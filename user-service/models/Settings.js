@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
-const db = require('../config/db');
-const User = require('./User');
+const { DataTypes } = require('sequelize')
+const db = require('../config/db')
+const User = require('./User')
 
-// SPECIFIC SETTINGS TO ONE USER SUCH AS NOTIFICATIONS, VERIFIED, TWO FACTOR AUTH, ETC.
+// SPECIFIC SETTINGS TO ONE USER SUCH AS NOTIFICATIONS, TWO FACTOR AUTH, ETC.
 const Settings = db.define('settings', {
     id: {
         type: DataTypes.INTEGER,
@@ -19,20 +19,18 @@ const Settings = db.define('settings', {
     },
     notifications: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: false,
+        defaultValue: true
     },
-    verified: {
+    mfa: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
-    },
-    twoFactorAuth: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: false,
+        defaultValue: false
     }
-});
+})
 
 // TABLE ASSOCIATIONS OR FOREIGN KEYS
-Settings.belongsTo(User, { foreignKey: 'userId' });
+Settings.belongsTo(User, { foreignKey: 'userId' })
 
 // EXPORT MODEL TO BE USED IN OTHER FILES
-module.exports = Settings;
+module.exports = Settings

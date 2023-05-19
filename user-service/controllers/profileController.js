@@ -14,9 +14,8 @@ const s3Config = new AWS.S3({
 })
 
 // GET USER PROFILE
-// GET http://localhost:5001/:id/profile - get user profile
+// GET http://localhost:5001/users/:id/profile - get user profile
 const getUserProfile = async (req, res) => {
-    console.log('\nFetching user profile...\n')
     try {
         const profile = await UserProfile.findOne({
             where: {
@@ -30,7 +29,6 @@ const getUserProfile = async (req, res) => {
 
         res.json(profile)
     } catch (error) {
-        console.error('Error fetching user profile', error)
         res.status(500).json({ error: 'Internal server error' })
     }
 }
@@ -38,14 +36,12 @@ const getUserProfile = async (req, res) => {
 // UPDATE USER PROFILE
 // PUT http://localhost:5001/users/:id/profile - update user profile
 const updateUserProfile = async (req, res) => {
-    console.log('\nUpdating user profile...\n')
 
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality } = req.body
-    
+
     // CALCULATE USER AGE
     const age = moment().diff(dateOfBirth, 'years')
-    console.log(age)
 
     try {
         const profile = await UserProfile.findOne({
@@ -100,9 +96,8 @@ const updateUserProfile = async (req, res) => {
 
 
 // UPDATE USER PROFILE PHOTO
-// POST http://localhost:5001/:id/profilePhoto - update user profile photo
+// PUT http://localhost:5001/users/:id/profilePhoto - update user profile photo
 const updateUserProfilePhoto = async (req, res) => {
-    console.log('\nUpdating user profile photo...\n')
 
     // CHECK IF FILE IS MISSING
     if (!req.file) {
@@ -121,7 +116,8 @@ const updateUserProfilePhoto = async (req, res) => {
                 }
             })
 
-            console.log('\nProfile: ', profile)
+            console.log("Image to be uploaded: ", img_file)
+            console.log(req.file);
 
             // IF PROFILE NOT EXISTS, CREATE NEW PROFILE
             if (!profile) {
@@ -143,55 +139,63 @@ const updateUserProfilePhoto = async (req, res) => {
 
             // IF PROFILE EXISTS, UPDATE PROFILE PHOTO
             else {
-                console.log('\nProfile: ', profile.profilePhoto)
-                // REMOVE OLD PROFILE PHOTO FROM S3
-                if (profile && profile.profilePhoto) {
-                    const params = {
-                        Bucket: process.env.USER_PROFILE_PHOTOS,
+                // IF CURRENT PROFILE PHOTO IS NULL AND NEW PROFILE PHOTO IS NOT NULL - UPLOAD NEW PROFILE PHOTO
+                if (!profile.profilePhoto && img_file) {
+                    const updatedProfile = await UserProfile.update({
+                        profilePhoto: img_file.location ? img_file.location : img_file.path,
+                        updatedAt: new Date()
+                    }, {
+                        where: {
+                            userId: req.params.id
+                        }
+                    })
 
-                        // TAKE FILE NAME FROM DATABASE
-                        Key: profile.profilePhoto.split('/').pop() //if any sub folder-> path/of/the/folder.ext
-                    }
+                    if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
 
-                    try {
-                        // DELETE FILE FROM S3
-                        s3Config.deleteObject(params, (err, data) => {
-                            if (err) {
-                                console.log(err, err.stack) // an error occurred
-                            }
-                            else {
-                                console.log(params.Key + ' deleted!')
-                            }
-                        })
-                    }
-                    catch (err) {
-                        console.log('ERROR in file Deleting : ' + JSON.stringify(err))
-                    }
+                    // RETURN UPDATED PROFILE
+                    res.status(200).json({
+                        message: 'Profile updated successfully!',
+                        profile: updatedProfile
+                    })
                 }
 
-                console.log('\nUploading new profile photo...\n')
-                // UPDATE PROFILE PHOTO
-                const updatedUserProfile = await UserProfile.update({
-                    profilePhoto: img_file.location ? img_file.location : img_file.path,
-                    updatedAt: new Date()
-                }, {
-                    where: {
-                        userId: req.params.id
+                // IF CURRENT PROFILE PHOTO IS NOT NULL AND NEW PROFILE PHOTO IS NOT NULL - DELETE CURRENT PROFILE PHOTO AND UPLOAD NEW PROFILE PHOTO
+                else if (profile.profilePhoto && img_file) {
+                    // DELETE CURRENT PROFILE PHOTO
+                    const params = {
+                        Bucket: process.env.USER_PROFILE_PHOTOS,
+                        Key: profile.profilePhoto.split('/').pop()
                     }
-                })
 
-                if (!updatedUserProfile) throw Error('Something went wrong while updating the profile photo!')
+                    s3Config.deleteObject(params, (err, data) => {
+                        if (err) console.error('Error deleting user profile photo', err)
+                        else console.log('User profile photo deleted successfully', data)
+                    })
 
-                console.log(`\nProfile photo ${img_file.originalname} uploaded successfully!\n`)
-                console.log(img_file)
+                    // UPLOAD NEW PROFILE PHOTO
+                    const updatedProfile = await UserProfile.update({
+                        profilePhoto: img_file.location ? img_file.location : img_file.path,
+                        updatedAt: new Date()
+                    }, {
+                        where: {
+                            userId: req.params.id
+                        }
+                    })
 
-                // RETURN UPDATED PROFILE
-                res.status(200).json({
-                    message: 'Profile photo updated successfully!',
-                    profile: updatedUserProfile
-                })
+                    if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
+
+                    // RETURN UPDATED PROFILE
+                    res.status(200).json({
+                        message: 'Profile updated successfully!',
+                        profile: updatedProfile
+                    })
+                }
+
+                else
+                    throw Error('Something went wrong while updating the profile!')
             }
         } catch (err) {
+            console.error('Error updating user profile photo', err)
             res.status(400).json({ msg: err.message })
         }
     }

@@ -1,29 +1,30 @@
-const express = require('express');
-const router = express.Router();
-const settingsController = require('../controllers/settingsController');
+const express = require('express')
+const router = express.Router()
+const settingsController = require('../controllers/settingsController')
+const userMiddleware = require('../middlewares/userMiddleware')
 
-// Public route - get all settings
+// Private route - get all settings
 // GET http://localhost:5001/settings
-router.get('/', settingsController.getAllSettings);
+router.get('/', userMiddleware, settingsController.getAllSettings)
 
-// Public route - get setting by id
+// Private route - get setting by id
 // GET http://localhost:5001/settings/:id
-router.get('/:id', settingsController.getSettingsById);
+router.get('/:id', userMiddleware, settingsController.getSettingsById)
 
-// Public route - get setting by userId
+// Private route - get setting by userId
 // GET http://localhost:5001/settings/user/:userId
-router.get('/user/:userId', settingsController.getSettingsByUserId);
+router.get('/user/:userId', userMiddleware, settingsController.getSettingsByUserId)
 
-// Public route - create new setting
+// Private route - create new setting
 // POST http://localhost:5001/settings
-router.post('/', settingsController.createSettings);
+router.post('/', userMiddleware, settingsController.createSettings)
 
-// Public route - update setting by id
-// PUT http://localhost:5001/settings/:id
-router.put('/:id', settingsController.updateSettings);
+// Private route - update setting by userId
+// PUT http://localhost:5001/settings/user/:userId
+router.put('/user/:userId', userMiddleware, settingsController.updateSettings)
 
-// Public route - delete setting by id
+// Private route - delete setting by id
 // DELETE http://localhost:5001/settings/:id
-router.delete('/:id', settingsController.deleteSettings);
+router.delete('/:id', userMiddleware, settingsController.deleteSettings)
 
-module.exports = router;
+module.exports = router

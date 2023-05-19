@@ -13,11 +13,12 @@ const s3Config = new AWS.S3({
 
 const fileFilter = (req, file, callback) => {
 
-    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/svg']
+    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/svg', 'image/jpg', 'image/gif', 'image/JPG', 'image/JPEG', 'image/PNG', 'image/SVG', 'image/GIF']
 
     if (allowedFileTypes.includes(file.mimetype)) {
         callback(null, true)
     } else {
+        console.log('Only these file types are allowed - ' + allowedFileTypes)
         callback(null, false)
     }
 }
@@ -38,11 +39,11 @@ const storage = multer.diskStorage({
 const multerS3Storage = multerS3({
     s3: s3Config,
     bucket: process.env.USER_PROFILE_PHOTOS,
+    acl: 'public-read',
     metadata: (req, file, callback) => {
-        callback(null, { fieldname: file.fieldname })
+        callback(null, { fieldName: file.fieldname })
     },
     key: (req, file, callback) => {
-
         // REPLACE SPACE WITH DASHES AND REMOVE SPECIAL CHARACTERS FROM FILENAME
         const fileName = file.originalname.toLowerCase().split(' ').join('-').replace(/[^a-zA-Z0-9.]/g, '-')
         callback(null, req.params.id + '-' + fileName)

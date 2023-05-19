@@ -1,0 +1,31 @@
+{
+  "name": "user-service",
+  "version": "1.0.0",
+  "description": "Microservice for user related events",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "dev": "concurrently \"npm run server\""
+  },
+  "author": "Parmenide",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.946.0",
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^8.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.4",
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
+    "pg": "^8.11.0",
+    "sequelize": "^6.31.1",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

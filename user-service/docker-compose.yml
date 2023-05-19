@@ -1,0 +1,33 @@
+# CONFIGURATION FOR A POSTGRESQL DATABASE CONTAINER
+version: '3.7'
+
+# ALL IMAGES TO CREATE CONTAINERS
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: jesus123
+      POSTGRES_USER: postgres
+      POSTGRES_DB: users_db
+
+    # WHERE THE DATA WILL BE STORED
+    volumes:
+      - ./pgdata:var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  # CONFIGURATION FOR A NODEJS CONTAINER
+  app:
+    image: user_service
+    build: .
+    restart: always
+    ports:
+      - '5001:5001'
+    environment:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASSWORD: jesus123
+      DB_NAME: users_db
+    depends_on:
+      - db

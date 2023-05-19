@@ -40,7 +40,14 @@ This is a user account management solution built with Node.js runtime, Express f
 **Configure the environment variables:*
 
 * Create a .env file in the root directory. 
-* Provide the necessary environment variables, such as DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, APP_HOST, DOMAIN, DB_PORT, USER_SERVICE_PORT, AUTH_SERVICE_PORT, CLIENT_SERVICE_PORT, JWT_SECRET_KEY, SMTP_HOST=smtp.gmail.com, SMTP_PORT=465, SMTP_USER, SMTP_PASSWORD, USER_PROFILE_PHOTOS, AWS_USER_ACCESS_KEY_ID, AWS_USER_SECRET_ACCESS_KEY, JWT_EXPIRES_IN=15m, to provide database connection details, AWS S3 credentials, and other configuration values. 
+* Provide the necessary environment variables, such as DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, APP_HOST, DOMAIN, DB_PORT, USER_SERVICE_PORT, AUTH_SERVICE_PORT, CLIENT_SERVICE_PORT, JWT_SECRET_KEY, SMTP_HOST=smtp.gmail.com, SMTP_PORT=465, SMTP_USER, SMTP_PASSWORD, USER_PROFILE_PHOTOS, AWS_USER_ACCESS_KEY_ID, AWS_USER_SECRET_ACCESS_KEY, JWT_EXPIRES_IN=15m, to provide database connection details, AWS S3 credentials, and other configuration values as shown below:
+
+![Auth env](https://drive.google.com/file/d/1Okws5a5-Xqs1rB8VMeAChiTMLmzOVf5y/view?usp=share_link)
+
+![user](https://drive.google.com/file/d/1CWOVBtjErjNOc8vIJDXU8vNWXifjXU6e/view?usp=share_link)
+
+![verification](https://drive.google.com/file/d/1-qeBd7p0I4kf0loqs3PoyAS4uoJDBc0I/view?usp=share_link)
+
 
 * Run the following command to start each microservice:
 > npm run server
@@ -49,6 +56,9 @@ This is a user account management solution built with Node.js runtime, Express f
 * Navigate inside the next-user-acc-mgt directory
 * Create a .env.local file in that directory. 
 * Provide the necessary environment variables, such a NEXT_PUBLIC_USER, NEXT_PUBLIC_AUTH, NEXT_PUBLIC_VERIFICATION
+
+![frontend](https://drive.google.com/file/d/1zpIqH1RXhW5YKikSEE60tFs-xxqqcu0f/view?usp=share_link)
+
 * Run the following command to start the frontend: 
 > npm run dev
 

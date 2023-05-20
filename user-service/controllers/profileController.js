@@ -101,7 +101,7 @@ const updateUserProfilePhoto = async (req, res) => {
 
     // CHECK IF FILE IS MISSING
     if (!req.file) {
-        throw Error('FILE_MISSING')
+        throw Error('Image is missing');
     }
 
     // CHECK IF FILE IS AN IMAGE
@@ -115,9 +115,6 @@ const updateUserProfilePhoto = async (req, res) => {
                     userId: req.params.id
                 }
             })
-
-            console.log("Image to be uploaded: ", img_file)
-            console.log(req.file);
 
             // IF PROFILE NOT EXISTS, CREATE NEW PROFILE
             if (!profile) {
@@ -169,7 +166,6 @@ const updateUserProfilePhoto = async (req, res) => {
 
                     s3Config.deleteObject(params, (err, data) => {
                         if (err) console.error('Error deleting user profile photo', err)
-                        else console.log('User profile photo deleted successfully', data)
                     })
 
                     // UPLOAD NEW PROFILE PHOTO

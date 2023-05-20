@@ -11,7 +11,6 @@ const validateEmail = require('../utils/validateEmail')
 // 2FA
 // POST http://localhost:5002/2fa - 2fa
 const twoFactorAuth = async (req, res) => {
-    console.log('\n2FA...\n')
 
     // DESTRUCTURE EMAIL AND PASSWORD
     const { email, password } = req.body
@@ -89,7 +88,6 @@ const twoFactorAuth = async (req, res) => {
 // VERIFY 2FA
 // POST http://localhost:5002/verify-2fa - verify 2fa
 const verifyTwoFactorAuth = async (req, res) => {
-    console.log('\nVerifying 2fa...\n')
 
     // DESTRUCTURE EMAIL AND PASSWORD
     const { email, password, twoFactorToken } = req.body

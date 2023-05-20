@@ -13,7 +13,6 @@ const LoginLink = require('../models/LoginLink')
 // LOGIN LINK
 // POST http://localhost:5002/auth/login-link - login link
 const loginLink = async (req, res) => {
-    console.log('\nLogin link...\n')
 
     // DESTRUCTURE EMAIL
     const { email } = req.body
@@ -83,8 +82,6 @@ const loginLink = async (req, res) => {
 // VERIFY LINK
 // POST http://localhost:5002/auth/verify-link/:token - verify link
 const verifyLink = async (req, res) => {
-    console.log('\nVerifying link...\n')
-
     // DESTRUCTURE TOKEN
     const { token } = req.params
 
@@ -141,7 +138,7 @@ const verifyLink = async (req, res) => {
             id: user.data.id,
             email: user.data.email
         }, process.env.JWT_SECRET_KEY, {
-            expiresIn: '1h'
+            expiresIn: '120000'
         })
 
         // RETURN JWT TOKEN

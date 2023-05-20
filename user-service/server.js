@@ -23,7 +23,7 @@ try {
     // sequelize.sync({ force: true })
     sequelize.sync({ force: false })
     sequelize.authenticate()
-    console.log('Database connected ...')
+    console.log('User service connected to the database ...')
 } catch (error) {
     console.error('Unable to connect to the database:', error)
 }

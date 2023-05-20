@@ -2,14 +2,13 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 // MIDDLEWARE FOR AUTHORIZATION - CHECKS IF USER IS AUTHENTICATED
-const authMiddleware = (req, res, next) => {
+const protectionMiddleware = (req, res, next) => {
 
     // GET THE TOKEN FROM THE HEADER IF PRESENT
     const token = req.headers['x-auth-token']
 
     // IF NO TOKEN FOUND, RETURN ERROR
     if (!token) {
-        console.log('\nNo token found...\n')
         return res.status(401).json({
             success: false,
             message: 'No token, authorizaton Denied',
@@ -36,4 +35,4 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware;
+module.exports = protectionMiddleware;

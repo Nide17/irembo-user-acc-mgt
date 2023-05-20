@@ -8,7 +8,7 @@ const loginLinkController = require('../controllers/loginLinkController')
 const passwordController = require('../controllers/passwordController')
 
 // MIDDLEWARES
-const authMiddleware = require('../middlewares/authMiddleware')
+const protectionMiddleware = require('../middlewares/protectionMiddleware')
 
 // ROUTES
 // Public route
@@ -21,7 +21,7 @@ router.post('/logout', authController.logoutUser)
 
 // Private route
 // POST http://localhost:5002/auth/change-password - change password
-router.post('/change-password', authMiddleware, passwordController.changePassword)
+router.post('/change-password', protectionMiddleware, passwordController.changePassword)
 
 // Public route
 // POST http://localhost:5002/auth/forgot-password - forgot password
@@ -45,10 +45,10 @@ router.post('/two-fa', twoFaController.twoFactorAuth)
 
 // Private route
 // POST http://localhost:5002/auth/verify-two-fa - verify 2fa
-router.post('/verify-two-fa', twoFaController.verifyTwoFactorAuth)
+router.post('/verify-two-fa', protectionMiddleware, twoFaController.verifyTwoFactorAuth)
 
-// Private route
+// Public route
 // POST http://localhost:5002/auth/verify-token
-router.post('/verify-token', authMiddleware, authController.verifyToken)
+router.post('/verify-token', authController.verifyToken)
 
 module.exports = router

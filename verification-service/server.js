@@ -19,7 +19,7 @@ app.use(express.json()) // PARSE JSON DATA FROM REQUEST BODY - POST/PUT REQUESTS
 try {
     sequelize.sync({ force: false })
     sequelize.authenticate()
-    console.log('Database connected ...')
+    console.log('Verification service connected to the database ...')
 } catch (error) {
     console.error('Unable to connect to the database:', error)
 }

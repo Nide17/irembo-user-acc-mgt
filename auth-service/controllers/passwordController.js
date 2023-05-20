@@ -14,8 +14,6 @@ const PswdReset = require('../models/PswdReset')
 // FORGOT PASSWORD
 // POST http://localhost:5002/forgot-password - forgot password
 const forgotPassword = async (req, res) => {
-    console.log('\nForgot password...\n')
-
     // DESTRUCTURE EMAIL
     const { email } = req.body
 
@@ -83,7 +81,6 @@ const forgotPassword = async (req, res) => {
 // RESET PASSWORD
 // PUT http://localhost:5002/reset-password - reset password
 const resetPassword = async (req, res) => {
-    console.log('\nResetting password...\n')
 
     // DESTRUCTURE RESET TOKEN AND NEW PASSWORD
     const { resetToken, password } = req.body
@@ -119,7 +116,6 @@ const resetPassword = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt)
 
         // UPDATE PASSWORD
-        console.log(resetTokenExists)
         const updatedUser = await axios.put(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/` + resetTokenExists.userId, {
             password: hashedPassword
         })
@@ -137,7 +133,6 @@ const resetPassword = async (req, res) => {
 // PASSWORD CHANGE
 // PUT http://localhost:5002/auth/change-password - change password
 const changePassword = async (req, res) => {
-    console.log('\nChanging password...\n')
 
     // DESCTRUCTURE OLD PASSWORD AND NEW PASSWORD AND USER ID
     const { oldPswd, newPswd, userId } = req.body

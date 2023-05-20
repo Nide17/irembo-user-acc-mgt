@@ -18,7 +18,6 @@ const fileFilter = (req, file, callback) => {
     if (allowedFileTypes.includes(file.mimetype)) {
         callback(null, true)
     } else {
-        console.log('Only these file types are allowed - ' + allowedFileTypes)
         callback(null, false)
     }
 }
@@ -57,7 +56,7 @@ const upload = multer({
     storage: multerS3Storage,
     fileFilter,
     limits: {
-        fileSize: 2000000 // 1000000 Bytes = 1 MB (2MB)
+        fileSize: 12000000 // 1000000 Bytes = 1 MB (2MB)
     }
 })
 

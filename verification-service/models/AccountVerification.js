@@ -21,7 +21,7 @@ const AccountVerification = sequelize.define('AccountVerification', {
         type: DataTypes.STRING,
         allowNull: true,
         validate: {
-            isIn: [['PASSPORT', 'DRIVERS LICENSE', 'NATIONAL ID']]
+            isIn: [['passport', 'drivers_license', 'nid', 'laissez_passer']]
         }
     },
     documentNumber: {
@@ -40,8 +40,13 @@ const AccountVerification = sequelize.define('AccountVerification', {
         }
     },
     status: {
-        type: DataTypes.ENUM('UNVERIFIED', 'PENDING VERIFICATION', 'VERIFIED'),
-        allowNull: false
+        type: DataTypes.ENUM('unverified', 'pending', 'verified'),
+        allowNull: false,
+        validate: {
+            isIn: [['unverified', 'pending', 'verified']],
+            notEmpty: true
+        },
+        defaultValue: 'unverified'
     }
 });
 

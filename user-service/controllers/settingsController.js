@@ -29,8 +29,6 @@ const getSettingsByUserId = async (req, res) => {
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { userId } = req.params
 
-    console.log(userId)
-
     // IF USER HAS SETTINGS, RETURN SETTINGS
     try {
         const settings = await Settings.findOne({
@@ -48,11 +46,9 @@ const getSettingsByUserId = async (req, res) => {
             })
 
             if (!createdSettings) {
-                console.log('Something went wrong while creating the settings!')
                 throw Error('Something went wrong while creating the settings!')
             }
             else {
-                console.log('Settings created successfully!')
                 return res.json({ message: 'Settings created successfully!' })
             }
         }

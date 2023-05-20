@@ -1,7 +1,5 @@
 const checkOTP = async (savedOTPcode) => {
 
-    console.log('\nChecking OTP code...\n')
-
     // PROMPT USER TO ENTER OTP CODE
     const enteredOTP = prompt('Enter OTP code: ')
 

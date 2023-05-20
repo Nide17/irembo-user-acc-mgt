@@ -3,7 +3,6 @@ require('dotenv').config()
 
 // UTILITY FUNCTION TO SEND EMAIL WITH NODEMAILER - SENDS EMAIL TO USER WITH RESET LINK
 const sendEmailWithNodemailer = async (req, res, emailData) => {
-    console.log('\nSending email with nodemailer...\n')
 
     try {
         const transporter = nodemailer.createTransport({
@@ -21,7 +20,6 @@ const sendEmailWithNodemailer = async (req, res, emailData) => {
         })
 
         const info = await transporter.sendMail(emailData)
-        console.log('Message sent: %s', info.messageId)
     } catch (error) {
         console.error('Error sending email with nodemailer', error)
     }

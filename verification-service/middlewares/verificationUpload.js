@@ -7,13 +7,13 @@ require('dotenv').config()
 const s3Config = new AWS.S3({
     accessKeyId: process.env.AWS_USER_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_USER_SECRET_ACCESS_KEY,
-    Bucket: process.env.USER_PROFILE_PHOTOS,
+    Bucket: process.env.USER_DOCUMENTS,
     region: process.env.AWS_REGION,
 })
 
 const fileFilter = (req, file, callback) => {
 
-    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/svg']
+    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/svg, image/jpg, image/gif', 'image/JPEG', 'image/PNG', 'image/SVG, image/JPG, image/GIF']
 
     if (allowedFileTypes.includes(file.mimetype)) {
         callback(null, true)
@@ -25,7 +25,7 @@ const fileFilter = (req, file, callback) => {
 // UPLOAD IMAGE ON LOCAL MACHINE
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, path.join(__dirname, 'profiles'));
+        callback(null, path.join(__dirname, 'documents'));
     },
     filename: (req, file, callback) => {
         // REPLACE SPACE WITH DASHES AND REMOVE SPECIAL CHARACTERS FROM FILENAME
@@ -37,9 +37,10 @@ const storage = multer.diskStorage({
 // UPLOAD IMAGE ON AWS S3 BUCKET
 const multerS3Storage = multerS3({
     s3: s3Config,
-    bucket: process.env.USER_PROFILE_PHOTOS,
+    bucket: process.env.USER_DOCUMENTS,
+    acl: 'public-read',
     metadata: (req, file, callback) => {
-        callback(null, { fieldname: file.fieldname })
+        callback(null, { fieldName: file.fieldname })
     },
     key: (req, file, callback) => {
 
@@ -56,7 +57,7 @@ const upload = multer({
     storage: multerS3Storage,
     fileFilter,
     limits: {
-        fileSize: 2000000 // 1000000 Bytes = 1 MB (2MB)
+        fileSize: 12000000 // 1000000 Bytes = 1 MB (2MB)
     }
 })
 

@@ -86,7 +86,7 @@ const loginUser = async (req, res) => {
             id: user.data.id,
         },
         process.env.JWT_SECRET_KEY,
-        { expiresIn: '1h' }
+        { expiresIn: '120000' }
     )
 
     if (!token) {
@@ -109,7 +109,6 @@ const verifyToken = async (req, res) => {
 
     // IF NO TOKEN FOUND, RETURN ERROR
     if (!token) {
-        console.log('\nNo token found...\n')
         return res.status(401).json({
             success: false,
             message: 'No token, authorizaton Denied',
@@ -131,7 +130,6 @@ const verifyToken = async (req, res) => {
             code: 'TOKEN_VERIFIED'
         })
     } catch (error) {
-        console.log('\nToken not verified...\n')
         return res.status(401).json({
             success: false,
             message: 'Invalid token, authorizaton Denied',

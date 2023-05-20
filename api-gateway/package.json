@@ -7,9 +7,14 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "auth": "cd ../auth-service && npm start",
+    "install-auth": "cd ../auth-service && npm install",
     "user": "cd ../user-service && npm start",
-    "verification": "cd ../verification-service && npm run dev",
-    "client": "cd ../next-user-acc-mgt && npm start",
+    "install-user": "cd ../user-service && npm install",
+    "verification": "cd ../verification-service && npm start",
+    "install-verification": "cd ../verification-service && npm install",
+    "client": "cd ../next-user-acc-mgt && npm run dev",
+    "install-client": "cd ../next-user-acc-mgt && npm install",
+    "install-dev": "npm install && npm run install-auth && npm run install-user && npm run install-verification && npm run install-client",
     "dev": "concurrently \"npm run start\" \"npm run auth\" \"npm run user\" \"npm run verification\" \"npm run client\""
   },
   "keywords": [

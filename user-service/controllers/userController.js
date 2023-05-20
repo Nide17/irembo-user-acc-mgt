@@ -7,7 +7,7 @@ const User = require('../models/User')
 const validateEmail = require('../utils/validateEmail')
 const validatePassword = require('../utils/validatePassword')
 
-// GET http://localhost:5001/ - get all users
+// GET http://localhost:5002/ - get all users
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll()
@@ -17,7 +17,7 @@ const getAllUsers = async (req, res) => {
     }
 }
 
-// GET http://localhost:5001/users/:id - get user by id
+// GET http://localhost:5002/users/:id - get user by id
 const getUserById = async (req, res) => {
     try {
         const user = await User.findOne({
@@ -36,7 +36,7 @@ const getUserById = async (req, res) => {
     }
 }
 
-// POST http://localhost:5001/ - create new user
+// POST http://localhost:5002/ - create new user
 const createUser = async (req, res) => {
 
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
@@ -69,12 +69,15 @@ const createUser = async (req, res) => {
         })
 
         if (userExists) {
+            console.log('user already exists')
             return res.status(400).json({ error: 'User with that email already exists' })
         }
 
         // HASH THE PASSWORD
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
+
+        console.log('hashed password', hashedPassword)
 
         // CREATE NEW USER
         const user = await User.create({
@@ -84,13 +87,17 @@ const createUser = async (req, res) => {
             createdAt: new Date(),
             updatedAt: new Date()
         })
+
+        console.log('user created')
         res.json(user)
     } catch (error) {
+
+        console.log(error)
         res.status(500).json({ error: 'Internal server error' })
     }
 }
 
-// PUT http://localhost:5001/users/:id - update user by id
+// PUT http://localhost:5002/users/:id - update user by id
 const updateUser = async (req, res) => {
 
     const { password } = req.body
@@ -122,7 +129,7 @@ const updateUser = async (req, res) => {
     }
 }
 
-// DELETE http://localhost:5001/:id - delete user by id
+// DELETE http://localhost:5002/:id - delete user by id
 const deleteUser = async (req, res) => {
     try {
         const userid = await User.findByPk(req.params.id)
@@ -143,23 +150,18 @@ const deleteUser = async (req, res) => {
     }
 }
 
-// GET http://localhost:5001/:email - get user by email
+// GET http://localhost:5002/:email - get user by email
+// RETURNS USER OBJECT IF USER EXISTS, AND NULL IF USER DOES NOT EXIST
 const getUserByEmail = async (req, res) => {
     try {
-        // CHECK IF USER EXISTS
         const user = await User.findOne({
             where: {
                 email: req.params.email
             }
         })
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' })
-        }
-
         res.json(user)
-
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: 'Internal server error' })
     }
 }

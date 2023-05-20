@@ -1,4 +1,12 @@
+const AWS = require('aws-sdk')
 const AccountVerification = require('../models/AccountVerification')
+
+const s3Config = new AWS.S3({
+    accessKeyId: process.env.AWS_USER_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_USER_SECRET_ACCESS_KEY,
+    Bucket: process.env.USER_DOCUMENTS,
+    region: process.env.AWS_REGION,
+})
 
 // GET http://localhost:5003/accvers - get all accvers
 const getAllAccVers = async (req, res) => {
@@ -45,7 +53,7 @@ const getAccVerByUserId = async (req, res) => {
 const updateAccVer = async (req, res) => {
 
     // DESTRUCTURE THE REQUEST BODY
-    const { documentType, documentNumber, status } = req.body
+    const { documentType, documentNumber } = req.body
     const img_file = req.file
 
     try {
@@ -64,7 +72,7 @@ const updateAccVer = async (req, res) => {
                 documentType,
                 documentNumber,
                 documentImage: img_file.location ? img_file.location : img_file.path,
-                status
+                status: 'pending',
             })
 
             if (!newVer) throw Error('Something went wrong while creating the verification!')
@@ -81,7 +89,10 @@ const updateAccVer = async (req, res) => {
             // IF CURRENT VERIFICATION PHOTO IS NULL AND NEW VERIFICATION PHOTO IS NOT NULL - UPLOAD NEW VERIFICATION PHOTO
             if (!verific.documentImage && img_file) {
                 const updatedVer = await AccountVerification.update({
+                    documentType,
+                    documentNumber,
                     documentImage: img_file.location ? img_file.location : img_file.path,
+                    status: 'pending',
                     updatedAt: new Date()
                 }, {
                     where: {
@@ -112,7 +123,10 @@ const updateAccVer = async (req, res) => {
 
                 // UPLOAD NEW VERIFICATION PHOTO
                 const updatedVer = await AccountVerification.update({
+                    documentType,
+                    documentNumber,
                     documentImage: img_file.location ? img_file.location : img_file.path,
+                    status: 'pending',
                     updatedAt: new Date()
                 }, {
                     where: {
@@ -134,7 +148,7 @@ const updateAccVer = async (req, res) => {
         }
     } catch (err) {
         console.error('Error: ', err)
-        res.status(400).json({ msg: err.message })
+        res.status(400).json({ message: err.message })
     }
 }
 

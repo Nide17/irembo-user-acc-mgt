@@ -12,7 +12,7 @@ const validatePassword = require('../utils/validatePassword')
 const PswdReset = require('../models/PswdReset')
 
 // FORGOT PASSWORD
-// POST http://localhost:5002/forgot-password - forgot password
+// POST http://localhost:5001/forgot-password - forgot password
 const forgotPassword = async (req, res) => {
     // DESTRUCTURE EMAIL
     const { email } = req.body
@@ -79,7 +79,7 @@ const forgotPassword = async (req, res) => {
 }
 
 // RESET PASSWORD
-// PUT http://localhost:5002/reset-password - reset password
+// PUT http://localhost:5001/reset-password - reset password
 const resetPassword = async (req, res) => {
 
     // DESTRUCTURE RESET TOKEN AND NEW PASSWORD
@@ -131,7 +131,7 @@ const resetPassword = async (req, res) => {
 }
 
 // PASSWORD CHANGE
-// PUT http://localhost:5002/auth/change-password - change password
+// PUT http://localhost:5001/auth/change-password - change password
 const changePassword = async (req, res) => {
 
     // DESCTRUCTURE OLD PASSWORD AND NEW PASSWORD AND USER ID

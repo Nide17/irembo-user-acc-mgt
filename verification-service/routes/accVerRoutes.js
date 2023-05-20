@@ -1,26 +1,29 @@
 const express = require('express')
 const router = express.Router()
 const accVerController = require('../controllers/accVerController')
+
+// MIDDLEWARES
 const { verificationUpload } = require('../middlewares/verificationUpload.js')
+const protectionMiddleware = require('../middlewares/protectionMiddleware')
 
-// Public route - get all accvers
+// Private route - get all accvers
 // GET http://localhost:5003/accvers
-router.get('/', accVerController.getAllAccVers)
+router.get('/', protectionMiddleware, accVerController.getAllAccVers)
 
-// Public route - get accver by id
+// Private route - get accver by id
 // GET http://localhost:5003/accvers/:id
-router.get('/:id', accVerController.getAccVerById)
+router.get('/:id', protectionMiddleware, accVerController.getAccVerById)
 
-// Public route - get accver by user userId
+// Private route - get accver by user userId
 // GET http://localhost:5003/accvers/user/:userId
-router.get('/user/:id', accVerController.getAccVerByUserId)
+router.get('/user/:id', protectionMiddleware, accVerController.getAccVerByUserId)
 
-// Public route - update accver by userId
+// Private route - update accver by userId
 // PUT http://localhost:5003/accvers/user/:userId
-router.put('/user/:userId', verificationUpload.single('documentImage'), accVerController.updateAccVer)
+router.put('/user/:userId', protectionMiddleware, verificationUpload.single('documentImage'), accVerController.updateAccVer)
 
-// Public route - delete accver by id
+// Private route - delete accver by id
 // DELETE http://localhost:5003/accvers/:id
-router.delete('/:id', accVerController.deleteAccVer)
+router.delete('/:id', protectionMiddleware, accVerController.deleteAccVer)
 
 module.exports = router

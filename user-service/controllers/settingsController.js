@@ -1,6 +1,6 @@
 const Settings = require('../models/Settings')
 
-// GET http://localhost:5001/settings - get all settings
+// GET http://localhost:5002/settings - get all settings
 const getAllSettings = async (req, res) => {
     try {
         const stgs = await Settings.findAll()
@@ -10,7 +10,7 @@ const getAllSettings = async (req, res) => {
     }
 }
 
-// GET http://localhost:5001/settings/:id - get settings by id
+// GET http://localhost:5002/settings/:id - get settings by id
 const getSettingsById = async (req, res) => {
     try {
         const settings = await Settings.findOne({
@@ -24,7 +24,7 @@ const getSettingsById = async (req, res) => {
     }
 }
 
-// GET http://localhost:5001/settings/user/:userId - get settings by userId
+// GET http://localhost:5002/settings/user/:userId - get settings by userId
 const getSettingsByUserId = async (req, res) => {
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { userId } = req.params
@@ -59,7 +59,7 @@ const getSettingsByUserId = async (req, res) => {
     }
 }
 
-// POST http://localhost:5001/settings - create new settings
+// POST http://localhost:5002/settings - create new settings
 const createSettings = async (req, res) => {
     try {
         const settings = await Settings.create({
@@ -71,7 +71,7 @@ const createSettings = async (req, res) => {
     }
 }
 
-// PUT http://localhost:5001/settings/user/:userId - update settings by id
+// PUT http://localhost:5002/settings/user/:userId - update settings by id
 const updateSettings = async (req, res) => {
 
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
@@ -98,7 +98,7 @@ const updateSettings = async (req, res) => {
     }
 }
 
-// DELETE http://localhost:5001/settings/:id - delete settings by id
+// DELETE http://localhost:5002/settings/:id - delete settings by id
 const deleteSettings = async (req, res) => {
     try {
         const settings = await Settings.destroy({

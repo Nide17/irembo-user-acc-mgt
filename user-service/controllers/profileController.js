@@ -14,7 +14,7 @@ const s3Config = new AWS.S3({
 })
 
 // GET USER PROFILE
-// GET http://localhost:5001/users/:id/profile - get user profile
+// GET http://localhost:5002/users/:id/profile - get user profile
 const getUserProfile = async (req, res) => {
     try {
         const profile = await UserProfile.findOne({
@@ -34,7 +34,7 @@ const getUserProfile = async (req, res) => {
 }
 
 // UPDATE USER PROFILE
-// PUT http://localhost:5001/users/:id/profile - update user profile
+// PUT http://localhost:5002/users/:id/profile - update user profile
 const updateUserProfile = async (req, res) => {
 
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
@@ -96,7 +96,7 @@ const updateUserProfile = async (req, res) => {
 
 
 // UPDATE USER PROFILE PHOTO
-// PUT http://localhost:5001/users/:id/profilePhoto - update user profile photo
+// PUT http://localhost:5002/users/:id/profilePhoto - update user profile photo
 const updateUserProfilePhoto = async (req, res) => {
 
     // CHECK IF FILE IS MISSING

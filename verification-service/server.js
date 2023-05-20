@@ -11,6 +11,7 @@ const sequelize = require('./config/db')
 // IMPORTING ROUTES
 const accVerRoutes = require('./routes/accVerRoutes')
 
+
 // MIDDLEWARES
 app.use(cors()) // ALLOW OTHER DOMAINS TO ACCESS THIS SERVER
 app.use(express.json()) // PARSE JSON DATA FROM REQUEST BODY - POST/PUT REQUESTS

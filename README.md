@@ -55,7 +55,7 @@ This is a user account management solution built with Node.js runtime, Express f
 **Start the frontend by navigating to **
 * Navigate inside the next-user-acc-mgt directory
 * Create a .env.local file in that directory. 
-* Provide the necessary environment variables, such a NEXT_PUBLIC_USER, NEXT_PUBLIC_AUTH, NEXT_PUBLIC_VERIFICATION
+* Provide the necessary environment variables, such a NEXT_PUBLIC_API_GATEWAY, NEXT_PUBLIC_API_GATEWAY, NEXT_PUBLIC_API_GATEWAY
 
 ![frontend](https://drive.google.com/file/d/1zpIqH1RXhW5YKikSEE60tFs-xxqqcu0f/view?usp=share_link)
 

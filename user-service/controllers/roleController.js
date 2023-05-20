@@ -1,6 +1,6 @@
 const Role = require('../models/Role');
 
-// GET http://localhost:5001/roles - get all roles
+// GET http://localhost:5002/roles - get all roles
 const getAllRoles = async (req, res) => {
     try {
         const roles = await Role.findAll();
@@ -10,7 +10,7 @@ const getAllRoles = async (req, res) => {
     }
 }
 
-// GET http://localhost:5001/roles/:id - get role by id
+// GET http://localhost:5002/roles/:id - get role by id
 const getRoleById = async (req, res) => {
     try {
         const role = await Role.findOne({
@@ -24,7 +24,7 @@ const getRoleById = async (req, res) => {
     }
 }
 
-// POST http://localhost:5001/roles - create new role
+// POST http://localhost:5002/roles - create new role
 const createRole = async (req, res) => {
     try {
         const role = await Role.create({
@@ -36,7 +36,7 @@ const createRole = async (req, res) => {
     }
 }
 
-// PUT http://localhost:5001/roles/:id - update role by id
+// PUT http://localhost:5002/roles/:id - update role by id
 const updateRole = async (req, res) => {
     try {
         const role = await Role.update({
@@ -52,7 +52,7 @@ const updateRole = async (req, res) => {
     }
 }
 
-// DELETE http://localhost:5001/roles/:id - delete role by id
+// DELETE http://localhost:5002/roles/:id - delete role by id
 const deleteRole = async (req, res) => {
     try {
         const role = await Role.destroy({

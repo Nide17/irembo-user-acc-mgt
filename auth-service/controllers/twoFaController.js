@@ -9,7 +9,7 @@ const sendEmailWithNodemailer = require('../utils/sendEmailWithNodemailer')
 const validateEmail = require('../utils/validateEmail')
 
 // 2FA
-// POST http://localhost:5002/2fa - 2fa
+// POST http://localhost:5001/2fa - 2fa
 const twoFactorAuth = async (req, res) => {
 
     // DESTRUCTURE EMAIL AND PASSWORD
@@ -86,7 +86,7 @@ const twoFactorAuth = async (req, res) => {
 }
 
 // VERIFY 2FA
-// POST http://localhost:5002/verify-2fa - verify 2fa
+// POST http://localhost:5001/verify-2fa - verify 2fa
 const verifyTwoFactorAuth = async (req, res) => {
 
     // DESTRUCTURE EMAIL AND PASSWORD

@@ -3,7 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 require('dotenv').config()
-const PORT = process.env.USER_SERVICE_PORT || 5001
+const PORT = process.env.USER_SERVICE_PORT || 5002
 
 // IMPORTING CONNECTION TO POSTGRESQL DATABASE
 const sequelize = require('./config/db')

@@ -16,14 +16,19 @@ app.use(express.urlencoded({ extended: false })) // PARSE URL ENCODED DATA FROM 
 // ALL TYPE OF REQUESTS TO /users WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/users', (req, res) => {
 
+    console.log('Request made to /users', req.originalUrl)
+
     // REDIRECT ALL REQUESTS TO /users WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.baseUrl}`,
-        data: req.body
+        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
+        data: req.body,
+        headers: req.headers
     }).then(response => {
+        console.log('Response from /users', response.data)
         res.send(response.data)
     }).catch(error => {
+        console.log('Response:', error)
         // IF ERROR OCCURS, SEND ERROR MESSAGE
         res.send(error.message)
     })
@@ -35,8 +40,9 @@ app.use('/settings', (req, res) => {
     // REDIRECT ALL REQUESTS TO /settings WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.baseUrl}`,
-        data: req.body
+        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
+        data: req.body,
+        headers: req.headers
     }).then(response => {
         res.send(response.data)
     }).catch(error => {
@@ -51,8 +57,9 @@ app.use('/roles', (req, res) => {
     // REDIRECT ALL REQUESTS TO /roles WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.baseUrl}`,
-        data: req.body
+        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
+        data: req.body,
+        headers: req.headers
     }).then(response => {
         res.send(response.data)
     }).catch(error => {
@@ -68,7 +75,8 @@ app.use('/auth', (req, res) => {
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.AUTH_SERVICE_PORT}${req.originalUrl}`,
-        data: req.body
+        data: req.body,
+        headers: req.headers
     }).then(response => {
         res.send(response.data)
     }).catch(error => {
@@ -83,8 +91,9 @@ app.use('/accvers', (req, res) => {
     // REDIRECT ALL REQUESTS TO /accvers WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.VERIFICATION_SERVICE_PORT}${req.baseUrl}`,
-        data: req.body
+        url: `${process.env.APP_HOST}:${process.env.VERIFICATION_SERVICE_PORT}${req.originalUrl}`,
+        data: req.body,
+        headers: req.headers
     }).then(response => {
         res.send(response.data)
     }).catch(error => {

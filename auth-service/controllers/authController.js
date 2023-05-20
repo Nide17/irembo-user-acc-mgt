@@ -35,7 +35,6 @@ const loginUser = async (req, res) => {
 
         // IF USER NOT FOUND, RETURN ERROR
         if (!response.data) {
-            console.log('User not found!')
             return res.status(404).json({ msg: 'User not found!' })
         }
 
@@ -44,12 +43,10 @@ const loginUser = async (req, res) => {
 
         // CHECK IF USER EXISTS
         if (!user) {
-            console.log('User does not exist!')
             return res.status(400).json({ msg: 'User does not exist!' })
         }
 
         else {
-            console.log(user)
             // CHECK IF PASSWORD IS CORRECT
             const isMatch = await bcrypt.compare(password, user.password)
 
@@ -78,7 +75,6 @@ const loginUser = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ msg: 'Internal server error' })
     }
 }

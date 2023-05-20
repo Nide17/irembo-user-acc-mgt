@@ -99,6 +99,8 @@ const updateUserProfile = async (req, res) => {
 // PUT http://localhost:5002/users/:id/profilePhoto - update user profile photo
 const updateUserProfilePhoto = async (req, res) => {
 
+    console.log('endpoint hit')
+
     // CHECK IF FILE IS MISSING
     if (!req.file) {
         throw Error('Image is missing');
@@ -109,6 +111,7 @@ const updateUserProfilePhoto = async (req, res) => {
         const img_file = req.file
 
         try {
+            console.log('finding profile ...')
             // FIND PROFILE
             const profile = await UserProfile.findOne({
                 where: {
@@ -124,6 +127,8 @@ const updateUserProfilePhoto = async (req, res) => {
                     createdAt: new Date(),
                     updatedAt: new Date()
                 })
+
+                console.log('newProfile', newProfile)
 
                 if (!newProfile) throw Error('Something went wrong while creating the profile!')
 
@@ -146,6 +151,8 @@ const updateUserProfilePhoto = async (req, res) => {
                             userId: req.params.id
                         }
                     })
+
+                    console.log('updatedProfile', updatedProfile)
 
                     if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
 
@@ -178,6 +185,8 @@ const updateUserProfilePhoto = async (req, res) => {
                         }
                     })
 
+                    console.log('updatedProfile photo', updatedProfile)
+
                     if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
 
                     // RETURN UPDATED PROFILE
@@ -193,6 +202,7 @@ const updateUserProfilePhoto = async (req, res) => {
         } catch (err) {
             console.error('Error updating user profile photo', err)
             res.status(400).json({ msg: err.message })
+            throw Error(err)
         }
     }
 }

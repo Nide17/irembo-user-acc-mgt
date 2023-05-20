@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs")
 
 // MODELS
 const User = require('../models/User')
+const UserProfile = require('../models/UserProfile')
 
 // UTILS
 const validateEmail = require('../utils/validateEmail')
@@ -69,15 +70,12 @@ const createUser = async (req, res) => {
         })
 
         if (userExists) {
-            console.log('user already exists')
             return res.status(400).json({ error: 'User with that email already exists' })
         }
 
         // HASH THE PASSWORD
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
-
-        console.log('hashed password', hashedPassword)
 
         // CREATE NEW USER
         const user = await User.create({
@@ -88,11 +86,29 @@ const createUser = async (req, res) => {
             updatedAt: new Date()
         })
 
-        console.log('user created')
-        res.json(user)
-    } catch (error) {
+        // IF USER IS CREATED SUCCESSFULLY, CREATE USER PROFILE
+        if (user) {
+            const userProfile = await UserProfile.create({
+                userId: user.id,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            })
 
-        console.log(error)
+            // IF PROFILE IS NOT CREATED, DELETE THE USER AND RETURN ERROR MESSAGE
+            if (!userProfile) {
+                await User.destroy({
+                    where: {
+                        id: user.id
+                    }
+                })
+                return res.status(500).json({ error: 'Internal server error' })
+            }
+        }
+
+        // RETURN THE USER, ALL IS WELL
+        res.json(user)
+
+    } catch (error) {
         res.status(500).json({ error: 'Internal server error' })
     }
 }
@@ -161,7 +177,6 @@ const getUserByEmail = async (req, res) => {
         })
         res.json(user)
     } catch (error) {
-        console.log(error)
         res.status(500).json({ error: 'Internal server error' })
     }
 }

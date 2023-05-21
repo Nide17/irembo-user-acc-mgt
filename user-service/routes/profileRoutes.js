@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const profileController = require('../controllers/profileController')
 const protectionMiddleware = require('../middlewares/protectionMiddleware')
-const {profileUpload} = require('../middlewares/profileUpload')
+const { profileUpload } = require('../middlewares/profileUpload')
 
 // Private route - get setting by userId
 // GET http://localhost:5002/profiles/user/:userId

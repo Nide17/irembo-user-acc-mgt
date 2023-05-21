@@ -37,8 +37,10 @@ const EditProfilePage = () => {
                 })
 
                 // SET USER PROFILE
-                if (response.status === 200) {
+                if (response.data) {
                     setProfile(response.data)
+                    console.log(response.data)
+                    console.log(profile)
                 }
 
                 // SET ERROR MESSAGE
@@ -48,7 +50,6 @@ const EditProfilePage = () => {
                     setTimeout(() => {
                         setError('')
                     }, 3000)
-
                 }
 
                 // SET LOADING TO FALSE
@@ -103,11 +104,9 @@ const EditProfilePage = () => {
                 setLoading(false)
                 return response
             }
-
             else
                 setError('Error updating user profile')
             setLoading(false)
-
             return response
         }
         catch (err) {
@@ -118,11 +117,9 @@ const EditProfilePage = () => {
     // RETURN THE FORM
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
+            {console.log("form section", profile)}
             <Form
                 updateUser={updateUser}
-                error={error}
-                success={success}
-                loading={loading}
                 profile={profile}
                 setProfile={setProfile}
             />

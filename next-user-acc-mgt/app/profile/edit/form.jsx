@@ -3,51 +3,27 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import countryList from './countries.json'
-import moment from 'moment';
+import moment from 'moment'
 
-const Form = ({ updateUser }) => {
-
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [gender, setGender] = useState('')
-  const [dob, setDob] = useState('')
-  const [maritalStatus, setMaritalStatus] = useState('')
-  const [nationality, setNationality] = useState('')
+const Form = ({ updateUser, profile, setProfile }) => {
 
   const [errorP, setErrorP] = useState('')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  // Function to validate the form and create a new user
-  function calculateAge(birthdate) {
-    const age = moment().diff(moment(birthdate), 'years');
-    return age;
-  }
-
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preDefault()
 
     // Call function to update user
     const response = await updateUser(firstName, lastName, gender, dob, maritalStatus, nationality)
 
-    // Redirect to login page if successful
     if (response) {
-      // clear error message
       setErrorP('')
-      // set loading to true when loading user profile data from server and before setting user state
-      setLoading(true)
-      // set success to true when user profile data is successfully loaded from server and user state is set
       setSuccess(true)
-      // set loading to false when user profile data is successfully loaded from server and user state is set
       setLoading(false)
     } else {
-      // clear success message
       setSuccess(false)
-      // set loading to true when loading user profile data from server and before setting user state
-      setLoading(true)
-      // set error message when user profile data is not successfully loaded from server and user state is not set
       setErrorP('Error updating user profile')
-      // set loading to false when user profile data is not successfully loaded from server and user state is not set
       setLoading(false)
     }
   }
@@ -70,30 +46,32 @@ const Form = ({ updateUser }) => {
       {errorP && (<small className="text-red-700 text-center animate-bounce">{errorP}</small>)}
 
       {!loading && !errorP && success && (
-        <small className="text-green-700 text-center animate-bounce">Success, login!</small>
+        <small className="text-green-700 text-center animate-bounce">Success, updating profile!</small>
       )}
+
+      {console.log("Profile to display is:", profile)}
 
       <input
         className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
         type="text"
         placeholder="First name"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
+        value={profile && profile.firstName ? profile.firstName : ''}
+        onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
         required
       />
       <input
         className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
         type="text"
         placeholder="Last name"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
+        value={profile && profile.lastName ? profile.lastName : ''}
+        onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
         required
       />
       <select
         className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
         id="gender"
-        value={gender}
-        onChange={(event) => setGender(event.target.value)}
+        value={profile && profile.gender ? profile.gender : ""}
+        onChange={(e) => setProfile({...profile, gender: e.target.value})}
         required
       >
         <option value="">Select Gender</option>
@@ -106,16 +84,20 @@ const Form = ({ updateUser }) => {
         id="dob"
         type="date"
         placeholder="Date of Birth"
-        value={dob}
-        onChange={(event) => setDob(event.target.value)}
+        value={profile && profile.dob ? moment(new Date(profile.dob)).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')}
+        onChange={(e) => setProfile({
+          ...profile,
+          dob: moment(new Date(e.target.value)).format('YYYY-MM-DD')
+        }
+        )}
         required
       />
 
       <select
         className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
         id="maritalStatus"
-        value={maritalStatus}
-        onChange={(event) => setMaritalStatus(event.target.value)}
+        value={profile && profile.maritalStatus ? profile.maritalStatus : ''}
+        onChange={(e) => setProfile({ ...profile, maritalStatus: e.target.value })}
         required
       >
         <option value="">Select Marital Status</option>
@@ -128,8 +110,8 @@ const Form = ({ updateUser }) => {
       <select
         className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
         id='nationality'
-        value={nationality}
-        onChange={(event) => setNationality(event.target.value)}
+        value={profile && profile.nationality ? profile.nationality : ''}
+        onChange={(e) => setProfile({ ...profile, nationality: e.target.value })}
         required
       >
         <option value="" disabled>Select a country</option>

@@ -9,12 +9,12 @@ const DashboardPage = () => {
 
     const { isAuthenticated } = useAuth()
     const [loading, setLoading] = useState(true)
-    const [user, setUser] = useState({})
     const [isMfa, setMfa] = useState({})
+    const [profile, setProfile] = useState({})
 
     // USER ID FROM LOCAL STORAGE
     const userLocal = typeof window !== 'undefined' ? localStorage.getItem('user') : null
-    const userId = userLocal && userLocal.id
+    const userId = userLocal && JSON.parse(userLocal).id
 
     useEffect(() => {
         setLoading(false)
@@ -25,7 +25,7 @@ const DashboardPage = () => {
         // GET USER PROFILE
         const getUserProfile = async () => {
             // REQUEST USING ID 
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/users/${userId}/profile`, {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${userId}`, {
                 headers: {
                     'x-auth-token': token,
                     'Content-Type': 'application/json'
@@ -33,9 +33,8 @@ const DashboardPage = () => {
             })
 
             // SET USER PROFILE
-            if (response.status === 200) {
-                // SET USER SETTINGS
-                setMfa(response.data.mfa)
+            if (response.data) {
+                setProfile(response.data)
             }
         }
         // GET USER SETTINGS
@@ -49,7 +48,7 @@ const DashboardPage = () => {
             })
 
             // SET USER SETTINGS
-            if (response.status === 200) {
+            if (response.data) {
                 setMfa(response.data.settings)
             }
         }
@@ -106,20 +105,17 @@ const DashboardPage = () => {
             {/* USER DETAILS */}
             <div className="flex flex-col items-center justify-center w-5/6 sm:w-4/5 h-min p-4 sm:p-24 bg-blue-400 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white text-left mt-16">
                 <h1 className="text-3xl text-white font-bold mb-8">User Details</h1>
-
                 {
-                    Object.keys(user).length > 0 && Object.keys(user).map((key, index) => {
+                    Object.keys(profile).length > 0 && Object.keys(profile).map((key, index) => {
                         return (
                             <div className="flex flex-row items-center w-full h-1/3 text-left text-sm sm:text-3xl" key={index}>
                                 <span className="text-xl text-white font-bold mr-2 overflow-ellipsis">{key}:</span>
-                                <span className="text-xl text-white font-bold overflow-ellipsis">{user[key]}</span>
+                                <span className="text-xl text-white font-bold overflow-ellipsis">{profile[key]}</span>
                             </div>
                         )
-                    }
-                    )
+                    })
                 }
             </div>
-
         </div>)
 }
 

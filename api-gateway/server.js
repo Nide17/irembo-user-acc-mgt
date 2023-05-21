@@ -68,7 +68,7 @@ app.use('/profiles', (req, res) => {
     }).catch(error => {
         console.log(req.method, 'Response:', error)
         // IF ERROR OCCURS, SEND ERROR MESSAGE
-        res.send(error.message)
+        res.status(500).send(error)
     })
 })
 

@@ -4,7 +4,7 @@ import ProfilePic from './utils/profilePic'
 
 const Header = ({ logout, isMenuOpen, toggleMenu, isLoggedIn, user, token }) => {
 
-    console.log('user: ', user, 'token: ', token, 'isLoggedIn: ', isLoggedIn) 
+    // console.log('user: ', user, 'token: ', token, 'isLoggedIn: ', isLoggedIn) 
 
     return (
         <header className='fixed top-0 left-0 w-full z-10 bg-slate-100 text-slate-900 text-16 drop-shadow-md'>
@@ -16,7 +16,7 @@ const Header = ({ logout, isMenuOpen, toggleMenu, isLoggedIn, user, token }) => 
                         <span className='block text-[10px] text-slate-800 underline underline-offset-4 leading-6'>Manage, be fruitful</span>
                     </Link>
                 </div>
-
+                {/* {console.log(user)} */}
                 <div className={`${isMenuOpen ? "" : "hidden"} sm:flex grow justify-center sm:justify-end top-20 sm:top-0 h-72 sm:h-auto fixed sm:static z-10 sm:z-1 mr-3 sm:mr-0  w-full sm:w-auto`}>
 
                     <ul className={`flex flex-col sm:flex-row justify-center sm:justify-end items-center w-9/12 sm:w-auto mx-auto sm:mr-0 bg-slate-100`}>
@@ -62,7 +62,7 @@ const Header = ({ logout, isMenuOpen, toggleMenu, isLoggedIn, user, token }) => 
                             token={token}
                             isLoggedIn={isLoggedIn}
                         />}
-                    {console.log('user: ', user, 'token: ', token, 'isLoggedIn: ', isLoggedIn)}
+                    {/* {console.log('user: ', user, 'token: ', token, 'isLoggedIn: ', isLoggedIn)} */}
                 </div>
 
                 <div className={`hamburger inline sm:hidden ml-auto ${isMenuOpen ? "w-4 h-[2rem]" : ""}`} onClick={toggleMenu}>

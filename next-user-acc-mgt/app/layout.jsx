@@ -57,7 +57,7 @@ export default function RootLayout({ children }) {
           })
 
           // IF TOKEN IS VALID, REDIRECT TO DASHBOARD
-          if (response.status === 200) {
+          if (response.data.code === 'TOKEN_VERIFIED') {
             setIsLoggedIn(true)
             setToken(storedToken)
             setUser(JSON.parse(storedUser))
@@ -87,7 +87,6 @@ export default function RootLayout({ children }) {
           setIsLoggedIn(false)
           setToken('')
           localStorage.removeItem('token')
-          router.push('/')
           return
         }
       }
@@ -138,7 +137,7 @@ export default function RootLayout({ children }) {
     setUser({})
 
     // REDIRECT TO HOME PAGE
-    router.push('/')
+    window.location.href = '/'
   }
 
   // RETURN THE LAYOUT

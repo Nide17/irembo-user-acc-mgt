@@ -32,16 +32,13 @@ const UserProfile = sequelize.define('userProfile', {
     firstName: {
         type: DataTypes.STRING,
         allowNull: true,
-        validate: {
-            isAlpha: true
-        }
+        // validate: {
+        //     isAlpha: true
+        // }
     },
     lastName: {
         type: DataTypes.STRING,
         allowNull: true,
-        validate: {
-            isAlpha: true
-        }
     },
     gender: {
         type: DataTypes.STRING,
@@ -60,7 +57,7 @@ const UserProfile = sequelize.define('userProfile', {
     },
     dateOfBirth: {
         type: DataTypes.DATEONLY,
-        allowNull: true,
+        allowNull: false,
         validate: {
             isDate: true
         }
@@ -75,10 +72,7 @@ const UserProfile = sequelize.define('userProfile', {
     },
     nationality: {
         type: DataTypes.STRING,
-        allowNull: true,
-        validate: {
-            isAlpha: true
-        }
+        allowNull: true
     }
 })
 

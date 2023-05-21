@@ -68,6 +68,8 @@ const RegisterPage = () => {
         catch (err) {
             setRegError('Error signing up!')
         }
+
+        setRegisterLoading(false)
     }
 
     return (
@@ -83,13 +85,20 @@ const RegisterPage = () => {
 
                 {/* NOTIFICATION - LOADING, ERROR, SUCCESS */}
                 {registerLoading && !regError && !regSuccess && (
-                    <p className="text-center text-yellow-500 text-sm">Loading...</p>
+                    <div className="flex items-center justify-center">
+                        <Loading />
+                    </div>
                 )}
+
                 {regError && (
-                    <p className="text-center text-red-700 text-sm my-4">{regError}</p>
-                )}
+                    <div className="flex items-center justify-center h-16 mx-2 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-100">
+                        <p className="text-center text-red-700 text-sm">{regError}</p>
+                    </div>)}
+
                 {!registerLoading && !regError && regSuccess && (
-                    <p className="text-center text-green-700 text-sm">Success, login!</p>
+                    <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
+                        <p className="text-center text-green-900 text-lg">Success, login now!</p>
+                    </div>
                 )}
 
                 <input

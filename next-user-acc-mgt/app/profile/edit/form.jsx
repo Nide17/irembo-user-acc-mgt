@@ -3,28 +3,47 @@ import Link from 'next/link'
 import { useState } from 'react'
 import countryList from './countries.json'
 import moment from 'moment'
+import Loading from '../../utils/loading'
 
 const Form = ({ error, updateUser, profile, setProfile }) => {
 
+  // STATE VARIABLES
   const [errorP, setErrorP] = useState(error)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  // DESTRUCTURE PROFILE
+  const { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality } = profile
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // Call function to update user
-    const response = await updateUser(firstName, lastName, gender, dob, maritalStatus, nationality)
+    // SET LOADING TO TRUE
+    setLoading(true)
 
-    if (response) {
-      setErrorP('')
-      setSuccess(true)
-      setLoading(false)
-    } else {
+    // CLEAR ERROR MESSAGE
+    setErrorP('')
+
+    // ATTEMPT TO UPDATE USER PROFILE
+    try {
+      // CALL UPDATE USER FUNCTION
+      const response = await updateUser(firstName, lastName, gender, dateOfBirth, maritalStatus, nationality)
+
+      // IF SUCCESSFUL, SET SUCCESS STATE
+      if (response && response.data) {
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 3000)
+      }
+    } catch (error) {
+      // IF ERROR, SET ERROR STATE
       setSuccess(false)
       setErrorP('Error updating user profile')
-      setLoading(false)
+      return error
     }
+
+    // SET LOADING TO FALSE
+    setLoading(false)
   }
 
   return (
@@ -39,16 +58,21 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
 
       {/* NOTIFICATION - LOADING, ERROR, SUCCESS */}
       {loading && !errorP && !success && (
-        <small className="text-yellow-500 text-center animate-ping">Loading ...</small>
+        <div className="flex items-center justify-center">
+          <Loading />
+        </div>
       )}
 
-      {errorP && (<small className="text-red-700 text-center animate-bounce">{errorP}</small>)}
+      {errorP && (
+        <div className="flex items-center justify-center h-16 mx-2 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-100">
+          <p className="text-center text-red-700 text-sm">{errorP}</p>
+        </div>)}
 
       {!loading && !errorP && success && (
-        <small className="text-green-700 text-center animate-bounce">Success, updating profile!</small>
+        <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
+          <p className="text-center text-green-900 text-lg">Success, updating profile!</p>
+        </div>
       )}
-
-      {console.log("Profile to display is:", profile)}
 
       <input
         className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
@@ -70,7 +94,7 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
         className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
         id="gender"
         value={profile && profile.gender ? profile.gender : ""}
-        onChange={(e) => setProfile({...profile, gender: e.target.value})}
+        onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
         required
       >
         <option value="">Select Gender</option>
@@ -80,13 +104,13 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
 
       <input
         className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
-        id="dob"
+        id="dateOfBirth"
         type="date"
         placeholder="Date of Birth"
-        value={profile && profile.dob ? moment(new Date(profile.dob)).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')}
+        value={profile && profile.dateOfBirth ? moment(profile.dateOfBirth).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')}
         onChange={(e) => setProfile({
           ...profile,
-          dob: moment(new Date(e.target.value)).format('YYYY-MM-DD')
+          dateOfBirth: moment(e.target.value).format('YYYY-MM-DD')
         }
         )}
         required

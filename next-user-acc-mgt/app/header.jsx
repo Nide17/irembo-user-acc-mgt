@@ -1,9 +1,9 @@
 "use client"
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import ProfilePic from './utils/profilePic'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import axios from 'axios'
-import { useRouter } from 'next/router'
 
 const Header = () => {
 

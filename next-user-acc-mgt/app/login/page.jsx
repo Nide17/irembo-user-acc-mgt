@@ -1,8 +1,8 @@
 "use client"
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import axios from 'axios'
 import useAuth from '../utils/useauth'
 
 const LoginPage = () => {
@@ -89,13 +89,20 @@ const LoginPage = () => {
 
                 {/* NOTIFICATION - LOADING, ERROR, SUCCESS */}
                 {loadingLogin && !error && !success && (
-                    <p className="text-center text-yellow-500 text-sm">Loading...</p>
+                    <div className="flex items-center justify-center">
+                        <Loading />
+                    </div>
                 )}
                 {error && (
-                    <p className="text-center text-red-700 text-sm my-4">{error}</p>
+                    <div className="flex items-center justify-center h-16 mx-2 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-100">
+                        <p className="text-center text-red-700 text-sm">{error}</p>
+                    </div>
                 )}
+
                 {!loadingLogin && !error && success && (
-                    <p className="text-center text-green-700 text-sm">Login successful</p>
+                    <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
+                        <p className="text-center text-green-900 text-lg">Login successful</p>
+                    </div>
                 )}
 
                 <input

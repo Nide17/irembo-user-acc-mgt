@@ -43,7 +43,7 @@ const updateProfile = async (req, res) => {
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality } = req.body
 
-    console.log(req.body)
+    console.log('\ndateOfBirth', dateOfBirth)
 
     // CALCULATE USER AGE
     const age = moment().diff(dateOfBirth, 'years')
@@ -89,7 +89,7 @@ const updateProfile = async (req, res) => {
                 updatedAt: new Date()
             }, {
                 where: {
-                    userId: req.params.id
+                    userId: req.params.userId
                 }
             })
 

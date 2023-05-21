@@ -165,15 +165,23 @@ const VerificationPage = () => {
                         <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Manage your data</span>
                     </Link>
                 </div>
+
                 {/* NOTIFICATION - LOADING, ERROR, SUCCESS */}
                 {loading && !error && !success && (
-                    <small className="text-yellow-500 text-center animate-ping">Loading ...</small>
+                    <div className="flex items-center justify-center">
+                        <Loading />
+                    </div>
                 )}
 
-                {error && (<small className="text-red-700 text-center animate-bounce">{error}</small>)}
+                {error && (
+                    <div className="flex items-center justify-center h-16 mx-2 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-100">
+                        <p className="text-center text-red-700 text-sm">{error}</p>
+                    </div>)}
 
                 {!loading && !error && success && (
-                    <small className="text-green-700 text-center animate-bounce">Successful request!</small>
+                    <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
+                        <p className="text-center text-green-900 text-lg">Successful request!</p>
+                    </div>
                 )}
 
                 <select

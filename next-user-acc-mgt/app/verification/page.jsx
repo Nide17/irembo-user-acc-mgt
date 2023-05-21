@@ -1,10 +1,15 @@
-"use client";
-import { useState } from 'react'
+"use client"
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
+import useAuth from '../utils/useauth'
 
 const VerificationPage = () => {
-    // DOCUMENT TYPE, DOCUMENT NUMBER, DOCUMENT IMAGE
+
+    // TO CHECK AUTHENTICATION
+    const { isAuthenticated } = useAuth()
+
+    // STATE VARIABLES
     const [documentType, setDocumentType] = useState('') // passport, nid, drivers_license, laissez_passer
     const [documentNumber, setDocumentNumber] = useState('')
     const [documentImage, setDocumentImage] = useState('')
@@ -14,13 +19,62 @@ const VerificationPage = () => {
     const [success, setSuccess] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    // USER ID FROM LOCAL STORAGE
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user')) : null
-    const userId = user && user.id
-
-    // TOKEN FROM LOCAL STORAGE
+    // FETCH USER ID AND TOKEN FROM LOCAL STORAGE
+    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
+    // TRY TO GET EXISTING USER VERIFICATION
+    useEffect(() => {
+        const fetchVerification = async () => {
+            try {
+
+                // CLEAR ERROR MESSAGE
+                setError('')
+                setLoading(true)
+
+                // ATTEMPT TO FETCH USER VERIFICATION
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user).id}`, {
+                    headers: {
+                        'x-auth-token': token,
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                // SET USER VERIFICATION
+                console.log(response)
+                if (response) {
+                    setDocumentType(response.data.documentType || '')
+                    setDocumentNumber(response.data.documentNumber || '')
+                    setDocumentImage(response.data.documentImage || '')
+                }
+
+                // SET ERROR MESSAGE
+                else {
+                    setError('An error occurred! Please try again.')
+                    // CLEAR MESSAGE AFTER 3 SECONDS
+                    setTimeout(() => {
+                        setError('')
+                    }, 3000)
+                }
+
+                // SET LOADING TO FALSE
+                setLoading(false)
+
+            } catch (error) {
+                console.log(error)
+                setError('An error occurred! Please try again.')
+                // CLEAR MESSAGE AFTER 3 SECONDS
+                setTimeout(() => {
+                    setError('')
+                }, 3000)
+                setLoading(false)
+            }
+        }
+
+        fetchVerification()
+    }, [])
+
+    // HANDLE FORM SUBMISSION
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -52,15 +106,15 @@ const VerificationPage = () => {
             formData.append('documentNumber', documentNumber)
 
             // UPDATE DOCUMENT TYPE, DOCUMENT NUMBER, DOCUMENT IMAGE
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${userId}`, formData, {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user).id}`, formData, {
                 headers: {
                     'x-auth-token': token,
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'multipart/form-data'
                 },
             })
 
-            if (response.status === 200) {
+            console.log(response)
+            if (response) {
                 setLoading(false)
                 setSuccess(true)
 
@@ -68,8 +122,6 @@ const VerificationPage = () => {
                 setTimeout(() => {
                     window.location.href = '/dashboard'
                 }, 5000)
-
-                return response
             }
             else {
                 setLoading(false)
@@ -79,17 +131,15 @@ const VerificationPage = () => {
         }
         catch (err) {
             setError('Something went wrong')
-
-            // IF ERROR IS 401 UNAUTHORIZED, LOGOUT USER
-            if (err.response.status === 401) {
-                localStorage.removeItem('user')
-                localStorage.removeItem('token')
-                window.location.href = '/login'
-            }
-            return error
         }
     }
 
+    // IF USER IS NOT AUTHENTICATED, REDIRECT TO LOGIN PAGE
+    if (!isAuthenticated) {
+        window.location.href = '/login'
+    }
+
+    // IF USER IS AUTHENTICATED, SHOW VERIFICATION PAGE
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
             <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>

@@ -3,20 +3,24 @@ import Link from 'next/link'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 import Loading from '../../utils/loading'
+import useAuth from '../../utils/useauth'
 
 const SettingsPage = () => {
+
+    // TO CHECK AUTHENTICATION
+    const { isAuthenticated } = useAuth()
+
+    // STATE VARIABLES
     const [notifications, setNotifications] = useState(true)
     const [mfa, setMfa] = useState(false)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState(false)
     const [loadingSettings, setLoadingSettings] = useState(false)
 
-    // TOKEN FROM LOCAL STORAGE
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
-    // USER ID FROM LOCAL STORAGE
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user')) : null
-    const userId = user && user.id
+    // FETCH USER ID AND TOKEN FROM LOCAL STORAGE
+    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
     // FETCH USER SETTINGS
     useEffect(() => {
@@ -27,7 +31,7 @@ const SettingsPage = () => {
                 setLoadingSettings(true)
 
                 // ATTEMPT TO FETCH USER SETTINGS
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${userId}`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'x-auth-token': token
@@ -35,7 +39,8 @@ const SettingsPage = () => {
                 })
 
                 // SET USER SETTINGS
-                if (response.status === 200) {
+                console.log(response)
+                if (response) {
                     setNotifications(response.data.notifications)
                     setMfa(response.data.mfa)
                 }
@@ -51,9 +56,6 @@ const SettingsPage = () => {
 
                 // SET LOADING TO FALSE
                 setLoadingSettings(false)
-
-                // RETURN THE RESPONSE
-                return response.data
 
             } catch (error) {
                 setError('Something went wrong! Please try again.')
@@ -83,15 +85,15 @@ const SettingsPage = () => {
             setSuccess(false)
 
             // ATTEMPT TO UPDATE USER SETTINGS
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${userId}`, { notifications: !notifications }, {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, { notifications: !notifications }, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    'x-auth-token': token
+                    'x-auth-token': token,
                 }
             })
 
             // SET SUCCESS MESSAGE
-            if (response.status === 200) {
+            console.log(response)
+            if (response) {
                 setSuccess(true)
 
                 // CLEAR MESSAGE AFTER 3 SECONDS
@@ -109,9 +111,6 @@ const SettingsPage = () => {
                     setError('')
                 }, 3000)
             }
-
-            // RETURN THE RESPONSE
-            return response.data
 
         } catch (error) {
             setError('Something went wrong! Please try again.')
@@ -137,15 +136,13 @@ const SettingsPage = () => {
             setSuccess(false)
 
             // ATTEMPT TO UPDATE USER SETTINGS
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${userId}`, { mfa: !mfa }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'x-auth-token': token
-                }
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, { mfa: !mfa }, {
+                headers: { 'x-auth-token': token }
             })
 
             // SET SUCCESS MESSAGE
-            if (response.status === 200) {
+            console.log(response)
+            if (response) {
                 setSuccess(true)
 
                 // CLEAR MESSAGE AFTER 3 SECONDS
@@ -164,9 +161,6 @@ const SettingsPage = () => {
                 }, 3000)
             }
 
-            // RETURN THE RESPONSE
-            return response.data
-
         } catch (error) {
             setError('Something went wrong! Please try again.')
 
@@ -175,6 +169,20 @@ const SettingsPage = () => {
                 setError('')
             }, 3000)
         }
+    }
+
+    // IF NOT AUTHENTICATED, DISPLAY MESSAGE
+    if (!isAuthenticated) {
+        return <p>Please log in to access the dashboard.</p>
+    }
+
+    // IF LOADING, DISPLAY LOADING COMPONENT
+    if (loadingSettings) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loading />
+            </div>
+        )
     }
 
     return (

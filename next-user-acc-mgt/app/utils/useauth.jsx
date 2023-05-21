@@ -16,6 +16,7 @@ const useAuth = () => {
         if (!token || token === 'undefined') {
             router.push('/login')
         }
+
         else {
             // IF TOKEN IS PRESENT, CHECK IF IT IS VALID
             const checkToken = async () => {
@@ -28,7 +29,9 @@ const useAuth = () => {
                         },
                     })
 
-                    // IF TOKEN IS VALID, REDIRECT TO DASHBOARD
+                    console.log('response for auth:\n\n', response)
+
+                    // IF TOKEN IS VALID, USER IS AUTHORIZED
                     if (response.status === 200) {
                         setIsAuthenticated(true)
                     }

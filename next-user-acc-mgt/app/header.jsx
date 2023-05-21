@@ -1,10 +1,82 @@
 "use client"
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import ProfilePic from './utils/profilePic'
 
-const Header = ({ logout, isMenuOpen, toggleMenu, isLoggedIn, user, token }) => {
+const Header = () => {
 
-    // console.log('user: ', user, 'token: ', token, 'isLoggedIn: ', isLoggedIn) 
+    // STATE VARIABLES
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+    // isAuth STATE TO KEEP TRACK OF AUTHENTICATION STATUS
+    const [isAuth, setIsAuth] = useState(false)
+
+    // GET THE TOKEN AND USER FROM LOCAL STORAGE
+    const token1 = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    const user1 = typeof window !== 'undefined' ? localStorage.getItem('user') : null
+
+    // IF TOKEN IS PRESENT, CHECK IF IT IS VALID VIA /auth/verify-token API
+    useEffect(() => {
+
+        // IF TOKEN IS PRESENT, CHECK IF IT IS VALID
+        if (token1) {
+
+            // FUNCTION TO CHECK IF TOKEN IS VALID
+            const checkToken = async () => {
+                try {
+                    // CALL THE API TO CHECK IF TOKEN IS VALID
+                    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token: token1 }, {
+                        headers: {
+                            'x-auth-token': token1,
+                            'Content-Type': 'application/json',
+                        }
+                    })
+
+                    console.log(response)
+
+                    // IF TOKEN IS VALID, USER IS AUTHORIZED
+                    if (response.status === 200) {
+                        setIsAuth(true)
+                    }
+
+                    else {
+                        // REMOVE TOKEN AND USER DATA FROM LOCAL STORAGE
+                        setIsAuth(false)
+                        localStorage.removeItem('token')
+                        localStorage.removeItem('user')
+                    }
+                }
+                catch (error) {
+                    // IF TOKEN IS INVALID, LOGOUT USER
+                    setIsAuth(false)
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('user')
+                    return
+                }
+            }
+            // CALL THE FUNCTION TO CHECK IF TOKEN IS VALID
+            checkToken()
+        }
+
+        // KEEP TRACKING OF AUTHENTICATION STATUS THROUGH OUT THE APP
+        setIsAuth(isAuth)
+    }, [token1])
+
+    // LOGOUT USER
+    const logout = () => {
+        setIsAuth(false)
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+
+        // REDIRECT TO LOGIN PAGE
+        router.push('/login')
+        return
+    }
+
+    // TOGGLE MENU FUNCTION ON MOBILE 
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen)
+    }
 
     return (
         <header className='fixed top-0 left-0 w-full z-10 bg-slate-100 text-slate-900 text-16 drop-shadow-md'>
@@ -16,7 +88,6 @@ const Header = ({ logout, isMenuOpen, toggleMenu, isLoggedIn, user, token }) => 
                         <span className='block text-[10px] text-slate-800 underline underline-offset-4 leading-6'>Manage, be fruitful</span>
                     </Link>
                 </div>
-                {/* {console.log(user)} */}
                 <div className={`${isMenuOpen ? "" : "hidden"} sm:flex grow justify-center sm:justify-end top-20 sm:top-0 h-72 sm:h-auto fixed sm:static z-10 sm:z-1 mr-3 sm:mr-0  w-full sm:w-auto`}>
 
                     <ul className={`flex flex-col sm:flex-row justify-center sm:justify-end items-center w-9/12 sm:w-auto mx-auto sm:mr-0 bg-slate-100`}>
@@ -34,7 +105,7 @@ const Header = ({ logout, isMenuOpen, toggleMenu, isLoggedIn, user, token }) => 
                         </li>
 
                         {
-                            isLoggedIn ? <li className='sm:mx-4 py-3 hover:scale-110 transition duration-500 ease-in-out'>
+                            isAuth ? <li className='sm:mx-4 py-3 hover:scale-110 transition duration-500 ease-in-out'>
                                 <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onClick={logout}>
                                     Logout
                                 </button>
@@ -56,13 +127,13 @@ const Header = ({ logout, isMenuOpen, toggleMenu, isLoggedIn, user, token }) => 
                         }
                     </ul>
 
-                    {isLoggedIn &&
+                    {isAuth &&
                         <ProfilePic
-                            user={user}
-                            token={token}
-                            isLoggedIn={isLoggedIn}
+                            user={user1}
+                            token={token1}
+                            isAuth={isAuth}
                         />}
-                    {/* {console.log('user: ', user, 'token: ', token, 'isLoggedIn: ', isLoggedIn)} */}
+                    {console.log('user: ', user1, 'token: ', token1, 'isAuth: ', isAuth)}
                 </div>
 
                 <div className={`hamburger inline sm:hidden ml-auto ${isMenuOpen ? "w-4 h-[2rem]" : ""}`} onClick={toggleMenu}>

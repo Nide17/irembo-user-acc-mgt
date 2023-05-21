@@ -3,54 +3,42 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Form from './form'
 import Loading from '../../utils/loading'
+import useAuth from '../../utils/useauth'
 
 const EditProfilePage = () => {
 
-    // ERROR, SUCCESS, LOADING
-    const [error, setError] = useState('')
-    const [success, setSuccess] = useState(false)
-    const [loading, setLoading] = useState(false)
-    // PROFILE STATE
+    // TO CHECK AUTHENTICATION
+    const { isAuthenticated } = useAuth()
+
+    // STATE VARIABLES
     const [profile, setProfile] = useState()
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
 
-    // USER ID FROM LOCAL STORAGE
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user')) : null
-    const userId = user && user.id
-
-    // TOKEN FROM LOCAL STORAGE
+    // FETCH USER ID AND TOKEN FROM LOCAL STORAGE
+    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
     // FETCH USER PROFILE
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                // CLEAR ERROR MESSAGE
-                setError('')
                 setLoading(true)
+                setError('')
 
                 // ATTEMPT TO FETCH USER PROFILE
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${userId}`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'x-auth-token': token
                     }
                 })
 
-                // SET USER PROFILE
-                if (response.data) {
-                    setProfile(response.data)
-                    console.log(response.data)
-                    console.log(profile)
-                }
+                // IF SUCCESSFUL, SET PROFILE STATE
+                if (response.data) setProfile(response.data)
 
                 // SET ERROR MESSAGE
-                else {
-                    setError('An error occurred! Please try again.')
-                    // CLEAR MESSAGE AFTER 3 SECONDS
-                    setTimeout(() => {
-                        setError('')
-                    }, 3000)
-                }
+                else setError('Something went wrong! Please try again.')
 
                 // SET LOADING TO FALSE
                 setLoading(false)
@@ -59,12 +47,8 @@ const EditProfilePage = () => {
                 return response.data
 
             } catch (error) {
+                // SET ERROR MESSAGE
                 setError('Something went wrong! Please try again.')
-
-                // CLEAR MESSAGE AFTER 3 SECONDS
-                setTimeout(() => {
-                    setError('')
-                }, 3000)
 
                 // SET LOADING TO FALSE
                 setLoading(false)
@@ -84,13 +68,15 @@ const EditProfilePage = () => {
         }
 
         try {
-            // clear error message
-            setError('')
-            // set loading to true when loading user profile data from server and before setting user state
+
+            // SET LOADING TO TRUE
             setLoading(true)
 
-            // attempt to create user
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${userId}`,
+            // CLEAR ERROR MESSAGE
+            setError('')
+
+            // ATTEMPT TO UPDATE USER PROFILE
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`,
                 { firstName, lastName, gender, dob, maritalStatus, nationality },
                 {
                     headers: {
@@ -99,19 +85,38 @@ const EditProfilePage = () => {
                         'Authorization': `Bearer ${token}`
                     },
                 })
-            if (response.status === 200) {
+
+            // IF SUCCESSFUL, SET SUCCESS STATE
+            console.log(response)
+            if (response.data) {
                 setSuccess(true)
                 setLoading(false)
                 return response
             }
             else
                 setError('Error updating user profile')
+
+            // SET LOADING TO FALSE
             setLoading(false)
             return response
         }
         catch (err) {
-            setError('Error!')
+            setError('Error updating user profile')
         }
+    }
+
+    // IF NOT AUTHENTICATED, DISPLAY MESSAGE
+    if (!isAuthenticated) {
+        return <p>Please log in to access the dashboard.</p>
+    }
+
+    // IF LOADING, DISPLAY LOADING COMPONENT
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loading />
+            </div>
+        )
     }
 
     // RETURN THE FORM
@@ -119,6 +124,7 @@ const EditProfilePage = () => {
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
             {console.log("form section", profile)}
             <Form
+                error={error}
                 updateUser={updateUser}
                 profile={profile}
                 setProfile={setProfile}

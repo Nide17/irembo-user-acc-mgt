@@ -2,12 +2,17 @@
 import Link from 'next/link'
 import axios from 'axios'
 import { useState } from 'react'
+import useAuth from '../../utils/useauth'
 
 // THE LOADING COMPONENT
 import Loading from '../../utils/loading'
 
-const PasswordChangetPage = () => {
+const PasswordChangePage = () => {
 
+    // TO CHECK AUTHENTICATION
+    const { isAuthenticated } = useAuth()
+
+    // STATE VARIABLES
     const [oldPswd, setOldPassword] = useState('')
     const [newPswd, setNewPswd] = useState('')
     const [error, setError] = useState('')
@@ -68,10 +73,10 @@ const PasswordChangetPage = () => {
                 })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response.status === 200) {
+            console.log(response)
+            if (response) {
                 setSuccess(true)
                 setLoadingChange(false)
-                return response.data
             }
 
             else if (response.status === 400 || response.status === 401) {
@@ -90,9 +95,6 @@ const PasswordChangetPage = () => {
             setOldPassword('')
             setNewPswd('')
 
-            // RETURN THE RESPONSE
-            return response.data
-
         } catch (error) {
             // SET LOADING TO FALSE
             setLoadingChange(false)
@@ -101,6 +103,14 @@ const PasswordChangetPage = () => {
             const err = error.response.data.msg
             setError(err)
         }
+    }
+
+    // CHECK FOR AUTHENTICATION
+    if (!isAuthenticated) {
+
+        // REDIRECT TO LOGIN PAGE
+        typeof window !== 'undefined' && window.location.replace('/login')
+        return null
     }
 
     return (
@@ -156,4 +166,4 @@ const PasswordChangetPage = () => {
     )
 }
 
-export default PasswordChangetPage
+export default PasswordChangePage

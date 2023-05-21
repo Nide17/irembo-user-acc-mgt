@@ -7,49 +7,61 @@ import Loading from '../utils/loading'
 
 const DashboardPage = () => {
 
-    const { isAuthenticated } = useAuth()
+    const { isAuthenticated } = useAuth() // CUSTOM HOOK TO CHECK AUTHENTICATION STATUS
+    const [token, setToken] = useState(null) // TOKEN FROM LOCAL STORAGE
+    const [user, setUser] = useState(null) // USER FROM LOCAL STORAGE
     const [loading, setLoading] = useState(true)
     const [isMfa, setMfa] = useState({})
     const [profile, setProfile] = useState({})
 
-    // USER ID FROM LOCAL STORAGE
-    const userLocal = typeof window !== 'undefined' ? localStorage.getItem('user') : null
-    const userId = userLocal && JSON.parse(userLocal).id
 
+    // FETCH USER PROFILE AND SETTINGS ON PAGE LOAD
     useEffect(() => {
         setLoading(false)
 
-        // TOKEN FROM LOCAL STORAGE
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+        // SET TOKEN AND USER STATES
+        setToken(typeof window !== 'undefined' ? localStorage.getItem('token') : null)
+        setUser(typeof window !== 'undefined' ? localStorage.getItem('user') : null)
 
         // GET USER PROFILE
         const getUserProfile = async () => {
+
             // REQUEST USING ID 
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${userId}`, {
+            console.log("USER ID:", user && JSON.parse(user).id)
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`, {
                 headers: {
                     'x-auth-token': token,
                     'Content-Type': 'application/json'
                 },
             })
 
-            // SET USER PROFILE
+            // IF SUCCESSFUL, SET THE PROFILE STATE, ELSE SET THE PROFILE STATE TO NULL
+            console.log(JSON.stringify(response.data))
             if (response.data) {
                 setProfile(response.data)
+            } else {
+                setProfile({})
             }
         }
+
+
         // GET USER SETTINGS
         const getUserSettings = async () => {
             // REQUEST USING ID
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${userId}`, {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, {
                 headers: {  // HEADERS
                     'x-auth-token': token,
                     'Content-Type': 'application/json'
                 },
             })
 
-            // SET USER SETTINGS
+            // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
             if (response.data) {
-                setMfa(response.data.settings)
+                setMfa(response.data)
+            }
+
+            else {
+                setMfa({})
             }
         }
         getUserProfile()
@@ -57,6 +69,7 @@ const DashboardPage = () => {
     }, [])
 
 
+    // IF LOADING, DISPLAY LOADING COMPONENT
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -65,17 +78,19 @@ const DashboardPage = () => {
         )
     }
 
+    // IF NOT AUTHENTICATED, DISPLAY MESSAGE
     if (!isAuthenticated) {
         return <p>Please log in to access the dashboard.</p>
     }
 
+    // IF AUTHENTICATED, DISPLAY DASHBOARD
     return (
         <div className='flex flex-col items-center justify-center my-32'>
             <div className="flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center w-5/6 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
                     <h1 className="text-3xl text-white font-bold mb-8">Dashboard</h1>
 
-                    {!isMfa &&
+                    {!isMfa && // IF MFA IS NOT ENABLED, DISPLAY TOAST
                         <div id="toast-danger" className="flex items-center text-center w-full max-w-xs py-2 mb-4 text-gray-200 bg-white rounded-lg shadow dark:text-gray-200 dark:bg-red-700" role="alert">
                             <div className="w-full ml-3 text-sm font-normal text-center">Please edit settings to allow MFA to secure your account!</div>
                         </div>

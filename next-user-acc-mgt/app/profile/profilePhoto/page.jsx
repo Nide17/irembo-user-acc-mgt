@@ -3,20 +3,24 @@ import Link from 'next/link'
 import axios from 'axios'
 import { useState } from 'react'
 import Loading from '../../utils/loading'
+import useAuth from '../../utils/useauth'
 
 const ProfilePhotoPage = () => {
+
+    // TO CHECK AUTHENTICATION
+    const { isAuthenticated } = useAuth()
+
+    // STATE VARIABLES
     const [profilePhoto, setProfilePhoto] = useState('')
     const [error, setError] = useState('')
     const [success, setSuccess] = useState(false)
     const [loadingProfilePhoto, setLoadingProfilePhoto] = useState(false)
 
-    // TOKEN FROM LOCAL STORAGE
+    // FETCH USER ID AND TOKEN FROM LOCAL STORAGE
+    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
-    // USER ID FROM LOCAL STORAGE
-    const user = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user')) : null
-    const userId = user && user.id
-
+    // ATTEMPT TO UPDATE PROFILE PICTURE
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -51,16 +55,16 @@ const ProfilePhotoPage = () => {
             setLoadingProfilePhoto(true)
 
             // ATTEMPT TO UPLOAD PROFILE PHOTO
-            const response = await axios.put(`http://localhost:5002/profiles/${userId}/profilePhoto`, formData, {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/${JSON.parse(user).id}/profilePhoto`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`,
                     'x-auth-token': token
                 }
             })
 
             // SET SUCCESS MESSAGE
-            if (response.status === 200) {
+            console.log(response)
+            if (response) {
                 setSuccess(true)
 
                 // SET LOADING TO FALSE WHEN USER STATE IS SET
@@ -84,12 +88,23 @@ const ProfilePhotoPage = () => {
             // CLEAR FORM
             setProfilePhoto('')
 
-            // RETURN THE RESPONSE
-            return response.data
-
         } catch (error) {
             setError('Something went wrong! Please try again.')
         }
+    }
+
+    // IF NOT AUTHENTICATED, DISPLAY MESSAGE
+    if (!isAuthenticated) {
+        return <p>Please log in to update profile.</p>
+    }
+
+    // IF LOADING, DISPLAY LOADING COMPONENT
+    if (loadingProfilePhoto) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loading />
+            </div>
+        )
     }
 
     return (
@@ -98,7 +113,7 @@ const ProfilePhotoPage = () => {
 
                 <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-8">
                     <Link href="/" className='p-1 font-bold'>
-                        <span className='block text-2xl text-blue-100 leading-8 my-4'>UPDATE YOUR PROFILE PICTURE</span>
+                        <span className='block text-2xl text-blue-100 leading-8 my-4'>PROFILE PICTURE UPDATE</span>
                         <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Manage your data</span>
                     </Link>
                 </div>

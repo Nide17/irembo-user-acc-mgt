@@ -4,7 +4,7 @@ import Link from 'next/link'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 
-const ProfilePic = ({ user, token, isLoggedIn }) => {
+const ProfilePic = ({ user, token, isAuth }) => {
     // STATE VARIABLES
     const [profilePic, setProfilePic] = useState()
 
@@ -38,7 +38,7 @@ const ProfilePic = ({ user, token, isLoggedIn }) => {
     }, [])
 
     // IF USER IS NOT LOGGED IN, RETURN NULL
-    if (!isLoggedIn) {
+    if (!isAuth) {
         return null
     }
     else {

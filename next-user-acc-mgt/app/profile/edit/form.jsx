@@ -1,18 +1,17 @@
 "use client"
-
 import Link from 'next/link'
 import { useState } from 'react'
 import countryList from './countries.json'
 import moment from 'moment'
 
-const Form = ({ updateUser, profile, setProfile }) => {
+const Form = ({ error, updateUser, profile, setProfile }) => {
 
-  const [errorP, setErrorP] = useState('')
+  const [errorP, setErrorP] = useState(error)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preDefault()
+    e.preventDefault()
 
     // Call function to update user
     const response = await updateUser(firstName, lastName, gender, dob, maritalStatus, nationality)

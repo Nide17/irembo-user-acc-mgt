@@ -11,7 +11,7 @@ const protectionMiddleware = (req, res, next) => {
     if (!token) {
         return res.status(401).json({
             success: false,
-            message: 'No token, authorizaton Denied',
+            msg: 'No token, authorizaton Denied',
             code: 'NO_TOKEN'
         })
     }
@@ -29,7 +29,7 @@ const protectionMiddleware = (req, res, next) => {
     catch (error) {
         res.status(400).json({
             success: false,
-            message: 'Session expired',
+            msg: 'Session expired',
             code: 'SESSION_EXPIRED'
         })
     }

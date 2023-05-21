@@ -74,7 +74,7 @@ const forgotPassword = async (req, res) => {
 
     } catch (error) {
         console.error('Error forgot password', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -126,7 +126,7 @@ const resetPassword = async (req, res) => {
         })
     } catch (error) {
         console.error('Error resetting password', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -183,7 +183,7 @@ const changePassword = async (req, res) => {
         })
     } catch (error) {
         console.error('Error changing password', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

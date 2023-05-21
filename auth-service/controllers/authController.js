@@ -75,7 +75,6 @@ const loginUser = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
         res.status(500).json({ msg: 'Internal server error' })
     }
 }
@@ -86,12 +85,13 @@ const verifyToken = async (req, res) => {
 
     // GET THE TOKEN FROM THE REQUEST BODY IF PRESENT
     const token = req.headers['x-auth-token']
+    console.log(token)
 
     // IF NO TOKEN FOUND, RETURN ERROR
     if (!token) {
         return res.status(401).json({
             success: false,
-            message: 'No token, authorizaton Denied',
+            msg: 'No token, authorizaton Denied',
             code: 'NO_TOKEN'
         })
     }
@@ -100,19 +100,31 @@ const verifyToken = async (req, res) => {
         // IF TOKEN FOUND, VERIFY IT
         const verified = jwt.verify(token, process.env.JWT_SECRET_KEY)
 
-        // ADD USER FROM PAYLOAD
-        req.user = verified
+        // IF TOKEN IS NOT VERIFIED, RETURN ERROR
+        if (!verified) {
+            return res.status(401).json({
+                success: false,
+                msg: 'Token verification failed, authorization denied',
+                code: 'TOKEN_VERIFICATION_FAILED'
+            })
+        }
 
-        // RETURN SUCCESS
-        return res.status(200).json({
-            success: true,
-            message: 'Token verified',
-            code: 'TOKEN_VERIFIED'
-        })
+        else {
+            // ADD USER FROM PAYLOAD
+            req.user = verified
+
+            // RETURN SUCCESS
+            res.status(200).json({
+                success: true,
+                msg: 'Token verified',
+                code: 'TOKEN_VERIFIED',
+                user: req.user
+            })
+        }
     } catch (error) {
-        return res.status(401).json({
+        return res.status(400).json({
             success: false,
-            message: 'Invalid token, authorizaton Denied',
+            msg: 'Invalid token, authorizaton Denied',
             code: 'INVALID_TOKEN'
         })
     }

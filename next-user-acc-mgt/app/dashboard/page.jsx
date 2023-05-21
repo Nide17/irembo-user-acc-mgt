@@ -8,66 +8,69 @@ import Loading from '../utils/loading'
 const DashboardPage = () => {
 
     const { isAuthenticated } = useAuth() // CUSTOM HOOK TO CHECK AUTHENTICATION STATUS
-    const [token, setToken] = useState(null) // TOKEN FROM LOCAL STORAGE
-    const [user, setUser] = useState(null) // USER FROM LOCAL STORAGE
+    const [token, setToken] = useState(typeof window !== 'undefined' ? localStorage.getItem('token') : null) // TOKEN FROM LOCAL STORAGE
+    const [user, setUser] = useState(typeof window !== 'undefined' ? localStorage.getItem('user') : null) // USER FROM LOCAL STORAGE
     const [loading, setLoading] = useState(true)
     const [isMfa, setMfa] = useState({})
     const [profile, setProfile] = useState({})
-
+    const [error, setError] = useState('')
 
     // FETCH USER PROFILE AND SETTINGS ON PAGE LOAD
     useEffect(() => {
-        setLoading(false)
 
-        // SET TOKEN AND USER STATES
-        setToken(typeof window !== 'undefined' ? localStorage.getItem('token') : null)
-        setUser(typeof window !== 'undefined' ? localStorage.getItem('user') : null)
+        // SET LOADING TO TRUE
+        setLoading(false)
+        console.log("USER:", user)
 
         // GET USER PROFILE
         const getUserProfile = async () => {
 
-            // REQUEST USING ID 
-            console.log("USER ID:", user && JSON.parse(user).id)
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`, {
-                headers: {
-                    'x-auth-token': token,
-                    'Content-Type': 'application/json'
-                },
-            })
+            // ATTEMPT TO GET USER PROFILE
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user) && JSON.parse(user).id}`, {
+                    headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
+                })
 
-            // IF SUCCESSFUL, SET THE PROFILE STATE, ELSE SET THE PROFILE STATE TO NULL
-            console.log(JSON.stringify(response.data))
-            if (response.data) {
-                setProfile(response.data)
-            } else {
+                if (response && response.data) {
+                    setProfile(response.data)
+                }
+                else setProfile({})
+            } catch (error) {
+
+                console.log("ERROR:", error.response.data.msg)
+
+                // IF ERROR, SET THE PROFILE STATE TO NULL
                 setProfile({})
+                setError(error.response.data.msg)
             }
         }
 
-
         // GET USER SETTINGS
         const getUserSettings = async () => {
+
             // REQUEST USING ID
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, {
-                headers: {  // HEADERS
-                    'x-auth-token': token,
-                    'Content-Type': 'application/json'
-                },
-            })
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user) && JSON.parse(user).id}`, {
+                    headers: {  'x-auth-token': token, 'Content-Type': 'application/json' },
+                })
 
-            // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
-            if (response.data) {
-                setMfa(response.data)
-            }
+                // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
+                if (response && response.data) {
+                    setMfa(response.data.mfa)
+                }
+                else setMfa({})
+            } catch (error) {
 
-            else {
+                console.log("ERROR:", error.response.data.msg)
+
+                // IF ERROR, SET THE SETTINGS STATE TO NULL
                 setMfa({})
+                setError(error.response.data.msg)
             }
         }
         getUserProfile()
         getUserSettings()
-    }, [])
-
+    }, [token, user])
 
     // IF LOADING, DISPLAY LOADING COMPONENT
     if (loading) {

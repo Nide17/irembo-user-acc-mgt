@@ -31,12 +31,12 @@ const LoginLinkPage = () => {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login-link`, { email })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response.status === 200) {
+            if (response && response.data) {
                 setSuccess(true)
             }
 
             else {
-                setError('An error occurred during reset. Please try again.')
+                setError("Error occured: ", response.data.msg)
             }
 
             // SET LOADING TO FALSE
@@ -44,9 +44,6 @@ const LoginLinkPage = () => {
 
             // CLEAR FORM
             setEmail('')
-
-            // RETURN THE RESPONSE
-            return response.data
 
         } catch (error) {
             setError('An error occurred during reset. Please try again.')

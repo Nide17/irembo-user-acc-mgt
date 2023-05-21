@@ -32,12 +32,11 @@ const useAuth = () => {
                     console.log('response for auth:\n\n', response)
 
                     // IF TOKEN IS VALID, USER IS AUTHORIZED
-                    if (response.status === 200) {
+                    if (response && response.data) {
                         setIsAuthenticated(true)
                     }
 
-                    else
-                    {
+                    else {
                         // REMOVE TOKEN AND USER DATA FROM LOCAL STORAGE
                         setIsAuthenticated(false)
                         localStorage.removeItem('token')

@@ -16,11 +16,7 @@ app.use(express.urlencoded({ extended: false })) // PARSE URL ENCODED DATA FROM 
 // ALL TYPE OF REQUESTS TO /users WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/users', (req, res) => {
 
-    console.log(req.method, 'Request made to /users', req.originalUrl)
-    console.log(req.file)
-    console.log(req.headers)
-
-    // REDIRECT ALL REQUESTS TO /users WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
+    // REDIRECT ALL REQUESTS TO /users (USING AXIOS)
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
@@ -33,25 +29,23 @@ app.use('/users', (req, res) => {
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
-        console.log(url);
-        console.log(headers);
-        console.log(file);
-        // console.log(req.method, 'Response from /users', response.data)
-        res.send(response)
+        // SUCCESSFUL REQUEST
+        res.status(200).send(response)
+
     }).catch(error => {
-        console.log('\n\n\n\n\n\n')
-        // console.log(req.method, 'Response:', error)
-        // IF ERROR OCCURS, SEND ERROR MESSAGE
-        res.send(error)
+        res.status(500).send({
+            code: 'USER_ACCESS_ERROR',
+            msg: 'Failed to access user account',
+            status: 500,
+            error: error
+        })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /profiles WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/profiles', (req, res) => {
 
-    console.log('Request made to /profiles', req.originalUrl)
-
-    // REDIRECT ALL REQUESTS TO /profiles WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
+    // REDIRECT ALL REQUESTS TO /profiles (USING AXIOS)
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
@@ -63,23 +57,22 @@ app.use('/profiles', (req, res) => {
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
-        console.log(req.method, 'Response from /profiles', response.data)
-        res.send(response.data)
+        res.status(200).send(response.data)
+
     }).catch(error => {
-        console.log(req.method, 'Response:', error)
-        // IF ERROR OCCURS, SEND ERROR MESSAGE
-        res.status(500).send(error)
+        res.status(500).send({
+            code: 'PROFILES_ACCESS_ERROR',
+            msg: 'Profiles access failed',
+            status: 500,
+            error: error
+        })
     })
 })
-
-
 
 // ALL TYPE OF REQUESTS TO /settings WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/settings', (req, res) => {
 
-    console.log('Request made to /settings', req.originalUrl)
-
-    // REDIRECT ALL REQUESTS TO /settings WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
+    // REDIRECT ALL REQUESTS TO /settings (USING AXIOS)
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
@@ -91,21 +84,22 @@ app.use('/settings', (req, res) => {
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
-        console.log(req.method, 'Response from /settings', response.data)
-        res.send(response.data)
+        res.status(200).send(response.data)
+
     }).catch(error => {
-        console.log(req.method, 'Response:', error)
-        // IF ERROR OCCURS, SEND ERROR MESSAGE
-        res.send(error.message)
+        res.status(500).send({
+            code: 'SETTINGS_ACCESS_ERROR',
+            msg: 'Failed to access settings',
+            status: 500,
+            error: error
+        })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /roles WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/roles', (req, res) => {
 
-    console.log('Request made to /roles', req.originalUrl)
-
-    // REDIRECT ALL REQUESTS TO /roles WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
+    // REDIRECT ALL REQUESTS TO /roles (USING AXIOS)
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
@@ -117,20 +111,22 @@ app.use('/roles', (req, res) => {
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
-        console.log(req.method, 'Response from /roles', response.data)
-        res.send(response.data)
+        res.status(200).send(response.data)
+
     }).catch(error => {
-        console.log(req.method, 'Response:', error)
-        // IF ERROR OCCURS, SEND ERROR MESSAGE
-        res.send(error.message)
+        res.status(500).send({
+            code: 'FAILED_ROLE_REQUEST',
+            msg: 'Failed role request',
+            status: 500,
+            error: error
+        })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /auth WILL BE REDIRECTED TO AUTH SERVICE MICROSERVICE
 app.use('/auth', (req, res) => {
 
-    console.log('Request made to /auth', req.originalUrl)
-    // REDIRECT ALL REQUESTS TO /auth WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
+    // REDIRECT ALL REQUESTS TO /auth (USING AXIOS)
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.AUTH_SERVICE_PORT}${req.originalUrl}`,
@@ -142,21 +138,23 @@ app.use('/auth', (req, res) => {
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
-        console.log(req.method, 'Response from /auth', response)
-        res.send(response.data)
+        // IF RESPONSE IS SUCCESSFUL, SEND RESPONSE
+        res.status(200).send(response.data)
+
     }).catch(error => {
-        console.log(req.method, 'Response:', error)
-        // IF ERROR OCCURS, SEND ERROR MESSAGE
-        res.send(error)
+        res.status(500).send({
+            code: 'UNAUTHORIZED',
+            msg: 'Not Authorized',
+            status: 500,
+            error: error
+        })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /accvers WILL BE REDIRECTED TO VERIFICATION SERVICE MICROSERVICE
 app.use('/accvers', (req, res) => {
 
-    console.log('Request made to /accvers', req.originalUrl)
-
-    // REDIRECT ALL REQUESTS TO /accvers WITHOUT USING PROXY MIDDLEWARE (USING AXIOS)
+    // REDIRECT ALL REQUESTS TO /accvers (USING AXIOS)
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.VERIFICATION_SERVICE_PORT}${req.originalUrl}`,
@@ -168,14 +166,16 @@ app.use('/accvers', (req, res) => {
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
+        // IF RESPONSE IS SUCCESSFUL, SEND RESPONSE
+        res.status(200).send(response.data)
 
-        console.log(req.method, 'Response from /accvers', response.data)
-        res.send(response.data)
     }).catch(error => {
-
-        console.log(req.method, 'Response:', error)
-        // IF ERROR OCCURS, SEND ERROR MESSAGE
-        res.send(error.message)
+        res.status(500).send({
+            code: 'FAILED_VERIFICATION',
+            msg: 'Unsuccessful verification',
+            status: 500,
+            error: error
+        })
     })
 })
 

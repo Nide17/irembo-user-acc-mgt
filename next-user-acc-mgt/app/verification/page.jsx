@@ -3,8 +3,13 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import useAuth from '../utils/useauth'
+import Loading from '../utils/loading'
+import { useRouter } from 'next/navigation'
 
 const VerificationPage = () => {
+
+    // ROUTER
+    const router = useRouter()
 
     // TO CHECK AUTHENTICATION
     const { isAuthenticated } = useAuth()
@@ -28,7 +33,7 @@ const VerificationPage = () => {
         const fetchVerification = async () => {
             try {
 
-                // CLEAR ERROR MESSAGE
+                // CLEAR ERROR msg
                 setError('')
                 setLoading(true)
 
@@ -42,16 +47,16 @@ const VerificationPage = () => {
 
                 // SET USER VERIFICATION
                 console.log(response)
-                if (response) {
+                if (response && response.data) {
                     setDocumentType(response.data.documentType || '')
                     setDocumentNumber(response.data.documentNumber || '')
                     setDocumentImage(response.data.documentImage || '')
                 }
 
-                // SET ERROR MESSAGE
+                // SET ERROR msg
                 else {
-                    setError('An error occurred! Please try again.')
-                    // CLEAR MESSAGE AFTER 3 SECONDS
+                    setError("Error occured: ", response.data.msg)
+                    // CLEAR msg AFTER 3 SECONDS
                     setTimeout(() => {
                         setError('')
                     }, 3000)
@@ -63,7 +68,7 @@ const VerificationPage = () => {
             } catch (error) {
                 console.log(error)
                 setError('An error occurred! Please try again.')
-                // CLEAR MESSAGE AFTER 3 SECONDS
+                // CLEAR msg AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
                 }, 3000)
@@ -125,7 +130,7 @@ const VerificationPage = () => {
             }
             else {
                 setLoading(false)
-                setError('Error occurred: ' + response.data.message)
+                setError('Error occurred: ' + response.data.msg)
                 return error
             }
         }
@@ -134,11 +139,21 @@ const VerificationPage = () => {
         }
     }
 
+
+
     // IF USER IS NOT AUTHENTICATED, REDIRECT TO LOGIN PAGE
     if (!isAuthenticated) {
-        window.location.href = '/login'
+        router.push('/login')
     }
 
+    // IF LOADING, SHOW LOADING PAGE
+    if (loading) {
+        return 
+        <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
+            <Loading />
+        </div>
+    }
+    
     // IF USER IS AUTHENTICATED, SHOW VERIFICATION PAGE
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">

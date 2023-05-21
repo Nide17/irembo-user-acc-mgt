@@ -142,7 +142,7 @@ const SettingsPage = () => {
 
             // SET SUCCESS MESSAGE
             console.log(response)
-            if (response) {
+            if (response && response.data) {
                 setSuccess(true)
 
                 // CLEAR MESSAGE AFTER 3 SECONDS
@@ -153,7 +153,7 @@ const SettingsPage = () => {
 
             // SET ERROR MESSAGE
             else {
-                setError('An error occurred! Please try again.')
+                setError("Error occured: ", response.data.msg)
 
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {

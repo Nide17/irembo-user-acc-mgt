@@ -64,23 +64,20 @@ const ProfilePhotoPage = () => {
 
             // SET SUCCESS MESSAGE
             console.log(response)
-            if (response) {
+            if (response && response.data) {
                 setSuccess(true)
 
                 // SET LOADING TO FALSE WHEN USER STATE IS SET
                 setLoadingProfilePhoto(false)
 
-                // // RELAOD PAGE AFTER SET SUCCESS MESSAGE
-                // setTimeout(() => {
-                //     window.location.reload()
-                // }, 5000)
+                // RELAOD PAGE AFTER SET SUCCESS MESSAGE
+                setTimeout(() => {
+                    window.location.reload()
+                }, 5000)
             }
 
             // SET ERROR MESSAGE
-            else {
-                console.error(response)
-                setError('An error occurred!. Please try again.')
-            }
+            else setError("Error occured: ", response.data.msg)
 
             // SET LOADING TO FALSE
             setLoadingProfilePhoto(false)

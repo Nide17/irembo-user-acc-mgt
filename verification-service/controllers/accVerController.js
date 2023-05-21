@@ -15,7 +15,7 @@ const getAllAccVers = async (req, res) => {
         res.json(accvers)
     } catch (error) {
         console.error('Error fetching verifications', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -30,7 +30,7 @@ const getAccVerById = async (req, res) => {
         res.json(accver)
     } catch (error) {
         console.error('Error fetching accver by id', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -45,7 +45,7 @@ const getAccVerByUserId = async (req, res) => {
         res.json(accver)
     } catch (error) {
         console.error('Error fetching accver by userId', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -79,7 +79,7 @@ const updateAccVer = async (req, res) => {
 
             // RETURN NEW VERIFICATION
             res.status(200).json({
-                message: 'Created successfully!',
+                msg: 'Created successfully!',
                 verification: newVer
             })
         }
@@ -104,7 +104,7 @@ const updateAccVer = async (req, res) => {
 
                 // RETURN UPDATED VERIFICATION
                 res.status(200).json({
-                    message: 'Updated successfully!',
+                    msg: 'Updated successfully!',
                     verification: updatedVer
                 })
             }
@@ -138,7 +138,7 @@ const updateAccVer = async (req, res) => {
 
                 // RETURN UPDATED VERIFICATION
                 res.status(200).json({
-                    message: 'Verification updated successfully!',
+                    msg: 'Verification updated successfully!',
                     verification: updatedVer
                 })
             }
@@ -148,7 +148,7 @@ const updateAccVer = async (req, res) => {
         }
     } catch (err) {
         console.error('Error: ', err)
-        res.status(400).json({ message: err.message })
+        res.status(400).json({ msg: err.msg })
     }
 }
 
@@ -163,7 +163,7 @@ const deleteAccVer = async (req, res) => {
         res.json(accver)
     } catch (error) {
         console.error('Error deleting accver by id', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

@@ -49,7 +49,7 @@ const RegisterPage = () => {
             setRegisterLoading(true)
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/users`, { email, password })
 
-            if (response.status === 200) {
+            if (response && response.data) {
                 setRegSuccess(true)
                 setRegisterLoading(false)
 
@@ -62,10 +62,8 @@ const RegisterPage = () => {
             }
             else {
                 setRegisterLoading(false)
-                setRegError('Error occurred while signing up!')
-                return error
+                setError("Error occured: ", response.data.msg)
             }
-            return response
         }
         catch (err) {
             setRegError('Error signing up!')

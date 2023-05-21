@@ -81,7 +81,7 @@ const twoFactorAuth = async (req, res) => {
 
     } catch (error) {
         console.error('Error 2fa', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -170,7 +170,7 @@ const verifyTwoFactorAuth = async (req, res) => {
 
     } catch (error) {
         console.error('Error verifying 2fa', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

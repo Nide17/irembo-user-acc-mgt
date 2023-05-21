@@ -24,7 +24,7 @@ const VerifyLink = () => {
                 const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-link/${router.id}`, { token: router.id })
 
                 // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-                if (response.status === 200) {
+                if (response && response.data) {
 
                     // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
                     setSuccess(true)
@@ -40,21 +40,11 @@ const VerifyLink = () => {
                     window.location.href = '/dashboard'
                 }
 
-                else if (response.status === 400 || response.status === 401) {
-
-                    // SET ERROR MESSAGE
-                    setError(response.data.msg)
-                    setSuccess(false)
-
-                    // REDIRECT TO LOGIN PAGE IF TOKEN IS INVALID
-                    if (response.data.msg === 'Invalid token') {
-                        router.push('/auth/link')
-                    }
-                }
-
-                // SET ERROR MESSAGE
                 else {
-                    setError('Something went wrong. Please try again.')
+                    // SET ERROR MESSAGE
+                    setError("Error occured: ", response.data.msg)
+                    setSuccess(false)
+                    router.push('/auth/link')
                 }
 
                 // SET LOADING TO FALSE AFTER SUCCESSFUL REQUEST
@@ -66,9 +56,6 @@ const VerifyLink = () => {
 
                 // SET LOADING TO FALSE AFTER FAILED REQUEST
                 setLoadingVerify(false)
-
-                // LOG ERROR TO CONSOLE
-                console.error(error)
             }
         }
 
@@ -84,7 +71,7 @@ const VerifyLink = () => {
                         <Loading />
                     </div> :
 
-                    error ?
+                    !success && error ?
 
                         // DISPLAY ERROR MESSAGE IF UNSUCCESSFUL
                         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
@@ -98,7 +85,16 @@ const VerifyLink = () => {
                                 </p>
                             </div>
                         </div> :
-                        null
+
+                        // DISPLAY SUCCESS MESSAGE IF SUCCESSFUL
+                        <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
+                            <div className="flex flex-col w-96 p-10 bg-slate-700 rounded-lg shadow-lg">
+                                <h1 className="mb-5 text-2xl font-bold text-center text-green-500">Verification successful!</h1>
+                                <p className="text-center text-white text-sm underline underline-offset-4">
+                                    <Link href="/login">Login</Link>
+                                </p>
+                            </div>
+                        </div>
             }
         </>
     )

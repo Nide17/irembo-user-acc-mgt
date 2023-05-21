@@ -73,20 +73,12 @@ const PasswordChangePage = () => {
                 })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            console.log(response)
-            if (response) {
+            if (response && response.data) {
                 setSuccess(true)
                 setLoadingChange(false)
             }
 
-            else if (response.status === 400 || response.status === 401) {
-                setError(response.data.msg)
-            }
-
-            // SET ERROR MESSAGE
-            else {
-                setError('Something went wrong! please try again.')
-            }
+            else setError(response.data.msg)
 
             // SET LOADING TO FALSE
             setLoadingChange(false)

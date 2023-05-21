@@ -14,22 +14,24 @@ const LoginPage = () => {
     const router = useRouter()
     const { isAuthenticated, setIsAuthenticated } = useAuth()
 
+    // CHECK IF USER IS AUTHENTICATED AND REDIRECT TO DASHBOARD
     useEffect(() => {
         if (isAuthenticated) {
             router.push('/dashboard')
         }
     }, [isAuthenticated, router])
 
+    // HANDLE FORM SUBMISSION
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        // Perform validation
+        // CHECK FOR EMPTY FIELDS
         if (!email || !password) {
             setError('Please provide both email and password.')
             return
         }
 
-        // Check for valid email address 
+        // CHECK FOR VALID EMAIL ADDRESS 
         const re = /\S+@\S+\.\S+/
         if (!re.test(email)) {
             setError('Please enter a valid email address')
@@ -46,8 +48,8 @@ const LoginPage = () => {
             // ATTEMPT TO LOGIN
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login`, { email, password })
 
-            // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response.status === 200) {
+            // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD AFTER 2 SECONDS IF LOGIN IS SUCCESSFUL
+            if (response && response.data && response.data.token && response.data.user) {
                 setSuccess(true)
 
                 // STORE TOKEN AND USER DATA IN LOCAL STORAGE FOR USE IN OTHER PAGES
@@ -64,11 +66,10 @@ const LoginPage = () => {
                 }, 2000)
             }
 
+            else setError("Error occured: ", response.data.msg)
+
             // SET LOADING TO FALSE
             setLoadingLogin(false)
-
-            // RETURN THE RESPONSE
-            return response.data
 
         } catch (error) {
             setError(error.response.data.msg)

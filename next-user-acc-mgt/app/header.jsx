@@ -2,8 +2,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import ProfilePic from './utils/profilePic'
+import axios from 'axios'
+import { useRouter } from 'next/router'
 
 const Header = () => {
+
+    // ROUTER
+    const router = useRouter()
 
     // STATE VARIABLES
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -11,23 +16,22 @@ const Header = () => {
     // isAuth STATE TO KEEP TRACK OF AUTHENTICATION STATUS
     const [isAuth, setIsAuth] = useState(false)
 
-    // GET THE TOKEN AND USER FROM LOCAL STORAGE
-    const token1 = typeof window !== 'undefined' ? localStorage.getItem('token') : null
-    const user1 = typeof window !== 'undefined' ? localStorage.getItem('user') : null
+    // GET THE TOKEN FROM LOCAL STORAGE
+    const [token, setToken] = useState(typeof window !== 'undefined' ? localStorage.getItem('token') : null) // TOKEN FROM LOCAL STORAGE
 
     // IF TOKEN IS PRESENT, CHECK IF IT IS VALID VIA /auth/verify-token API
     useEffect(() => {
 
         // IF TOKEN IS PRESENT, CHECK IF IT IS VALID
-        if (token1) {
+        if (token) {
 
             // FUNCTION TO CHECK IF TOKEN IS VALID
             const checkToken = async () => {
                 try {
                     // CALL THE API TO CHECK IF TOKEN IS VALID
-                    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token: token1 }, {
+                    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token: token }, {
                         headers: {
-                            'x-auth-token': token1,
+                            'x-auth-token': token,
                             'Content-Type': 'application/json',
                         }
                     })
@@ -35,7 +39,7 @@ const Header = () => {
                     console.log(response)
 
                     // IF TOKEN IS VALID, USER IS AUTHORIZED
-                    if (response.status === 200) {
+                    if (response && response.data) {
                         setIsAuth(true)
                     }
 
@@ -51,7 +55,6 @@ const Header = () => {
                     setIsAuth(false)
                     localStorage.removeItem('token')
                     localStorage.removeItem('user')
-                    return
                 }
             }
             // CALL THE FUNCTION TO CHECK IF TOKEN IS VALID
@@ -60,7 +63,7 @@ const Header = () => {
 
         // KEEP TRACKING OF AUTHENTICATION STATUS THROUGH OUT THE APP
         setIsAuth(isAuth)
-    }, [token1])
+    }, [token])
 
     // LOGOUT USER
     const logout = () => {
@@ -70,7 +73,6 @@ const Header = () => {
 
         // REDIRECT TO LOGIN PAGE
         router.push('/login')
-        return
     }
 
     // TOGGLE MENU FUNCTION ON MOBILE 
@@ -129,11 +131,10 @@ const Header = () => {
 
                     {isAuth &&
                         <ProfilePic
-                            user={user1}
-                            token={token1}
+                            token={token}
                             isAuth={isAuth}
                         />}
-                    {console.log('user: ', user1, 'token: ', token1, 'isAuth: ', isAuth)}
+                    {console.log('token: ', token, 'isAuth: ', isAuth)}
                 </div>
 
                 <div className={`hamburger inline sm:hidden ml-auto ${isMenuOpen ? "w-4 h-[2rem]" : ""}`} onClick={toggleMenu}>

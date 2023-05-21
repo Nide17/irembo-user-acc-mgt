@@ -75,7 +75,7 @@ const loginLink = async (req, res) => {
 
     } catch (error) {
         console.error('Error login link', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -150,7 +150,7 @@ const verifyLink = async (req, res) => {
 
     } catch (error) {
         console.error('Error verifying link', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

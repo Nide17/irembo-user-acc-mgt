@@ -48,18 +48,11 @@ const ResetPage = () => {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/reset-password`, { resetToken, password })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response.status === 200) {
+            if (response && response.data) {
                 setSuccess(true)
             }
 
-            else if (response.status === 400 || response.status === 401) {
-                setError(response.data.msg)
-            }
-
-            // SET ERROR MESSAGE
-            else {
-                setError('Something went wrong! please try again.')
-            }
+            else setError("Error occured: ", response.data.msg)
 
             // SET LOADING TO FALSE
             setLoadingReset(false)
@@ -67,9 +60,6 @@ const ResetPage = () => {
             // CLEAR FORM
             setPassword('')
             setPassword2('')
-
-            // RETURN THE RESPONSE
-            return response.data
 
         } catch (error) {
             // SET LOADING TO FALSE

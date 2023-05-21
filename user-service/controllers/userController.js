@@ -14,7 +14,7 @@ const getAllUsers = async (req, res) => {
         const users = await User.findAll()
         res.json(users)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -28,12 +28,12 @@ const getUserById = async (req, res) => {
         })
 
         if (!user) {
-            res.status(404).json({ error: 'User not found' })
+            res.status(404).json({ msg: 'User not found' })
         }
 
         res.json(user)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -45,18 +45,18 @@ const createUser = async (req, res) => {
 
     // VALIDATE USER DATA
     if (!email || !password) {
-        res.status(400).json({ error: 'All fields are required' })
+        res.status(400).json({ msg: 'All fields are required' })
     }
 
     // VALIDATE USER EMAIL
     if (!validateEmail(email)) {
-        res.status(400).json({ error: 'Invalid email' })
+        res.status(400).json({ msg: 'Invalid email' })
     }
 
     // VALIDATE USER PASSWORD
     if (!validatePassword(password)) {
         res.status(400).json({
-            error: 'Password should be greater than 7 and having special characters, number, and uppercase and lowercase letters'
+            msg: 'Password should be greater than 7 and having special characters, number, and uppercase and lowercase letters'
         })
     }
 
@@ -70,7 +70,7 @@ const createUser = async (req, res) => {
         })
 
         if (userExists) {
-            res.status(400).json({ error: 'User with that email already exists' })
+            res.status(400).json({ msg: 'User with that email already exists' })
         }
 
         // HASH THE PASSWORD
@@ -94,14 +94,14 @@ const createUser = async (req, res) => {
                 updatedAt: new Date()
             })
 
-            // IF PROFILE IS NOT CREATED, DELETE THE USER AND RETURN ERROR MESSAGE
+            // IF PROFILE IS NOT CREATED, DELETE THE USER AND RETURN ERROR msg
             if (!userProfile) {
                 await User.destroy({
                     where: {
                         id: user.id
                     }
                 })
-                res.status(500).json({ error: 'Internal server error' })
+                res.status(500).json({ msg: 'Internal server error' })
             }
         }
 
@@ -109,7 +109,7 @@ const createUser = async (req, res) => {
         res.json(user)
 
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -128,7 +128,7 @@ const updateUser = async (req, res) => {
         })
 
         if (!userExists) {
-            res.status(400).json({ error: 'User with that id does not exist' })
+            res.status(400).json({ msg: 'User with that id does not exist' })
         }
 
         const user = await User.update({
@@ -141,7 +141,7 @@ const updateUser = async (req, res) => {
         })
         res.json(user)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -151,7 +151,7 @@ const deleteUser = async (req, res) => {
         const userid = await User.findByPk(req.params.id)
 
         if (!userid) {
-            res.status(404).json({ error: 'User not found' })
+            res.status(404).json({ msg: 'User not found' })
         }
         else {
             const user = await User.destroy({
@@ -162,7 +162,7 @@ const deleteUser = async (req, res) => {
             res.json(user)
         }
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -177,7 +177,7 @@ const getUserByEmail = async (req, res) => {
         })
         res.json(user)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

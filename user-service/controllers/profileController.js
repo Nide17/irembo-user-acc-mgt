@@ -25,14 +25,14 @@ const getProfileByUserId = async (req, res) => {
         })
 
         if (!profile) {
-            res.status(404).json({ error: 'Profile not found' })
+            res.status(404).json({ msg: 'Profile not found' })
         }
         else {
             res.status(200).json(profile)
         }
     } catch (error) {
         console.log(error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -72,7 +72,7 @@ const updateProfile = async (req, res) => {
             if (!createdUserProfile) throw Error('Something went wrong while creating the profile!')
 
             res.json({
-                message: 'Profile created successfully!',
+                msg: 'Profile created successfully!',
                 profile: createdUserProfile
             })
         }
@@ -96,13 +96,13 @@ const updateProfile = async (req, res) => {
             if (!updatedUserProfile) throw Error('Something went wrong while updating the profile!')
 
             res.json({
-                message: 'Profile updated successfully!',
+                msg: 'Profile updated successfully!',
                 profile: updatedUserProfile
             })
         }
     } catch (error) {
         console.error('Error updating user profile', error)
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -146,7 +146,7 @@ const updateUserProfilePhoto = async (req, res) => {
 
                 // RETURN NEW PROFILE
                 res.status(200).json({
-                    message: 'Profile created successfully!',
+                    msg: 'Profile created successfully!',
                     profile: newProfile
                 })
             }
@@ -171,7 +171,7 @@ const updateUserProfilePhoto = async (req, res) => {
 
                     // RETURN UPDATED PROFILE
                     res.status(200).json({
-                        message: 'Profile updated successfully!',
+                        msg: 'Profile updated successfully!',
                         profile: updatedProfile
                     })
                 }
@@ -204,7 +204,7 @@ const updateUserProfilePhoto = async (req, res) => {
 
                     // RETURN UPDATED PROFILE
                     res.status(200).json({
-                        message: 'Profile updated successfully!',
+                        msg: 'Profile updated successfully!',
                         profile: updatedProfile
                     })
                 }
@@ -213,7 +213,7 @@ const updateUserProfilePhoto = async (req, res) => {
             }
         } catch (err) {
             console.error('Error updating user profile photo', err)
-            res.status(400).json({ msg: err.message })
+            res.status(400).json({ msg: err.msg })
             throw Error(err)
         }
     }

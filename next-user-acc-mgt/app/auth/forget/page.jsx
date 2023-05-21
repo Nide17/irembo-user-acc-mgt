@@ -31,7 +31,7 @@ const ForgetPage = () => {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/forgot-password`, { email })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response.status === 200) {
+            if (response && response.data) {
                 setSuccess(true)
             }
 
@@ -44,9 +44,6 @@ const ForgetPage = () => {
 
             // CLEAR FORM
             setEmail('')
-
-            // RETURN THE RESPONSE
-            return response.data
 
         } catch (error) {
             setError('An error occurred during reset. Please try again.')

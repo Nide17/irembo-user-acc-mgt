@@ -6,7 +6,7 @@ const getAllSettings = async (req, res) => {
         const stgs = await Settings.findAll()
         res.json(stgs)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -20,7 +20,7 @@ const getSettingsById = async (req, res) => {
         })
         res.json(settings)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -49,16 +49,14 @@ const getSettingsByUserId = async (req, res) => {
                 throw Error('Something went wrong while creating the settings!')
             }
             else {
-                res.status(200).json({ 
-                    message: 'Settings created successfully!',
+                res.status(200).json({
+                    msg: 'Settings created successfully!',
                     settings: createdSettings
-                 })
+                })
             }
         }
-
-        res.json(settings)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -70,7 +68,7 @@ const createSettings = async (req, res) => {
         })
         res.json(settings)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -93,11 +91,11 @@ const updateSettings = async (req, res) => {
         if (!settings) throw Error('Something went wrong while updating the settings!')
 
         res.json({
-            message: 'Settings updated successfully!',
+            msg: 'Settings updated successfully!',
             settings
         })
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -111,7 +109,7 @@ const deleteSettings = async (req, res) => {
         })
         res.json(settings)
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

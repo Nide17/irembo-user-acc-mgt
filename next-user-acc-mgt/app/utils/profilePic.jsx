@@ -4,27 +4,29 @@ import Link from 'next/link'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 
-const ProfilePic = ({ user, token, isAuth }) => {
+const ProfilePic = ({ token, isAuth }) => {
     // STATE VARIABLES
     const [profilePic, setProfilePic] = useState()
+    const [user, setUser] = useState(typeof window !== 'undefined' ? localStorage.getItem('user') : null) // USER FROM LOCAL STORAGE
 
     // GET PROFILE PIC
     useEffect(() => {
         // GET PROFILE PIC
         const getProfilePic = async () => {
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/users/${user.id}/profile`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user) && JSON.parse(user).id}`, {
                     headers: {
                         'x-auth-token': token,
                         'Content-Type': 'application/json',
                     },
                 })
 
-                // SET PROFILE PIC
-                setProfilePic(response.data.profilePhoto)
-
-                // RETURN RESPONSE
-                return response
+                // IF SUCCESSFUL, SET PROFILE PIC, ELSE SET PROFILE PIC TO NULL
+                if (response && response.data) {
+                    setProfilePic(response.data.profilePhoto)
+                }
+            
+                else setProfilePic(null)
             }
 
             catch (error) {
@@ -41,6 +43,7 @@ const ProfilePic = ({ user, token, isAuth }) => {
     if (!isAuth) {
         return null
     }
+    
     else {
         // RETURN THE PROFILE PIC
         return (

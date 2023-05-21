@@ -29,24 +29,21 @@ const EditProfilePage = () => {
                 // ATTEMPT TO FETCH USER PROFILE
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
                         'x-auth-token': token
                     }
                 })
 
                 // IF SUCCESSFUL, SET PROFILE STATE
-                if (response.data) setProfile(response.data)
+                if (response && response.data) setProfile(response.data)
 
                 // SET ERROR MESSAGE
-                else setError('Something went wrong! Please try again.')
+                else setError("Error occured: ", response.data.msg)
 
                 // SET LOADING TO FALSE
                 setLoading(false)
 
-                // RETURN THE RESPONSE
-                return response.data
-
             } catch (error) {
+
                 // SET ERROR MESSAGE
                 setError('Something went wrong! Please try again.')
 
@@ -81,24 +78,21 @@ const EditProfilePage = () => {
                 {
                     headers: {
                         'x-auth-token': token,
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Content-Type': 'application/json'
                     },
                 })
 
             // IF SUCCESSFUL, SET SUCCESS STATE
             console.log(response)
-            if (response.data) {
+            if (response && response.data) {
                 setSuccess(true)
                 setLoading(false)
                 return response
             }
-            else
-                setError('Error updating user profile')
+            else setError("Error occured: ", response.data.msg)
 
             // SET LOADING TO FALSE
             setLoading(false)
-            return response
         }
         catch (err) {
             setError('Error updating user profile')

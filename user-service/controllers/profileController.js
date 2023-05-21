@@ -14,31 +14,36 @@ const s3Config = new AWS.S3({
 })
 
 // GET USER PROFILE
-// GET http://localhost:5002/users/:id/profile - get user profile
-const getUserProfile = async (req, res) => {
+// GET http://localhost:5002/profiles/user/:userId/ - get user profile
+const getProfileByUserId = async (req, res) => {
+    console.log('\n\n\n\n Edpoint hit \n', req)
     try {
         const profile = await UserProfile.findOne({
             where: {
-                userId: req.params.id
+                userId: req.params.userId
             }
         })
 
         if (!profile) {
-            return res.status(404).json({ error: 'Profile not found' })
+            res.status(404).json({ error: 'Profile not found' })
         }
-
-        res.json(profile)
+        else {
+            res.status(200).json(profile)
+        }
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: 'Internal server error' })
     }
 }
 
 // UPDATE USER PROFILE
-// PUT http://localhost:5002/users/:id/profile - update user profile
-const updateUserProfile = async (req, res) => {
+// PUT http://localhost:5002/profiles/user/:userId - update user profile
+const updateProfile = async (req, res) => {
 
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality } = req.body
+
+    console.log(req.body)
 
     // CALCULATE USER AGE
     const age = moment().diff(dateOfBirth, 'years')
@@ -46,7 +51,7 @@ const updateUserProfile = async (req, res) => {
     try {
         const profile = await UserProfile.findOne({
             where: {
-                userId: req.params.id
+                userId: req.params.userId
             }
         })
 
@@ -54,7 +59,7 @@ const updateUserProfile = async (req, res) => {
 
             // CREATE USER PROFILE
             const createdUserProfile = await UserProfile.create({
-                userId: req.params.id,
+                userId: req.params.userId,
                 firstName,
                 lastName,
                 gender,
@@ -66,37 +71,44 @@ const updateUserProfile = async (req, res) => {
 
             if (!createdUserProfile) throw Error('Something went wrong while creating the profile!')
 
-            return res.json({ message: 'Profile created successfully!' })
+            res.json({
+                message: 'Profile created successfully!',
+                profile: createdUserProfile
+            })
         }
+        else {
+            // UPDATE PROFILE
+            const updatedUserProfile = await UserProfile.update({
+                firstName,
+                lastName,
+                gender,
+                age,
+                dateOfBirth,
+                maritalStatus,
+                nationality,
+                updatedAt: new Date()
+            }, {
+                where: {
+                    userId: req.params.id
+                }
+            })
 
-        // UPDATE PROFILE
-        const updatedUserProfile = await UserProfile.update({
-            firstName,
-            lastName,
-            gender,
-            age,
-            dateOfBirth,
-            maritalStatus,
-            nationality,
-            updatedAt: new Date()
-        }, {
-            where: {
-                userId: req.params.id
-            }
-        })
+            if (!updatedUserProfile) throw Error('Something went wrong while updating the profile!')
 
-        if (!updatedUserProfile) throw Error('Something went wrong while updating the profile!')
-
-        return res.json({ message: 'Profile updated successfully!' })
+            res.json({
+                message: 'Profile updated successfully!',
+                profile: updatedUserProfile
+            })
+        }
     } catch (error) {
         console.error('Error updating user profile', error)
-        return res.status(500).json({ error: 'Internal server error' })
+        res.status(500).json({ error: 'Internal server error' })
     }
 }
 
 
 // UPDATE USER PROFILE PHOTO
-// PUT http://localhost:5002/users/:id/profilePhoto - update user profile photo
+// PUT http://localhost:5002/profiles/:userId/profilePhoto - update user profile photo
 const updateUserProfilePhoto = async (req, res) => {
 
     console.log('endpoint hit')
@@ -152,7 +164,8 @@ const updateUserProfilePhoto = async (req, res) => {
                         }
                     })
 
-                    console.log('updatedProfile', updatedProfile)
+                    console.log('updatedProfile',
+                    )
 
                     if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
 
@@ -195,7 +208,6 @@ const updateUserProfilePhoto = async (req, res) => {
                         profile: updatedProfile
                     })
                 }
-
                 else
                     throw Error('Something went wrong while updating the profile!')
             }
@@ -209,7 +221,7 @@ const updateUserProfilePhoto = async (req, res) => {
 
 // EXPORTS
 module.exports = {
-    getUserProfile,
-    updateUserProfile,
+    getProfileByUserId,
+    updateProfile,
     updateUserProfilePhoto
 }

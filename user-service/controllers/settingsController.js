@@ -49,7 +49,10 @@ const getSettingsByUserId = async (req, res) => {
                 throw Error('Something went wrong while creating the settings!')
             }
             else {
-                return res.json({ message: 'Settings created successfully!' })
+                res.status(200).json({ 
+                    message: 'Settings created successfully!',
+                    settings: createdSettings
+                 })
             }
         }
 

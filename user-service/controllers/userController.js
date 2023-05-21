@@ -28,7 +28,7 @@ const getUserById = async (req, res) => {
         })
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' })
+            res.status(404).json({ error: 'User not found' })
         }
 
         res.json(user)
@@ -45,17 +45,17 @@ const createUser = async (req, res) => {
 
     // VALIDATE USER DATA
     if (!email || !password) {
-        return res.status(400).json({ error: 'All fields are required' })
+        res.status(400).json({ error: 'All fields are required' })
     }
 
     // VALIDATE USER EMAIL
     if (!validateEmail(email)) {
-        return res.status(400).json({ error: 'Invalid email' })
+        res.status(400).json({ error: 'Invalid email' })
     }
 
     // VALIDATE USER PASSWORD
     if (!validatePassword(password)) {
-        return res.status(400).json({
+        res.status(400).json({
             error: 'Password should be greater than 7 and having special characters, number, and uppercase and lowercase letters'
         })
     }
@@ -70,7 +70,7 @@ const createUser = async (req, res) => {
         })
 
         if (userExists) {
-            return res.status(400).json({ error: 'User with that email already exists' })
+            res.status(400).json({ error: 'User with that email already exists' })
         }
 
         // HASH THE PASSWORD
@@ -101,7 +101,7 @@ const createUser = async (req, res) => {
                         id: user.id
                     }
                 })
-                return res.status(500).json({ error: 'Internal server error' })
+                res.status(500).json({ error: 'Internal server error' })
             }
         }
 
@@ -128,7 +128,7 @@ const updateUser = async (req, res) => {
         })
 
         if (!userExists) {
-            return res.status(400).json({ error: 'User with that id does not exist' })
+            res.status(400).json({ error: 'User with that id does not exist' })
         }
 
         const user = await User.update({

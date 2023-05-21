@@ -10,6 +10,7 @@ const sequelize = require('./config/db')
 
 // IMPORTING ROUTES
 const userRoutes = require('./routes/userRoutes')
+const profileRoutes = require('./routes/profileRoutes')
 const roleRoutes = require('./routes/roleRoutes')
 const settingsRoutes = require('./routes/settingsRoutes')
 
@@ -33,5 +34,6 @@ app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
 
 // ROUTES
 app.use('/users', userRoutes) // USE ROUTES FROM userRoutes.js
+app.use('/profiles', profileRoutes) // USE ROUTES FROM profileRoutes.js
 app.use('/roles', roleRoutes) // USE ROUTES FROM roleRoutes.js
 app.use('/settings', settingsRoutes) // USE ROUTES FROM settingsRoutes.js

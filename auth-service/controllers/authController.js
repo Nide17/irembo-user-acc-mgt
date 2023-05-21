@@ -35,7 +35,7 @@ const loginUser = async (req, res) => {
 
         // IF USER NOT FOUND, RETURN ERROR
         if (!response.data) {
-            return res.status(404).json({ msg: 'User not found!' })
+            res.status(404).json({ msg: 'User not found!' })
         }
 
         // GET USER FROM RESPONSE
@@ -43,7 +43,7 @@ const loginUser = async (req, res) => {
 
         // CHECK IF USER EXISTS
         if (!user) {
-            return res.status(400).json({ msg: 'User does not exist!' })
+            res.status(400).json({ msg: 'User does not exist!' })
         }
 
         else {
@@ -51,7 +51,7 @@ const loginUser = async (req, res) => {
             const isMatch = await bcrypt.compare(password, user.password)
 
             if (!isMatch) {
-                return res.status(400).json({ msg: 'Invalid credentials!' })
+                res.status(400).json({ msg: 'Invalid credentials!' })
             }
 
             // IF ALL IS GOOD, SIGN AND GENERATE TOKEN
@@ -64,7 +64,7 @@ const loginUser = async (req, res) => {
             )
 
             if (!token) {
-                return res.status(400).json({ msg: 'Couldnt sign in, try again!' })
+                res.status(400).json({ msg: 'Couldnt sign in, try again!' })
             }
 
             // RETURN TOKEN AND USER
@@ -75,7 +75,8 @@ const loginUser = async (req, res) => {
         }
 
     } catch (error) {
-        return res.status(500).json({ msg: 'Internal server error' })
+        console.log(error)
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

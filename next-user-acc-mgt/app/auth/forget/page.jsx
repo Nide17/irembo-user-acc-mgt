@@ -36,7 +36,7 @@ const ForgetPage = () => {
             }
 
             else {
-                setError('An error occurred during reset. Please try again.')
+                setError('An error occurred. Please try again.')
             }
 
             // SET LOADING TO FALSE
@@ -46,7 +46,7 @@ const ForgetPage = () => {
             setEmail('')
 
         } catch (error) {
-            setError('An error occurred during reset. Please try again.')
+            setError('An error occurred. Please try again.')
         }
     }
 

@@ -36,15 +36,15 @@ router.post('/login-link', loginLinkController.loginLink)
 router.post('/verify-link/:token', loginLinkController.verifyLink)
 
 // Private route
+// POST http://localhost:5001/auth/verify-token
+router.post('/verify-token', protectionMiddleware, authController.verifyToken)
+
+// Private route
 // POST http://localhost:5001/auth/two-fa - 2fa
 router.post('/two-fa', twoFaController.twoFactorAuth)
 
 // Private route
 // POST http://localhost:5001/auth/verify-two-fa - verify 2fa
 router.post('/verify-two-fa', protectionMiddleware, twoFaController.verifyTwoFactorAuth)
-
-// Private route
-// POST http://localhost:5001/auth/verify-token
-router.post('/verify-token', protectionMiddleware, authController.verifyToken)
 
 module.exports = router

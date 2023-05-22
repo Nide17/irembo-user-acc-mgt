@@ -1,12 +1,16 @@
 const bcrypt = require("bcryptjs")
 const axios = require('axios')
 const jwt = require('jsonwebtoken')
-const crypto = require("crypto")
 require('dotenv').config()
+
+// MODELS
+const OTPcode = require('../models/OTPcode')
 
 // UTILS
 const sendEmailWithNodemailer = require('../utils/sendEmailWithNodemailer')
 const validateEmail = require('../utils/validateEmail')
+const generateOTP = require('../utils/otpService')
+const checkOTP = require('../utils/checkOTP')
 
 // 2FA
 // POST http://localhost:5001/2fa - 2fa
@@ -22,10 +26,13 @@ const twoFactorAuth = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, {})
+        console.log(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
+        console.log("\n\n", user.data, "\n\n")
 
         // CHECK IF USER EXISTS
         if (!user) {
+            console.log("User does not exist!")
             return res.status(400).json({ msg: 'User does not exist!' })
         }
 
@@ -34,28 +41,26 @@ const twoFactorAuth = async (req, res) => {
 
         // CHECK IF PASSWORD IS CORRECT
         if (!isPasswordCorrect) {
+            console.log("Password is incorrect!")
             return res.status(400).json({ msg: 'Password is incorrect!' })
         }
 
+        console.log("\nPassword is correct!\n")
+
         // GENERATE 2FA TOKEN
-        const twoFactorToken = crypto.randomBytes(20).toString('hex')
-
-        // HASH 2FA TOKEN
-        const hashedTwoFactorToken = crypto.createHash('sha256').update(twoFactorToken).digest('hex')
-
-        // SET 2FA TOKEN EXPIRY TO 5 MINUTES
-        const expiryDate = Date.now() + 5 * 60 * 1000
-
+        const twoFactorToken = generateOTP()
+        
         // SAVE 2FA TOKEN AND EXPIRY IN DATABASE
-        const saveTwoFactorToken = await TwoFactor.create({
-            token: hashedTwoFactorToken,
-            expiration: expiryDate,
+        const savedOTPcode = await OTPcode.create({
+            otpCode: twoFactorToken,
+            expiresAt: Date.now() + 5 * 60 * 1000,
             userId: user.data.id,
             used: false
         })
 
         // CHECK IF 2FA TOKEN SAVED
-        if (!saveTwoFactorToken) {
+        if (!savedOTPcode) {
+            console.log("Error saving 2fa token")
             return res.status(500).json({ msg: 'Error saving 2fa token' })
         }
 
@@ -75,19 +80,23 @@ const twoFactorAuth = async (req, res) => {
         await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
 
         // RETURN EMAIL SENT SUCCESSFULLY
-        res.status(200).json({ msg: `Email sent successfully!` })
+        res.status(200).json({ msg: `OTP sent successfully!` })
 
     } catch (error) {
+        console.log("Internal server error", error)
         res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 
 // VERIFY 2FA
-// POST http://localhost:5001/verify-2fa - verify 2fa
+// POST http://localhost:5001/verify-two-fa - verify 2fa
 const verifyTwoFactorAuth = async (req, res) => {
 
+    console.log("object", req.body)
+
     // DESTRUCTURE EMAIL AND PASSWORD
-    const { email, password, twoFactorToken } = req.body
+    const { email, password, userId, twoFactorToken } = req.body
+    console.log("\n\n", req.body, "\n\n")
 
     // CHECK FOR VALIDITY OF EMAIL
     if (!validateEmail(email)) {
@@ -108,64 +117,64 @@ const verifyTwoFactorAuth = async (req, res) => {
 
         // CHECK IF PASSWORD IS CORRECT
         if (!isPasswordCorrect) {
+            console.log("Password is incorrect!")
             return res.status(400).json({ msg: 'Password is incorrect!' })
         }
 
-        // DECRYPT 2FA TOKEN
-        const twoFactorTokenDecrypted = crypto.createHash('sha256').update(twoFactorToken).digest('hex')
-
         // CHECK IF TOKEN EXISTS
-        const tokenExists = await TwoFactor.findOne({
+        const tokenExists = await OTPcode.findOne({
             where: {
-                token: twoFactorTokenDecrypted
+                otpCode: twoFactorToken,
+                userId
             }
         })
 
-        // CHECK IF TOKEN EXISTS
+        // IF TOKEN DOES NOT EXIST
         if (!tokenExists) {
+            console.log("Invalid token!")
             return res.status(400).json({ msg: 'Invalid token!' })
         }
 
         // CHECK IF TOKEN HAS EXPIRED
         if (tokenExists.expiration < Date.now()) {
+            console.log("Token has expired!")
             return res.status(400).json({ msg: 'Token has expired!' })
         }
 
         // CHECK IF TOKEN HAS BEEN USED
         if (tokenExists.used) {
+            console.log("Token has been used!")
             return res.status(400).json({ msg: 'Token has been used!' })
         }
 
         // UPDATE TOKEN TO USED
-        const updateToken = await TwoFactor.update({
+        const updateToken = await OTPcode.update({
             used: true
         }, {
             where: {
-                token: twoFactorTokenDecrypted
+                otpCode: twoFactorToken
             }
         })
 
         // CHECK IF TOKEN UPDATED
         if (!updateToken) {
-            console.error('Error updating token')
+            console.log('Error updating token')
         }
 
-        // GENERATE JWT TOKEN
-        const jwtToken = jwt.sign({
-            id: user.data.id,
-            email: user.data.email
-        }, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_EXPIRES_IN
-        })
+        // IF ALL IS GOOD, SIGN AND GENERATE TOKEN
+        const token = jwt.sign({ id: user.data.id, email: user.data.email }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
 
-        // RETURN JWT TOKEN
-        res.status(200).json({
-            token: jwtToken,
-            user: user.data,
-            msg: `Login successful!`
-        })
+        if (!token) {
+            console.log("Couldnt sign in, try again!")
+            return res.status(400).json({ msg: 'Couldnt sign in, try again!' })
+        }
+
+        // RETURN TOKEN AND USER
+        console.log("Successfully logged in!")
+        return res.status(200).json({ token, user: user.data })
 
     } catch (error) {
+        console.log("Internal server error", error)
         res.status(500).json({ msg: 'Internal server error', error })
     }
 }

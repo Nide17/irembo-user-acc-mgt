@@ -46,7 +46,7 @@ const LoginLinkPage = () => {
             setEmail('')
 
         } catch (error) {
-            setError('An error occurred during reset. Please try again.')
+            setError('An error occurred. Please try again.')
         }
     }
 

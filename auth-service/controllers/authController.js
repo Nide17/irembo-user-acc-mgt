@@ -5,12 +5,6 @@ require('dotenv').config()
 
 // UTILS
 const validateEmail = require('../utils/validateEmail')
-const generateOTP = require('../utils/otpService')
-const sendEmailWithNodemailer = require('../utils/sendEmailWithNodemailer')
-const checkOTP = require('../utils/checkOTP')
-
-// MODELS
-const OTPcode = require('../models/OTPcode')
 
 // POST http://localhost:5001/auth/login - login user
 const loginUser = async (req, res) => {
@@ -55,27 +49,19 @@ const loginUser = async (req, res) => {
             }
 
             // IF ALL IS GOOD, SIGN AND GENERATE TOKEN
-            const token = jwt.sign(
-                {
-                    id: user.id,
-                },
-                process.env.JWT_SECRET_KEY,
-                { expiresIn: '1h' }
-            )
+            const token = jwt.sign({ id: user.id, email }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
 
+            // IF TOKEN NOT GENERATED, RETURN ERROR
             if (!token) {
                 return res.status(400).json({ msg: 'Couldnt sign in, try again!' })
             }
 
             // RETURN TOKEN AND USER
-            return res.status(200).json({
-                token,
-                user: user
-            })
+            return res.status(200).json({ token, user: user })
         }
 
     } catch (error) {
-        return res.status(500).json({ msg: 'Internal server error', error})
+        return res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 

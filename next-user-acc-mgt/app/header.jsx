@@ -29,7 +29,7 @@ const Header = () => {
             const checkToken = async () => {
                 try {
                     // CALL THE API TO CHECK IF TOKEN IS VALID
-                    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token: token }, {
+                    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token }, {
                         headers: {
                             'x-auth-token': token,
                             'Content-Type': 'application/json',

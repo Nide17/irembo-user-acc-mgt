@@ -24,7 +24,7 @@ const loginLink = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/` + email)
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, {}, { headers: req.headers })
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -126,7 +126,7 @@ const verifyLink = async (req, res) => {
         }
 
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/` + tokenExists.userId)
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${tokenExists.userId}`, {}, {headers: req.headers})
 
         // CHECK IF USER EXISTS
         if (!user) {

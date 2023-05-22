@@ -8,7 +8,7 @@ const UserProfile = require('../models/UserProfile')
 const validateEmail = require('../utils/validateEmail')
 const validatePassword = require('../utils/validatePassword')
 
-// GET http://localhost:5002/ - get all users
+// GET http://localhost:5002/users/ - get all users
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll()
@@ -20,6 +20,7 @@ const getAllUsers = async (req, res) => {
 
 // GET http://localhost:5002/users/:id - get user by id
 const getUserById = async (req, res) => {
+    console.log('\n\nUpdating password:\n\n', `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${req.params.id}`)
     try {
         const user = await User.findOne({
             where: {
@@ -37,7 +38,7 @@ const getUserById = async (req, res) => {
     }
 }
 
-// POST http://localhost:5002/ - create new user
+// POST http://localhost:5002/users - create new user
 const createUser = async (req, res) => {
 
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
@@ -113,7 +114,7 @@ const createUser = async (req, res) => {
     }
 }
 
-// PUT http://localhost:5002/users/:id - update user by id
+// PUT http://localhost:5002/users/user/:id - update user by id
 const updateUser = async (req, res) => {
 
     const { password } = req.body
@@ -145,7 +146,7 @@ const updateUser = async (req, res) => {
     }
 }
 
-// DELETE http://localhost:5002/:id - delete user by id
+// DELETE http://localhost:5002/users/:id - delete user by id
 const deleteUser = async (req, res) => {
     try {
         const userid = await User.findByPk(req.params.id)
@@ -166,18 +167,25 @@ const deleteUser = async (req, res) => {
     }
 }
 
-// GET http://localhost:5002/:email - get user by email
+// GET http://localhost:5002/users/email/:email - get user by email
 // RETURNS USER OBJECT IF USER EXISTS, AND NULL IF USER DOES NOT EXIST
 const getUserByEmail = async (req, res) => {
+
+    // VALIDATE USER EMAIL
+    if (!validateEmail(req.params.email)) {
+        res.status(400).json({ msg: 'Invalid email' })
+    }
+
+    // GET USER BY EMAIL
     try {
         const user = await User.findOne({
             where: {
                 email: req.params.email
             }
         })
-        res.json(user)
+        return res.json(user)
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        return res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

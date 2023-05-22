@@ -13,7 +13,7 @@ router.get('/', protectionMiddleware, userController.getAllUsers)
 router.get('/:id', protectionMiddleware, userController.getUserById)
 
 // Public route
-// GET http://localhost:5002/users/:email - get user by email
+// GET http://localhost:5002/users/email/:email - get user by email
 router.get('/email/:email', userController.getUserByEmail)
 
 // Public route

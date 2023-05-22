@@ -24,7 +24,7 @@ const forgotPassword = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/` + email)
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, { headers: req.headers })
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -116,9 +116,9 @@ const resetPassword = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt)
 
         // UPDATE PASSWORD
-        const updatedUser = await axios.put(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/` + resetTokenExists.userId, {
+        const updatedUser = await axios.put(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${resetTokenExists.userId}`, {
             password: hashedPassword
-        })
+        }, { headers: req.headers })
 
         // RETURN UPDATED USER
         res.status(200).json({
@@ -136,11 +136,18 @@ const changePassword = async (req, res) => {
 
     // DESCTRUCTURE OLD PASSWORD AND NEW PASSWORD AND USER ID
     const { oldPswd, newPswd, userId } = req.body
-    consolo.log(req)
 
     try {
+
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/` + userId)
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${userId}`, {
+            headers: {
+                'Content-Type': req.headers['content-type'],
+                'x-auth-token': req.headers['x-auth-token']
+            }
+        })
+
+        console.log('\n\nUpdating password:\n\n', `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${userId}`)
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -169,20 +176,21 @@ const changePassword = async (req, res) => {
         }
 
         // UPDATE PASSWORD
-        const updatedUser = await axios.put(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/` + req.user.id, {
-            password: hashedPassword
+        const updatedUser = await axios.put(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${req.user.id}`, { password: hashedPassword }, {
+            headers: {
+                'x-auth-token': req.headers['x-auth-token'],
+            }
         })
 
         // RETURN UPDATED USER
         if (!updatedUser) {
-            return res.status(400).json({ msg: 'An error occured!' })
+            return res.status(400).json({ msg: '\n\n\nAn error occured!' })
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             updatedUser: updatedUser.data
         })
     } catch (error) {
-        console.error('Error changing password', error)
         res.status(500).json({ msg: 'Internal server error' })
     }
 }

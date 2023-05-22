@@ -16,7 +16,6 @@ const s3Config = new AWS.S3({
 // GET USER PROFILE
 // GET http://localhost:5002/profiles/user/:userId/ - get user profile
 const getProfileByUserId = async (req, res) => {
-    console.log('\n\n\n\n Edpoint hit \n', req)
     try {
         const profile = await UserProfile.findOne({
             where: {
@@ -31,7 +30,6 @@ const getProfileByUserId = async (req, res) => {
             res.status(200).json(profile)
         }
     } catch (error) {
-        console.log(error)
         res.status(500).json({ msg: 'Internal server error' })
     }
 }
@@ -42,8 +40,6 @@ const updateProfile = async (req, res) => {
 
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality } = req.body
-
-    console.log('\ndateOfBirth', dateOfBirth)
 
     // CALCULATE USER AGE
     const age = moment().diff(dateOfBirth, 'years')
@@ -111,8 +107,6 @@ const updateProfile = async (req, res) => {
 // PUT http://localhost:5002/profiles/:userId/profilePhoto - update user profile photo
 const updateUserProfilePhoto = async (req, res) => {
 
-    console.log('endpoint hit')
-
     // CHECK IF FILE IS MISSING
     if (!req.file) {
         throw Error('Image is missing');
@@ -123,7 +117,6 @@ const updateUserProfilePhoto = async (req, res) => {
         const img_file = req.file
 
         try {
-            console.log('finding profile ...')
             // FIND PROFILE
             const profile = await UserProfile.findOne({
                 where: {
@@ -139,9 +132,7 @@ const updateUserProfilePhoto = async (req, res) => {
                     createdAt: new Date(),
                     updatedAt: new Date()
                 })
-
-                console.log('newProfile', newProfile)
-
+                
                 if (!newProfile) throw Error('Something went wrong while creating the profile!')
 
                 // RETURN NEW PROFILE
@@ -163,9 +154,6 @@ const updateUserProfilePhoto = async (req, res) => {
                             userId: req.params.id
                         }
                     })
-
-                    console.log('updatedProfile',
-                    )
 
                     if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
 
@@ -197,9 +185,7 @@ const updateUserProfilePhoto = async (req, res) => {
                             userId: req.params.id
                         }
                     })
-
-                    console.log('updatedProfile photo', updatedProfile)
-
+                    
                     if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
 
                     // RETURN UPDATED PROFILE

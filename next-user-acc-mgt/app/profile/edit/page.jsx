@@ -3,13 +3,9 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Form from './form'
 import useAuth from '../../utils/useauth'
-import { useRouter } from 'next/navigation'
 import Loading from '../../utils/loading'
 
 const EditProfilePage = () => {
-
-    // NEXT ROUTER
-    const router = useRouter()
 
     // TO CHECK AUTHENTICATION
     const { isAuthenticated } = useAuth()

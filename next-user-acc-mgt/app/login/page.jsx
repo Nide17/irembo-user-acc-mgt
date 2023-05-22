@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import useAuth from '../utils/useauth'
+import Loading from '../utils/loading'
 
 const LoginPage = () => {
     const [email, setEmail] = useState('')

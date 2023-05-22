@@ -16,8 +16,8 @@ const protectionMiddleware = require('../middlewares/protectionMiddleware')
 router.post('/login', authController.loginUser)
 
 // Private route
-// POST http://localhost:5001/auth/change-password - change password
-router.post('/change-password', protectionMiddleware, passwordController.changePassword)
+// PUT http://localhost:5001/auth/change-password - change password
+router.put('/change-password', protectionMiddleware, passwordController.changePassword)
 
 // Public route
 // POST http://localhost:5001/auth/forgot-password - forgot password

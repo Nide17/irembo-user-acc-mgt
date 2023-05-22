@@ -3,8 +3,6 @@ import Link from 'next/link'
 import axios from 'axios'
 import { useState } from 'react'
 import useAuth from '../../utils/useauth'
-
-// THE LOADING COMPONENT
 import Loading from '../../utils/loading'
 
 const PasswordChangePage = () => {
@@ -28,7 +26,7 @@ const PasswordChangePage = () => {
         const userId = JSON.parse(user).id
 
         // TOKEN FROM LOCAL STORAGE
-        const token = typeof window !== 'undefined' && localStorage.getItem('token')
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
         // CHECK FOR VALIDITY OF password - REGEX
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/
@@ -64,18 +62,22 @@ const PasswordChangePage = () => {
             setLoadingChange(true)
 
             // ATTEMPT TO RESET PASSWORD
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/change-password`, { oldPswd, newPswd, userId },
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/change-password`, { oldPswd, newPswd, userId },
                 {
-                    headers: {
-                        'x-auth-token': token,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'x-auth-token': token }
                 })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
             if (response && response.data) {
                 setSuccess(true)
                 setLoadingChange(false)
+
+                // LOGOUT AND REDIRECT TO LOGIN PAGE
+                setTimeout(() => {
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('user')
+                    window.location.href = '/login'
+                }, 3000)
             }
 
             else setError(response.data.msg)
@@ -99,10 +101,7 @@ const PasswordChangePage = () => {
 
     // CHECK FOR AUTHENTICATION
     if (!isAuthenticated) {
-
-        // REDIRECT TO LOGIN PAGE
-        typeof window !== 'undefined' && window.location.replace('/login')
-        return null
+        return <p>Please log in to edit profile.</p>
     }
 
     return (
@@ -130,7 +129,7 @@ const PasswordChangePage = () => {
                 )}
                 {!loadingChange && !error && success && (
                     <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
-                        <p className="text-center text-green-900 text-lg">Success!</p>
+                        <p className="text-center text-green-900 text-lg">Password changed successfully!</p>
                     </div>
                 )}
 

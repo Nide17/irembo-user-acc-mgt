@@ -4,8 +4,12 @@ import { useState } from 'react'
 import countryList from './countries.json'
 import moment from 'moment'
 import Loading from '../../utils/loading'
+import { useRouter } from 'next/navigation'
 
 const Form = ({ error, updateUser, profile, setProfile }) => {
+
+  // NEXT ROUTER
+  const router = useRouter()
 
   // STATE VARIABLES
   const [errorP, setErrorP] = useState(error)
@@ -31,6 +35,11 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
 
       // IF SUCCESSFUL, SET SUCCESS STATE
       if (response && response.data) {
+
+        // SET SUCCESS STATE
+        setSuccess(true)
+
+        // REDIRECT TO DASHBOARD
         setTimeout(() => {
           router.push('/dashboard')
         }, 3000)
@@ -70,7 +79,7 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
 
       {!loading && !errorP && success && (
         <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
-          <p className="text-center text-green-900 text-lg">Success, updating profile!</p>
+          <p className="text-center text-green-900 text-lg">Success, profile updated ...</p>
         </div>
       )}
 

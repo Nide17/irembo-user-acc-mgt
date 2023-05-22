@@ -23,19 +23,17 @@ app.use('/users', (req, res) => {
         file: req.file,
         data: req.body,
         headers: {
-            'Authorization': req.headers.authorization,
             'Content-Type': req.headers['content-type'],
-            'Accept': req.headers.accept,
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
         // SUCCESSFUL REQUEST
-        res.status(200).send(response)
+        res.status(200).send(response.data)
 
     }).catch(error => {
         res.status(500).send({
-            code: 'USER_ACCESS_ERROR',
-            msg: 'Failed to access user account',
+            code: 'USERS_ACCESSS_ERROR',
+            msg: 'Failed to access users',
             status: 500,
             error: error
         })
@@ -51,9 +49,7 @@ app.use('/profiles', (req, res) => {
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
         data: req.body,
         headers: {
-            'Authorization': req.headers.authorization,
             'Content-Type': req.headers['content-type'],
-            'Accept': req.headers.accept,
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
@@ -78,9 +74,7 @@ app.use('/settings', (req, res) => {
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
         data: req.body,
         headers: {
-            'Authorization': req.headers.authorization,
             'Content-Type': req.headers['content-type'],
-            'Accept': req.headers.accept,
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
@@ -105,9 +99,7 @@ app.use('/roles', (req, res) => {
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
         data: req.body,
         headers: {
-            'Authorization': req.headers.authorization,
             'Content-Type': req.headers['content-type'],
-            'Accept': req.headers.accept,
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
@@ -132,9 +124,7 @@ app.use('/auth', (req, res) => {
         url: `${process.env.APP_HOST}:${process.env.AUTH_SERVICE_PORT}${req.originalUrl}`,
         data: req.body,
         headers: {
-            'Authorization': req.headers.authorization,
             'Content-Type': req.headers['content-type'],
-            'Accept': req.headers.accept,
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
@@ -160,9 +150,7 @@ app.use('/accvers', (req, res) => {
         url: `${process.env.APP_HOST}:${process.env.VERIFICATION_SERVICE_PORT}${req.originalUrl}`,
         data: req.body,
         headers: {
-            'Authorization': req.headers.authorization,
             'Content-Type': req.headers['content-type'],
-            'Accept': req.headers.accept,
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {

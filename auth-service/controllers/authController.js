@@ -31,11 +31,11 @@ const loginUser = async (req, res) => {
     // TRYING TO GET USER
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const response = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/` + email)
+        const response = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
 
         // IF USER NOT FOUND, RETURN ERROR
         if (!response.data) {
-            res.status(404).json({ msg: 'User not found!' })
+            return res.status(404).json({ msg: 'User not found!' })
         }
 
         // GET USER FROM RESPONSE
@@ -43,15 +43,15 @@ const loginUser = async (req, res) => {
 
         // CHECK IF USER EXISTS
         if (!user) {
-            res.status(400).json({ msg: 'User does not exist!' })
+            return res.status(400).json({ msg: 'User does not exist!' })
         }
 
-        else {
+        // else {
             // CHECK IF PASSWORD IS CORRECT
             const isMatch = await bcrypt.compare(password, user.password)
 
             if (!isMatch) {
-                res.status(400).json({ msg: 'Invalid credentials!' })
+                return res.status(400).json({ msg: 'Invalid credentials!' })
             }
 
             // IF ALL IS GOOD, SIGN AND GENERATE TOKEN
@@ -64,18 +64,19 @@ const loginUser = async (req, res) => {
             )
 
             if (!token) {
-                res.status(400).json({ msg: 'Couldnt sign in, try again!' })
+                return res.status(400).json({ msg: 'Couldnt sign in, try again!' })
             }
 
             // RETURN TOKEN AND USER
-            res.status(200).json({
+            return res.status(200).json({
                 token,
                 user: user
             })
-        }
+        // }
 
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        // console.error(error)
+        return res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -85,7 +86,6 @@ const verifyToken = async (req, res) => {
 
     // GET THE TOKEN FROM THE REQUEST BODY IF PRESENT
     const token = req.headers['x-auth-token']
-    console.log(token)
 
     // IF NO TOKEN FOUND, RETURN ERROR
     if (!token) {

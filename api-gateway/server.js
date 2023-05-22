@@ -20,7 +20,6 @@ app.use('/users', (req, res) => {
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
-        file: req.file,
         data: req.body,
         headers: {
             'Content-Type': req.headers['content-type'],
@@ -47,10 +46,10 @@ app.use('/profiles', (req, res) => {
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
-        data: req.body,
+        data: req.file ? req.file : req.body,
         headers: {
-            'Content-Type': req.headers['content-type'],
-            'x-auth-token': req.headers['x-auth-token']
+            'x-auth-token': req.headers['x-auth-token'],
+            'Content-Type': req.file ? 'multipart/form-data' : req.headers['content-type']
         }
     }).then(response => {
         res.status(200).send(response.data)

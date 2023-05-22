@@ -46,7 +46,7 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ msg: 'User does not exist!' })
         }
 
-        // else {
+        else {
             // CHECK IF PASSWORD IS CORRECT
             const isMatch = await bcrypt.compare(password, user.password)
 
@@ -72,10 +72,9 @@ const loginUser = async (req, res) => {
                 token,
                 user: user
             })
-        // }
+        }
 
     } catch (error) {
-        // console.error(error)
         return res.status(500).json({ msg: 'Internal server error' })
     }
 }

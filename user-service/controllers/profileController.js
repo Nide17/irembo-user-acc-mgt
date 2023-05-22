@@ -106,12 +106,16 @@ const updateProfile = async (req, res) => {
 // UPDATE USER PROFILE PHOTO
 // PUT http://localhost:5002/profiles/:userId/profilePhoto - update user profile photo
 const updateUserProfilePhoto = async (req, res) => {
+    console.log('req.body', req.body);
+    console.log('req.file', req.file);
+    // console.log('req.file', req)
+
+    // res.json(req.file)
 
     // CHECK IF FILE IS MISSING
     if (!req.file) {
         throw Error('Image is missing');
     }
-
     // CHECK IF FILE IS AN IMAGE
     else {
         const img_file = req.file
@@ -120,19 +124,19 @@ const updateUserProfilePhoto = async (req, res) => {
             // FIND PROFILE
             const profile = await UserProfile.findOne({
                 where: {
-                    userId: req.params.id
+                    userId: req.params.userId
                 }
             })
 
             // IF PROFILE NOT EXISTS, CREATE NEW PROFILE
             if (!profile) {
                 const newProfile = await UserProfile.create({
-                    userId: req.params.id,
+                    userId: req.params.userId,
                     profilePhoto: img_file.location ? img_file.location : img_file.path,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 })
-                
+
                 if (!newProfile) throw Error('Something went wrong while creating the profile!')
 
                 // RETURN NEW PROFILE
@@ -151,7 +155,7 @@ const updateUserProfilePhoto = async (req, res) => {
                         updatedAt: new Date()
                     }, {
                         where: {
-                            userId: req.params.id
+                            userId: req.params.userId
                         }
                     })
 
@@ -182,10 +186,10 @@ const updateUserProfilePhoto = async (req, res) => {
                         updatedAt: new Date()
                     }, {
                         where: {
-                            userId: req.params.id
+                            userId: req.params.userId
                         }
                     })
-                    
+
                     if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
 
                     // RETURN UPDATED PROFILE

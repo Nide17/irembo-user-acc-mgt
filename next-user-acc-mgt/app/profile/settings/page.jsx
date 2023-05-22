@@ -33,20 +33,20 @@ const SettingsPage = () => {
                 // ATTEMPT TO FETCH USER SETTINGS
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
                         'x-auth-token': token
                     }
                 })
 
                 // SET USER SETTINGS
-                console.log(response)
                 if (response) {
+                    setLoadingSettings(false)
                     setNotifications(response.data.notifications)
                     setMfa(response.data.mfa)
                 }
 
                 // SET ERROR MESSAGE
                 else {
+                    setLoadingSettings(false)
                     setError('An error occurred! Please try again.')
                     // CLEAR MESSAGE AFTER 3 SECONDS
                     setTimeout(() => {
@@ -59,7 +59,7 @@ const SettingsPage = () => {
 
             } catch (error) {
                 setError('Something went wrong! Please try again.')
-
+                setLoadingSettings(false)
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
@@ -68,6 +68,8 @@ const SettingsPage = () => {
         }
 
         fetchSettings()
+
+        setLoadingSettings(false)
     }, [])
     console.log(notifications, mfa)
 
@@ -84,6 +86,8 @@ const SettingsPage = () => {
             setError('')
             setSuccess(false)
 
+            setLoadingSettings(true)
+
             // ATTEMPT TO UPDATE USER SETTINGS
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, { notifications: !notifications }, {
                 headers: {
@@ -92,9 +96,9 @@ const SettingsPage = () => {
             })
 
             // SET SUCCESS MESSAGE
-            console.log(response)
             if (response) {
                 setSuccess(true)
+                setLoadingSettings(false)
 
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
@@ -105,7 +109,7 @@ const SettingsPage = () => {
             // SET ERROR MESSAGE
             else {
                 setError('An error occurred! Please try again.')
-
+                setLoadingSettings(false)
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
@@ -114,7 +118,7 @@ const SettingsPage = () => {
 
         } catch (error) {
             setError('Something went wrong! Please try again.')
-
+            setLoadingSettings(false)
             // CLEAR MESSAGE AFTER 3 SECONDS
             setTimeout(() => {
                 setError('')
@@ -134,17 +138,16 @@ const SettingsPage = () => {
             // CLEAR ERROR MESSAGE
             setError('')
             setSuccess(false)
-
+            setLoadingSettings(true)
             // ATTEMPT TO UPDATE USER SETTINGS
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, { mfa: !mfa }, {
                 headers: { 'x-auth-token': token }
             })
 
-            // SET SUCCESS MESSAGE
-            console.log(response)
+            // SET SUCCESS MESSAG
             if (response && response.data) {
                 setSuccess(true)
-
+                setLoadingSettings(false)
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
                     setSuccess(false)
@@ -154,7 +157,7 @@ const SettingsPage = () => {
             // SET ERROR MESSAGE
             else {
                 setError("Error occured: ", response.data.msg)
-
+                setLoadingSettings(false)
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
@@ -163,7 +166,7 @@ const SettingsPage = () => {
 
         } catch (error) {
             setError('Something went wrong! Please try again.')
-
+            setLoadingSettings(false)
             // CLEAR MESSAGE AFTER 3 SECONDS
             setTimeout(() => {
                 setError('')

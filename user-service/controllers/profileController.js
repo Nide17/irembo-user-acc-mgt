@@ -106,11 +106,6 @@ const updateProfile = async (req, res) => {
 // UPDATE USER PROFILE PHOTO
 // PUT http://localhost:5002/profiles/:userId/profilePhoto - update user profile photo
 const updateUserProfilePhoto = async (req, res) => {
-    console.log('req.body', req.body);
-    console.log('req.file', req.file);
-    // console.log('req.file', req)
-
-    // res.json(req.file)
 
     // CHECK IF FILE IS MISSING
     if (!req.file) {

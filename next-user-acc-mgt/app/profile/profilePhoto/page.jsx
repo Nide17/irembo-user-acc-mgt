@@ -71,8 +71,8 @@ const ProfilePhotoPage = () => {
 
                 // RELAOD PAGE AFTER SET SUCCESS MESSAGE
                 setTimeout(() => {
-                    window.location.reload()
-                }, 5000)
+                    window.location.href = '/dashboard'
+                }, 3000)
             }
 
             // SET ERROR MESSAGE

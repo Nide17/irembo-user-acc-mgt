@@ -20,7 +20,7 @@ const getAllUsers = async (req, res) => {
 
 // GET http://localhost:5002/users/:id - get user by id
 const getUserById = async (req, res) => {
-    console.log('\n\nUpdating password:\n\n', `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${req.params.id}`)
+
     try {
         const user = await User.findOne({
             where: {
@@ -33,6 +33,30 @@ const getUserById = async (req, res) => {
         }
 
         res.json(user)
+    } catch (error) {
+        res.status(500).json({ msg: 'Internal server error' })
+    }
+}
+
+// GET http://localhost:5002/users/:id - get user by id
+const getUserByLinkId = async (req, res) => {
+    
+    try {
+        const user = await User.findOne({
+            where: {
+                id: req.params.id
+            }
+        })
+
+        if (!user) {
+            res.status(404).json({ msg: 'User not found' })
+        }
+
+        res.json({
+            id: user.id,
+            email: user.email,
+            roleId: user.roleId,
+        })
     } catch (error) {
         res.status(500).json({ msg: 'Internal server error' })
     }
@@ -70,7 +94,6 @@ const createUser = async (req, res) => {
         const userExists = await User.findOne({ where: { email } })
 
         if (userExists) {
-            console.log('\n\nUser already exists\n\n', userExists)
             res.status(400).json({ msg: 'User with that email already exists' })
             return
         }
@@ -98,15 +121,17 @@ const createUser = async (req, res) => {
 
             // IF PROFILE IS NOT CREATED, DELETE THE USER AND RETURN ERROR msg
             if (!userProfile) {
-               const profil = await User.destroy({
+               const destroyed = await User.destroy({
                     where: {
-                        id: user.id
+                       id: user.id
                     }
                 })
 
-                if(!profil) {
-                    console.log('\n\nFailed to delete user\n\n', user)
+                if(!destroyed) {
                     res.status(500).json({ msg: 'Failed!' })
+                }
+                else {
+                    res.status(200).json({ msg: 'Success!' })
                 }
             }
         }
@@ -115,7 +140,6 @@ const createUser = async (req, res) => {
         res.status(200).json(user)
 
     } catch (error) {
-        console.log('\n\nError creating user\n\n', error)
         res.status(500).json({ msg: 'Internal server error' })
     }
 }
@@ -199,6 +223,7 @@ const getUserByEmail = async (req, res) => {
 module.exports = {
     getAllUsers,
     getUserById,
+    getUserByLinkId,
     getUserByEmail,
     createUser,
     updateUser,

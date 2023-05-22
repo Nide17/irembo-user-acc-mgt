@@ -6,7 +6,10 @@ const getAllRoles = async (req, res) => {
         const roles = await Role.findAll();
         res.json(roles);
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' });
+        res.status(500).json({ 
+            msg: 'Internal server error',
+            error
+         });
     }
 }
 
@@ -20,7 +23,10 @@ const getRoleById = async (req, res) => {
         });
         res.json(role);
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' });
+        res.status(500).json({ 
+            msg: 'Internal server error',
+            error
+         });
     }
 }
 
@@ -32,7 +38,10 @@ const createRole = async (req, res) => {
         });
         res.json(role);
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' });
+        res.status(500).json({ 
+            msg: 'Internal server error',
+            error
+         });
     }
 }
 
@@ -48,7 +57,10 @@ const updateRole = async (req, res) => {
         });
         res.json(role);
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' });
+        res.status(500).json({ 
+            msg: 'Internal server error',
+            error
+         });
     }
 }
 
@@ -62,7 +74,10 @@ const deleteRole = async (req, res) => {
         });
         res.json(role);
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' });
+        res.status(500).json({ 
+            msg: 'Internal server error',
+            error
+         });
     }
 }
 

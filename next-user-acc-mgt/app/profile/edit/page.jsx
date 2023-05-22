@@ -102,7 +102,6 @@ const EditProfilePage = () => {
     // RETURN THE FORM
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-            {console.log(profile)}
             <Form
                 error={error}
                 updateUser={updateUser}

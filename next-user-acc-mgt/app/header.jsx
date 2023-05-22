@@ -36,8 +36,6 @@ const Header = () => {
                         }
                     })
 
-                    console.log(response)
-
                     // IF TOKEN IS VALID, USER IS AUTHORIZED
                     if (response && response.data) {
                         setIsAuth(true)

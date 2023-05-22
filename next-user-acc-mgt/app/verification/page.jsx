@@ -115,10 +115,9 @@ const VerificationPage = () => {
             formData.append('documentImage', documentImage)
             formData.append('documentType', documentType)
             formData.append('documentNumber', documentNumber)
-            console.log(documentImage, documentType, documentNumber)
 
             // UPDATE DOCUMENT TYPE, DOCUMENT NUMBER, DOCUMENT IMAGE
-            const response = await axios.put(`$http://localhost:5002/accvers/user/${JSON.parse(user).id}`, formData, {
+            const response = await axios.put(`http://localhost:5003/accvers/user/${JSON.parse(user).id}`, formData, {
                 headers: {
                     'x-auth-token': token,
                     'Content-Type': 'multipart/form-data'
@@ -142,7 +141,6 @@ const VerificationPage = () => {
         }
         catch (err) {
             setError('Something went wrong')
-            console.log(err)
             return err
         }
     }

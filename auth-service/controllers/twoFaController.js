@@ -22,7 +22,7 @@ const twoFactorAuth = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, {}, { headers: req.headers })
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, {})
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -56,7 +56,7 @@ const twoFactorAuth = async (req, res) => {
 
         // CHECK IF 2FA TOKEN SAVED
         if (!saveTwoFactorToken) {
-            console.error('Error saving 2fa token')
+            return res.status(500).json({ msg: 'Error saving 2fa token' })
         }
 
         // SEND EMAIL
@@ -75,13 +75,10 @@ const twoFactorAuth = async (req, res) => {
         await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
 
         // RETURN EMAIL SENT SUCCESSFULLY
-        res.status(200).json({
-            msg: `Email sent successfully!`
-        })
+        res.status(200).json({ msg: `Email sent successfully!` })
 
     } catch (error) {
-        console.error('Error 2fa', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 
@@ -99,7 +96,7 @@ const verifyTwoFactorAuth = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, {}, { headers: req.headers })
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -169,8 +166,7 @@ const verifyTwoFactorAuth = async (req, res) => {
         })
 
     } catch (error) {
-        console.error('Error verifying 2fa', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 

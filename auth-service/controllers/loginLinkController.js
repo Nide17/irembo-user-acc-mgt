@@ -24,7 +24,7 @@ const loginLink = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, {}, { headers: req.headers })
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, {})
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -50,7 +50,7 @@ const loginLink = async (req, res) => {
 
         // CHECK IF LOGIN TOKEN SAVED
         if (!saveLoginToken) {
-            console.error('Error saving login token')
+            return res.status(400).json({ msg: 'Error saving login token!' })
         }
 
         // SEND EMAIL
@@ -69,19 +69,17 @@ const loginLink = async (req, res) => {
         await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
 
         // RETURN EMAIL SENT SUCCESSFULLY
-        res.status(200).json({
-            msg: `Email sent successfully!`
-        })
+        res.status(200).json({ msg: 'Email sent successfully' })
 
     } catch (error) {
-        console.error('Error login link', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 
 // VERIFY LINK
 // POST http://localhost:5001/auth/verify-link/:token - verify link
 const verifyLink = async (req, res) => {
+
     // DESTRUCTURE TOKEN
     const { token } = req.params
 
@@ -122,11 +120,11 @@ const verifyLink = async (req, res) => {
 
         // CHECK IF TOKEN UPDATED
         if (!updateToken) {
-            console.error('Error updating token')
+            return res.status(400).json({ msg: 'Error updating token!' })
         }
 
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${tokenExists.userId}`, {}, {headers: req.headers})
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/link/${tokenExists.userId}`)
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -140,7 +138,7 @@ const verifyLink = async (req, res) => {
         }, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h'
         })
-
+        
         // RETURN JWT TOKEN
         res.status(200).json({
             token: jwtToken,
@@ -149,8 +147,10 @@ const verifyLink = async (req, res) => {
         })
 
     } catch (error) {
-        console.error('Error verifying link', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 

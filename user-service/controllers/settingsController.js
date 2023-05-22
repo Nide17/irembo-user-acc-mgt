@@ -6,7 +6,10 @@ const getAllSettings = async (req, res) => {
         const stgs = await Settings.findAll()
         res.json(stgs)
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -20,7 +23,10 @@ const getSettingsById = async (req, res) => {
         })
         res.json(settings)
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -49,14 +55,19 @@ const getSettingsByUserId = async (req, res) => {
                 throw Error('Something went wrong while creating the settings!')
             }
             else {
-                res.status(200).json({
-                    msg: 'Settings created successfully!',
-                    settings: createdSettings
-                })
+                res.status(200).json(createdSettings)
             }
         }
+
+        else {
+            res.status(200).json(settings)
+        }
+
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -66,9 +77,14 @@ const createSettings = async (req, res) => {
         const settings = await Settings.create({
             name: req.body.name
         })
+
         res.json(settings)
+
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -90,12 +106,12 @@ const updateSettings = async (req, res) => {
 
         if (!settings) throw Error('Something went wrong while updating the settings!')
 
-        res.json({
-            msg: 'Settings updated successfully!',
-            settings
-        })
+        res.json(settings)
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -109,7 +125,10 @@ const deleteSettings = async (req, res) => {
         })
         res.json(settings)
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 

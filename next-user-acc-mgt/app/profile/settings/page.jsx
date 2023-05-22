@@ -11,8 +11,8 @@ const SettingsPage = () => {
     const { isAuthenticated } = useAuth()
 
     // STATE VARIABLES
-    const [notifications, setNotifications] = useState(true)
-    const [mfa, setMfa] = useState(false)
+    const [notifications, setNotifications] = useState()
+    const [mfa, setMfa] = useState()
     const [error, setError] = useState('')
     const [success, setSuccess] = useState(false)
     const [loadingSettings, setLoadingSettings] = useState(false)
@@ -47,7 +47,7 @@ const SettingsPage = () => {
                 // SET ERROR MESSAGE
                 else {
                     setLoadingSettings(false)
-                    setError('An error occurred! Please try again.')
+                    setError('An error occurred! Please refresh.')
                     // CLEAR MESSAGE AFTER 3 SECONDS
                     setTimeout(() => {
                         setError('')
@@ -58,7 +58,7 @@ const SettingsPage = () => {
                 setLoadingSettings(false)
 
             } catch (error) {
-                setError('Something went wrong! Please try again.')
+                setError('Something went wrong! refresh.')
                 setLoadingSettings(false)
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
@@ -71,7 +71,6 @@ const SettingsPage = () => {
 
         setLoadingSettings(false)
     }, [])
-    console.log(notifications, mfa)
 
     // NOTIFICATIONS TOGGLE
     const handleNotifications = async (e) => {

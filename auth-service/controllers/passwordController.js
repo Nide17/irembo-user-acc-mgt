@@ -12,8 +12,9 @@ const validatePassword = require('../utils/validatePassword')
 const PswdReset = require('../models/PswdReset')
 
 // FORGOT PASSWORD
-// POST http://localhost:5001/forgot-password - forgot password
+// POST http://localhost:5001/auth/forgot-password - forgot password
 const forgotPassword = async (req, res) => {
+
     // DESTRUCTURE EMAIL
     const { email } = req.body
 
@@ -24,7 +25,7 @@ const forgotPassword = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, { headers: req.headers })
+        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -73,8 +74,7 @@ const forgotPassword = async (req, res) => {
         })
 
     } catch (error) {
-        console.error('Error forgot password', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 
@@ -118,15 +118,15 @@ const resetPassword = async (req, res) => {
         // UPDATE PASSWORD
         const updatedUser = await axios.put(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${resetTokenExists.userId}`, {
             password: hashedPassword
-        }, { headers: req.headers })
+        })
 
         // RETURN UPDATED USER
         res.status(200).json({
             updatedUser: updatedUser.data
         })
+
     } catch (error) {
-        console.error('Error resetting password', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 
@@ -138,7 +138,6 @@ const changePassword = async (req, res) => {
     const { oldPswd, newPswd, userId } = req.body
 
     try {
-
         // ASK THE USER SERVICE FOR THIS USER
         const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${userId}`, {
             headers: {
@@ -146,8 +145,6 @@ const changePassword = async (req, res) => {
                 'x-auth-token': req.headers['x-auth-token']
             }
         })
-
-        console.log('\n\nUpdating password:\n\n', `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${userId}`)
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -187,11 +184,12 @@ const changePassword = async (req, res) => {
             return res.status(400).json({ msg: '\n\n\nAn error occured!' })
         }
 
-        return res.status(200).json({
-            updatedUser: updatedUser.data
+        res.status(200).json({
+            updatedUser: updatedUser.data // res.status(200).json(updatedUser) - Error changing password TypeError: Converting circular structure to JSON
         })
+
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 

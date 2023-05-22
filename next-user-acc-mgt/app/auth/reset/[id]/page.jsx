@@ -96,7 +96,7 @@ const ResetPage = () => {
                 )}
                 {!loadingReset && !error && success && (
                     <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
-                        <p className="text-center text-green-900 text-lg">Success, check your email! <Link href="/login" className='underline underline-offset-4 font-semibold'>Login</Link></p>
+                        <p className="text-center text-green-900 text-lg">Success! <Link href="/login" className='underline underline-offset-4 font-semibold'>Login</Link></p>
                     </div>
                 )}
 

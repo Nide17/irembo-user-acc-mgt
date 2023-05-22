@@ -14,8 +14,10 @@ const getAllAccVers = async (req, res) => {
         const accvers = await AccountVerification.findAll()
         res.json(accvers)
     } catch (error) {
-        console.error('Error fetching verifications', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -29,8 +31,7 @@ const getAccVerById = async (req, res) => {
         })
         res.json(accver)
     } catch (error) {
-        console.error('Error fetching accver by id', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({ msg: 'Internal server error', error })
     }
 }
 
@@ -45,25 +46,23 @@ const getAccVerByUserId = async (req, res) => {
         })
         res.json(accver)
     } catch (error) {
-        console.log('\n\nError fetching accver by userId\n\n', error)
-        res.status(500).json({ msg: error })
+        res.status(500).json({ msg: error, error })
     }
 }
 
-// PUT http://localhost:5003/accvers/:userId - update accver by userId
+// PUT http://localhost:5003/accvers/user/:userId - update accver by userId
 const updateAccVer = async (req, res) => {
 
     // DESTRUCTURE THE REQUEST BODY
     const { documentType, documentNumber } = req.body
     const img_file = req.file
-    console.log('\n\nimg_file\n\n', img_file)
 
     // VALIDATE THE REQUEST BODY
     if (!documentType || !documentNumber) return res.status(400).json({ msg: 'Please enter all required fields!' })
 
     // VALIDATE THE FILE
     if (!img_file) {
-        return res.status(400).json({ msg: 'Document image is required!' })
+        return res.status(400).json({ msg: 'Document image is required!1' })
     }
 
     try {
@@ -73,6 +72,7 @@ const updateAccVer = async (req, res) => {
                 userId: req.params.userId
             }
         })
+
         if (!verific && !img_file) throw Error('Document image is required!')
 
         // IF VERIFICATION NOT EXISTS, CREATE VERIFICATION
@@ -156,7 +156,7 @@ const updateAccVer = async (req, res) => {
             else {
                 throw Error('Something went wrong, please check your inputs!')
             }
-                
+
         }
     } catch (err) {
         console.error('Error: ', err)

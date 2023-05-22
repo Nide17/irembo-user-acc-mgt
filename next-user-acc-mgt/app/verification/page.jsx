@@ -19,9 +19,9 @@ const VerificationPage = () => {
     const [documentNumber, setDocumentNumber] = useState('')
     const [documentImage, setDocumentImage] = useState('')
 
-    // ERROR, SUCCESS, LOADING
+    // ERROR, SUCCESSMsg, LOADING
     const [error, setError] = useState('')
-    const [success, setSuccess] = useState(false)
+    const [successMsg, setSuccessMsg] = useState(false)
     const [loading, setLoading] = useState(false)
 
     // FETCH USER ID AND TOKEN FROM LOCAL STORAGE
@@ -32,7 +32,6 @@ const VerificationPage = () => {
     useEffect(() => {
         const fetchVerification = async () => {
             try {
-
                 // CLEAR ERROR msg
                 setError('')
                 setLoading(true)
@@ -46,16 +45,24 @@ const VerificationPage = () => {
                 })
 
                 // SET USER VERIFICATION
-                console.log(response)
                 if (response && response.data) {
                     setDocumentType(response.data.documentType || '')
                     setDocumentNumber(response.data.documentNumber || '')
                     setDocumentImage(response.data.documentImage || '')
+                    setLoading(false)
+                    setSuccessMsg('Data retrieved successfully')
+
+                    // CLEAR msg AFTER 3 SECONDS
+                    setTimeout(() => {
+                        setSuccessMsg('')
+                    }, 3000)
                 }
 
                 // SET ERROR msg
                 else {
                     setError("Error occured: ", response.data.msg)
+                    setSuccessMsg('')
+                    setLoading(false)
                     // CLEAR msg AFTER 3 SECONDS
                     setTimeout(() => {
                         setError('')
@@ -66,7 +73,6 @@ const VerificationPage = () => {
                 setLoading(false)
 
             } catch (error) {
-                console.log(error)
                 setError('An error occurred! Please try again.')
                 // CLEAR msg AFTER 3 SECONDS
                 setTimeout(() => {
@@ -109,23 +115,23 @@ const VerificationPage = () => {
             formData.append('documentImage', documentImage)
             formData.append('documentType', documentType)
             formData.append('documentNumber', documentNumber)
+            console.log(documentImage, documentType, documentNumber)
 
             // UPDATE DOCUMENT TYPE, DOCUMENT NUMBER, DOCUMENT IMAGE
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user).id}`, formData, {
+            const response = await axios.put(`$http://localhost:5002/accvers/user/${JSON.parse(user).id}`, formData, {
                 headers: {
                     'x-auth-token': token,
                     'Content-Type': 'multipart/form-data'
                 },
             })
 
-            console.log(response)
             if (response) {
                 setLoading(false)
-                setSuccess(true)
+                setSuccessMsg('Verification request successful')
 
                 // GO BACK TO DASHBOARD
                 setTimeout(() => {
-                    window.location.href = '/dashboard'
+                    router.push('/dashboard')
                 }, 5000)
             }
             else {
@@ -136,24 +142,25 @@ const VerificationPage = () => {
         }
         catch (err) {
             setError('Something went wrong')
+            console.log(err)
+            return err
         }
     }
 
-
-
-    // IF USER IS NOT AUTHENTICATED, REDIRECT TO LOGIN PAGE
+    // IF NOT AUTHENTICATED, DISPLAY MESSAGE
     if (!isAuthenticated) {
-        router.push('/login')
+        return <p>Please log in to verify your account.</p>
     }
 
-    // IF LOADING, SHOW LOADING PAGE
-    if (loading) {
-        return 
-        <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-            <Loading />
-        </div>
-    }
-    
+    // // IF LOADING, SHOW LOADING PAGE
+    // if (loading) {
+    //     return (
+    //         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
+    //             <Loading />
+    //         </div>
+    //     )
+    // }
+
     // IF USER IS AUTHENTICATED, SHOW VERIFICATION PAGE
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
@@ -166,8 +173,8 @@ const VerificationPage = () => {
                     </Link>
                 </div>
 
-                {/* NOTIFICATION - LOADING, ERROR, SUCCESS */}
-                {loading && !error && !success && (
+                {/* NOTIFICATION - LOADING, ERROR, SUCCESSMsg */}
+                {loading && !error && !successMsg && (
                     <div className="flex items-center justify-center">
                         <Loading />
                     </div>
@@ -178,9 +185,9 @@ const VerificationPage = () => {
                         <p className="text-center text-red-700 text-sm">{error}</p>
                     </div>)}
 
-                {!loading && !error && success && (
+                {!loading && !error && successMsg && (
                     <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
-                        <p className="text-center text-green-900 text-lg">Successful request!</p>
+                        <p className="text-center text-green-900 text-lg">{successMsg}</p>
                     </div>
                 )}
 

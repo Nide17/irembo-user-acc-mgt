@@ -36,6 +36,7 @@ const getAccVerById = async (req, res) => {
 
 // GET http://localhost:5003/accvers/user/:userId - get accver by user userId
 const getAccVerByUserId = async (req, res) => {
+
     try {
         const accver = await AccountVerification.findOne({
             where: {
@@ -44,8 +45,8 @@ const getAccVerByUserId = async (req, res) => {
         })
         res.json(accver)
     } catch (error) {
-        console.error('Error fetching accver by userId', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        console.log('\n\nError fetching accver by userId\n\n', error)
+        res.status(500).json({ msg: error })
     }
 }
 
@@ -55,6 +56,15 @@ const updateAccVer = async (req, res) => {
     // DESTRUCTURE THE REQUEST BODY
     const { documentType, documentNumber } = req.body
     const img_file = req.file
+    console.log('\n\nimg_file\n\n', img_file)
+
+    // VALIDATE THE REQUEST BODY
+    if (!documentType || !documentNumber) return res.status(400).json({ msg: 'Please enter all required fields!' })
+
+    // VALIDATE THE FILE
+    if (!img_file) {
+        return res.status(400).json({ msg: 'Document image is required!' })
+    }
 
     try {
         // FIND VERIFICATION BY USER ID
@@ -143,8 +153,10 @@ const updateAccVer = async (req, res) => {
                 })
             }
 
-            else
+            else {
                 throw Error('Something went wrong, please check your inputs!')
+            }
+                
         }
     } catch (err) {
         console.error('Error: ', err)

@@ -158,8 +158,8 @@ app.use('/accvers', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            code: 'FAILED_VERIFICATION',
-            msg: 'Unsuccessful verification',
+            code: 'FAILED_VERIFICATION_REQUEST',
+            msg: 'Unsuccessful verification request',
             status: 500,
             error: error
         })

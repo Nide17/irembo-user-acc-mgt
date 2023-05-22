@@ -16,7 +16,7 @@ router.get('/:id', protectionMiddleware, accVerController.getAccVerById)
 
 // Private route - get accver by user userId
 // GET http://localhost:5003/accvers/user/:userId
-router.get('/user/:id', protectionMiddleware, accVerController.getAccVerByUserId)
+router.get('/user/:userId', protectionMiddleware, accVerController.getAccVerByUserId)
 
 // Private route - update accver by userId
 // PUT http://localhost:5003/accvers/user/:userId

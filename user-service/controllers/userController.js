@@ -47,11 +47,13 @@ const createUser = async (req, res) => {
     // VALIDATE USER DATA
     if (!email || !password) {
         res.status(400).json({ msg: 'All fields are required' })
+        return
     }
 
     // VALIDATE USER EMAIL
     if (!validateEmail(email)) {
         res.status(400).json({ msg: 'Invalid email' })
+        return
     }
 
     // VALIDATE USER PASSWORD
@@ -59,19 +61,18 @@ const createUser = async (req, res) => {
         res.status(400).json({
             msg: 'Password should be greater than 7 and having special characters, number, and uppercase and lowercase letters'
         })
+        return
     }
 
     // CREATE NEW USER
     try {
         // CHECK IF USER ALREADY EXISTS
-        const userExists = await User.findOne({
-            where: {
-                email
-            }
-        })
+        const userExists = await User.findOne({ where: { email } })
 
         if (userExists) {
+            console.log('\n\nUser already exists\n\n', userExists)
             res.status(400).json({ msg: 'User with that email already exists' })
+            return
         }
 
         // HASH THE PASSWORD
@@ -97,19 +98,24 @@ const createUser = async (req, res) => {
 
             // IF PROFILE IS NOT CREATED, DELETE THE USER AND RETURN ERROR msg
             if (!userProfile) {
-                await User.destroy({
+               const profil = await User.destroy({
                     where: {
                         id: user.id
                     }
                 })
-                res.status(500).json({ msg: 'Internal server error' })
+
+                if(!profil) {
+                    console.log('\n\nFailed to delete user\n\n', user)
+                    res.status(500).json({ msg: 'Failed!' })
+                }
             }
         }
 
         // RETURN THE USER, ALL IS WELL
-        res.json(user)
+        res.status(200).json(user)
 
     } catch (error) {
+        console.log('\n\nError creating user\n\n', error)
         res.status(500).json({ msg: 'Internal server error' })
     }
 }

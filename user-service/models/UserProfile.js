@@ -57,7 +57,7 @@ const UserProfile = sequelize.define('userProfile', {
     },
     dateOfBirth: {
         type: DataTypes.DATEONLY,
-        allowNull: false,
+        allowNull: true,
         validate: {
             isDate: true
         }

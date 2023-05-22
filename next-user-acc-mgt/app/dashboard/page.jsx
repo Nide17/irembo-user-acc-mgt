@@ -11,7 +11,7 @@ const DashboardPage = () => {
     const [token, setToken] = useState(typeof window !== 'undefined' ? localStorage.getItem('token') : null) // TOKEN FROM LOCAL STORAGE
     const [user, setUser] = useState(typeof window !== 'undefined' ? localStorage.getItem('user') : null) // USER FROM LOCAL STORAGE
     const [loading, setLoading] = useState(true)
-    const [isMfa, setMfa] = useState({})
+    const [isMfa, setMfa] = useState(false)
     const [profile, setProfile] = useState({})
     const [error, setError] = useState('')
 
@@ -20,7 +20,6 @@ const DashboardPage = () => {
 
         // SET LOADING TO TRUE
         setLoading(false)
-        console.log("USER:", user)
 
         // GET USER PROFILE
         const getUserProfile = async () => {
@@ -36,8 +35,6 @@ const DashboardPage = () => {
                 }
                 else setProfile({})
             } catch (error) {
-
-                console.log("ERROR:", error.response.data.msg)
 
                 // IF ERROR, SET THE PROFILE STATE TO NULL
                 setProfile({})
@@ -56,15 +53,12 @@ const DashboardPage = () => {
 
                 // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
                 if (response && response.data) {
-                    setMfa(response.data.mfa)
+                    setMfa(true)
                 }
-                else setMfa({})
+                else setMfa(true)
             } catch (error) {
-
-                console.log("ERROR:", error.response.data.msg)
-
                 // IF ERROR, SET THE SETTINGS STATE TO NULL
-                setMfa({})
+                setMfa(true)
                 setError(error.response.data.msg)
             }
         }
@@ -81,6 +75,8 @@ const DashboardPage = () => {
         )
     }
 
+    console.log(isMfa)
+
     // IF NOT AUTHENTICATED, DISPLAY MESSAGE
     if (!isAuthenticated) {
         return <p>Please log in to access the dashboard.</p>
@@ -92,6 +88,7 @@ const DashboardPage = () => {
             <div className="flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center w-5/6 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
                     <h1 className="text-3xl text-white font-bold mb-8">Dashboard</h1>
+                    {console.log(isMfa)}
 
                     {!isMfa && // IF MFA IS NOT ENABLED, DISPLAY TOAST
                         <div id="toast-danger" className="flex items-center text-center w-full max-w-xs py-2 mb-4 text-gray-200 bg-white rounded-lg shadow dark:text-gray-200 dark:bg-red-700" role="alert">

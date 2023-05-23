@@ -32,3 +32,4 @@ lerna-debug.log*
 # Local Netlify folder
 .netlify
 ./docker config.md
+*/env/config.js

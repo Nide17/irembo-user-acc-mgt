@@ -4,7 +4,7 @@ import ProfilePic from './utils/profilePic'
 import Link from 'next/link'
 import axios from 'axios'
 
-const Header = () => {
+export default function Header() {
 
     // STATE VARIABLES
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -144,5 +144,3 @@ const Header = () => {
         </header>
     )
 }
-
-export default Header

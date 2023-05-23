@@ -20,7 +20,10 @@ app.use('/users', (req, res) => {
     axios({
         method: req.method,
         url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
-        data: req.body,
+
+        // IF REQUEST BODY CONTAINS FILE, SEND FILE INSTEAD OF JSON DATA
+        data: req.file ? req.file : req.body,
+
         headers: {
             'Content-Type': req.headers['content-type'],
             'x-auth-token': req.headers['x-auth-token']
@@ -31,7 +34,7 @@ app.use('/users', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            status: error.response.status,
+            // status: error.response.status,
             error: error.response.data
         })
     })
@@ -54,8 +57,8 @@ app.use('/profiles', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            status: error.response.status,
-            error: error.response.data
+            // status: error.response.status,
+            error: error.response
         })
     })
 })
@@ -77,7 +80,7 @@ app.use('/settings', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            status: error.response.status,
+            // status: error.response.status,
             error: error.response.data
         })
     })
@@ -100,7 +103,7 @@ app.use('/roles', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            status: error.response.status,
+            // status: error.response.status,
             error: error.response.data
         })
     })
@@ -124,7 +127,7 @@ app.use('/auth', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            status: error.response.status,
+            // status: error.response.status,
             error: error.response.data
         })
     })
@@ -148,7 +151,7 @@ app.use('/accvers', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            status: error.response.status,
+            // status: error.response.status,
             error: error.response.data
         })
     })

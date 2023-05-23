@@ -35,7 +35,7 @@ app.use('/users', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data
+            error: error.response.data || error.response || error || error.response || error
         })
     })
 })
@@ -58,7 +58,7 @@ app.use('/profiles', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response
+            error: error.response.data || error.response || error
         })
     })
 })
@@ -81,7 +81,7 @@ app.use('/settings', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data
+            error: error.response.data || error.response || error
         })
     })
 })
@@ -104,7 +104,7 @@ app.use('/roles', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data
+            error: error.response.data || error.response || error
         })
     })
 })
@@ -128,7 +128,7 @@ app.use('/auth', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data
+            error: error.response.data || error.response || error
         })
     })
 })
@@ -152,7 +152,7 @@ app.use('/accvers', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data
+            error: error.response.data || error.response || error
         })
     })
 })

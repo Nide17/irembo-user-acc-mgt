@@ -1,6 +1,4 @@
-"use client"
 import './globals.css'
-import { createContext} from 'react'
 
 // TAILWIND CSS
 import 'tailwindcss/tailwind.css'
@@ -12,11 +10,6 @@ export const metadata = {
   title: 'User Account Management App',
   description: 'Managing user accounts',
 }
-
-// CONTEXT
-export const authContext = createContext()
-export const userContext = createContext()
-export const tokenContext = createContext()
 
 // PROVIDER COMPONENT
 export default function RootLayout({ children }) {

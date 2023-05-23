@@ -31,13 +31,11 @@ const useAuth = () => {
 
                     // IF TOKEN IS VALID, USER IS AUTHORIZED
                     if (response && response.data) {
-                        console.log('Auth response: ', response.data.code)
                         setIsAuthenticated(true)
                     }
 
                     else {
                         // REMOVE TOKEN AND USER DATA FROM LOCAL STORAGE
-                        console.log('Auth verification failed!')
                         setIsAuthenticated(false)
                         localStorage.removeItem('token')
                         localStorage.removeItem('user')
@@ -45,7 +43,6 @@ const useAuth = () => {
                 }
                 catch (error) {
                     // IF TOKEN IS INVALID, REDIRECT TO LOGIN PAGE
-                    console.log('Auth error!')
                     setIsAuthenticated(false)
                     localStorage.removeItem('token')
                     localStorage.removeItem('user')

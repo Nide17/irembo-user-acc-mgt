@@ -67,7 +67,6 @@ const VerificationPage = () => {
                 // SET ERROR msg
                 else {
                     setError("Unable to find previous verification!")
-                    console.log("Error occured: ", response)
                     setSuccessMsg('')
                     setLoading(false)
                     // CLEAR msg AFTER 3 SECONDS
@@ -81,7 +80,6 @@ const VerificationPage = () => {
 
             } catch (error) {
                 setError('An error occurred! Please try again.')
-                console.log('An error occurred! Please try again.', error)
                 // CLEAR msg AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
@@ -165,7 +163,6 @@ const VerificationPage = () => {
         catch (err) {
             setError('Something went wrong')
             setLoading(false)
-            console.log(err)
             return err
         }
     }

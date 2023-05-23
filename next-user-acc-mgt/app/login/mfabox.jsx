@@ -35,14 +35,10 @@ const MfaBox = ({ email, password, userId, jwtToken, setIsAuthenticated }) => {
             setLoadingMfa(true)
 
             // ATTEMPT TO CHECK OTP CODE
-            console.log("Verify 2FA: ", email, password, userId, twoFactorToken, jwtToken)
             const Verify2FAresponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-two-fa`, { email, password, userId, twoFactorToken }, { headers: { 'x-auth-token': jwtToken } })
-
-            console.log("\nResponse:\n", Verify2FAresponse)
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
             if (Verify2FAresponse && Verify2FAresponse.data) {
-                console.log(Verify2FAresponse.data)
 
                 // SAVE TOKEN AND USER DATA TO LOCAL STORAGE
                 localStorage.setItem('token', Verify2FAresponse.data.token)
@@ -60,11 +56,8 @@ const MfaBox = ({ email, password, userId, jwtToken, setIsAuthenticated }) => {
             }
 
             else {
-                console.log(Verify2FAresponse)
                 setError('An error occurred. Please try again.')
             }
-
-            console.log("Done!")
 
             // SET LOADING TO FALSE
             setLoadingMfa(false)
@@ -73,7 +66,6 @@ const MfaBox = ({ email, password, userId, jwtToken, setIsAuthenticated }) => {
             setTwoFactorToken('')
 
         } catch (error) {
-            console.log(error)
             setError('An error occurred. Please try again.')
         }
     }

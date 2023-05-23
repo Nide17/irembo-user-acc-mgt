@@ -78,7 +78,6 @@ const ProfilePhotoPage = () => {
             // SET ERROR MESSAGE
             else {
                 setError("Error occured: ", response.data.msg)
-                console.log(response.data.msg)
             }
 
             // SET LOADING TO FALSE

@@ -109,7 +109,6 @@ const VerificationPage = () => {
 
     return (
         <div className='flex flex-col items-center justify-center mt-24'>
-            {console.log("Verifications: ", vers)}
 
             <div className="flex flex-col items-center justify-center w-11/12 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-99 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
                 <h1 className="text-3xl text-white font-bold my-8">Verify users</h1>

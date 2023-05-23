@@ -77,8 +77,6 @@ const DashboardPage = () => {
                     headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
                 })
 
-                console.log("Verification status: \n", response)
-
                 // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
                 response.data && setVeriStatus(response.data.status)
 
@@ -110,7 +108,7 @@ const DashboardPage = () => {
 
     // IF NOT AUTHENTICATED, DISPLAY MESSAGE
     if (!isAuthenticated) {
-        return <p>Please log in to access the dashboard. {console.log("Not authenticated")}</p>
+        return <p>Please log in to access the dashboard </p>
     }
 
     // IF AUTHENTICATED, DISPLAY DASHBOARD
@@ -133,7 +131,6 @@ const DashboardPage = () => {
                             </small>
                         </div>
 
-                        {console.log('Profile: ', profile, 'User: ', user, 'role: ', role)}
                         {
                             role && role !== 2 ?
                                 <div className="w-8 h-8 sm:w-8 sm:h-6 rounded-full overflow-hidden shadow-md border-2 border-gray-200 mx-auto my-2 sm:mx-4">

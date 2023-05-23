@@ -57,12 +57,8 @@ const LoginPage = () => {
             // ATTEMPT TO LOGIN
             const loginResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login`, { email, password })
 
-            console.log(loginResponse)
-
             // SET SUCCESS MESSAGE AND SHOW MFA BOX IF MFA IS ENABLED
             if (loginResponse && loginResponse.data && loginResponse.data.token && loginResponse.data.user) {
-
-                console.log(loginResponse.data)
 
                 // CHECK IF USER HAS MFA ENABLED
                 const mfa = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${loginResponse.data.user.id}`, { headers: { 'x-auth-token': loginResponse.data.token } })
@@ -72,8 +68,6 @@ const LoginPage = () => {
 
                     // SEND EMAIL TO USER WITH OTP CODE FOR MFA VERIFICATION
                     const sendOtp = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/two-fa`, { email, password }, { headers: { 'x-auth-token': loginResponse.data.token } })
-
-                    console.log(sendOtp.data)
 
                     // SET USER ID
                     setUserId(loginResponse.data.user.id)
@@ -98,8 +92,6 @@ const LoginPage = () => {
 
                 // IF MFA IS NOT ENABLED, REDIRECT TO DASHBOARD
                 else {
-                    console.log('MFA is not enabled. Redirecting to dashboard.')
-
                     // STORE TOKEN AND USER DATA IN LOCAL STORAGE FOR USE IN OTHER PAGES
                     localStorage.setItem('token', loginResponse.data.token)
                     localStorage.setItem('user', JSON.stringify(loginResponse.data.user))
@@ -118,13 +110,11 @@ const LoginPage = () => {
             // IF LOGIN FAILED, SHOW ERROR MESSAGE
             else  { 
                 setError("Error occured: ", loginResponse.data.msg)
-                console.log("Error occured: ", loginResponse.data.msg)
             }
             // SET LOADING TO FALSE
             setLoadingLogin(false)
 
         } catch (error) {
-            console.log("error: ", error.response.data.error.msg)
             setError(error.response.data.error.msg)
         }
     }

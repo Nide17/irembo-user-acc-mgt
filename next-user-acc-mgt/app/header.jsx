@@ -139,7 +139,6 @@ const Header = () => {
                             token={token}
                             isAuth={isAuth}
                         />}
-                    {console.log('token: ', token, 'isAuth: ', isAuth)}
                 </div>
             </nav>
         </header>

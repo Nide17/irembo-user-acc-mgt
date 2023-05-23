@@ -11,7 +11,15 @@ const s3Config = new AWS.S3({
 // GET http://localhost:5003/accvers - get all accvers
 const getAllAccVers = async (req, res) => {
     try {
-        const accvers = await AccountVerification.findAll()
+
+        // RETURN ALL, SORT BY STATUS DESCENDING AND CREATEDAT ASCENDING
+        const accvers = await AccountVerification.findAll({
+            order: [
+                ['status', 'ASC'],
+                ['createdAt', 'ASC']
+            ]
+        })
+
         res.json(accvers)
     } catch (error) {
         res.status(500).json({

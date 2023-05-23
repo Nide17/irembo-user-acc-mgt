@@ -25,7 +25,7 @@ const forgotPassword = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
+        const user = await axios.get(`${process.USER_SERVICE}/users/email/${email}`)
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -116,7 +116,7 @@ const resetPassword = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt)
 
         // UPDATE PASSWORD
-        const updatedUser = await axios.put(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${resetTokenExists.userId}`, {
+        const updatedUser = await axios.put(`${process.env.USER_SERVICE}/users/${resetTokenExists.userId}`, {
             password: hashedPassword
         })
 
@@ -139,7 +139,7 @@ const changePassword = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${userId}`, {
+        const user = await axios.get(`${process.USER_SERVICE}/users/${userId}`, {
             headers: {
                 'Content-Type': req.headers['content-type'],
                 'x-auth-token': req.headers['x-auth-token']
@@ -173,7 +173,7 @@ const changePassword = async (req, res) => {
         }
 
         // UPDATE PASSWORD
-        const updatedUser = await axios.put(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/${req.user.id}`, { password: hashedPassword }, {
+        const updatedUser = await axios.put(`${process.env.USER_SERVICE}/users/${req.user.id}`, { password: hashedPassword }, {
             headers: {
                 'x-auth-token': req.headers['x-auth-token'],
             }

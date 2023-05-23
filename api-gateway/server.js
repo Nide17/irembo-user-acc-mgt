@@ -5,7 +5,7 @@ const app = express()
 const axios = require('axios')
 
 require('dotenv').config()
-const PORT = process.env.GATEWAY_PORT || 5000
+const PORT = process.env.GATEWAY || 5000
 
 // MIDDLEWARES
 app.use(cors()) // ALLOW OTHER DOMAINS TO ACCESS THIS SERVER
@@ -19,7 +19,7 @@ app.use('/users', (req, res) => {
     // REDIRECT ALL REQUESTS TO /users (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
+        url: `${process.env.USER_SERVICE}${req.originalUrl}`,
 
         // IF REQUEST BODY CONTAINS FILE, SEND FILE INSTEAD OF JSON DATA
         data: req.file ? req.file : req.body,
@@ -46,7 +46,7 @@ app.use('/profiles', (req, res) => {
     // REDIRECT ALL REQUESTS TO /profiles (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
+        url: `${process.env.USER_SERVICE}${req.originalUrl}`,
         data: req.file ? req.file : req.body,
         headers: {
             'x-auth-token': req.headers['x-auth-token'],
@@ -69,7 +69,7 @@ app.use('/settings', (req, res) => {
     // REDIRECT ALL REQUESTS TO /settings (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
+        url: `${process.env.USER_SERVICE}${req.originalUrl}`,
         data: req.body,
         headers: {
             'Content-Type': req.headers['content-type'],
@@ -92,7 +92,7 @@ app.use('/roles', (req, res) => {
     // REDIRECT ALL REQUESTS TO /roles (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}${req.originalUrl}`,
+        url: `${process.env.USER_SERVICE}${req.originalUrl}`,
         data: req.body,
         headers: {
             'Content-Type': req.headers['content-type'],
@@ -115,7 +115,7 @@ app.use('/auth', (req, res) => {
     // REDIRECT ALL REQUESTS TO /auth (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.AUTH_SERVICE_PORT}${req.originalUrl}`,
+        url: `${process.env.AUTH_SERVICE}${req.originalUrl}`,
         data: req.body,
         headers: {
             'Content-Type': req.headers['content-type'],
@@ -139,7 +139,7 @@ app.use('/accvers', (req, res) => {
     // REDIRECT ALL REQUESTS TO /accvers (USING AXIOS)
     axios({
         method: req.method,
-        url: `${process.env.APP_HOST}:${process.env.VERIFICATION_SERVICE_PORT}${req.originalUrl}`,
+        url: `${process.env.VERIFICATION_SERVICE}${req.originalUrl}`,
         data: req.body,
         headers: {
             'Content-Type': req.headers['content-type'],

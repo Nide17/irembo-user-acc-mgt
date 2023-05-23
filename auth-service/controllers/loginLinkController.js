@@ -24,7 +24,7 @@ const loginLink = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`, {})
+        const user = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`, {})
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -61,7 +61,7 @@ const loginLink = async (req, res) => {
             html: `
                 <h1>Login Link</h1>
                 <p>Click on the link below to login</p>
-                <a href="${process.env.APP_HOST}:${process.env.CLIENT_SERVICE_PORT}/auth/link/${loginToken}">Login Link</a>
+                <a href="${process.env.CLIENT_SERVICE_PORT}/auth/link/${loginToken}">Login Link</a>
                 \nIf you didn't request a login link, please ignore this email!`
         }
 
@@ -124,7 +124,7 @@ const verifyLink = async (req, res) => {
         }
 
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/link/${tokenExists.userId}`)
+        const user = await axios.get(`${process.env.USER_SERVICE}/users/link/${tokenExists.userId}`)
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -138,7 +138,7 @@ const verifyLink = async (req, res) => {
         }, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h'
         })
-        
+
         // RETURN JWT TOKEN
         res.status(200).json({
             token: jwtToken,

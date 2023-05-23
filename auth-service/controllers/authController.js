@@ -25,7 +25,7 @@ const loginUser = async (req, res) => {
     // TRYING TO GET USER
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const response = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
+        const response = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
 
         // IF USER NOT FOUND, RETURN ERROR
         if (!response.data) {

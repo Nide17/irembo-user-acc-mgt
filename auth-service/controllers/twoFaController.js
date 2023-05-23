@@ -26,7 +26,7 @@ const twoFactorAuth = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
+        const user = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
 
         // CHECK IF USER EXISTS
         if (!user) {
@@ -43,7 +43,7 @@ const twoFactorAuth = async (req, res) => {
 
         // GENERATE 2FA TOKEN
         const twoFactorToken = generateOTP()
-        
+
         // SAVE 2FA TOKEN AND EXPIRY IN DATABASE
         const savedOTPcode = await OTPcode.create({
             otpCode: twoFactorToken,
@@ -94,7 +94,7 @@ const verifyTwoFactorAuth = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.APP_HOST}:${process.env.USER_SERVICE_PORT}/users/email/${email}`)
+        const user = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
 
         // CHECK IF USER EXISTS
         if (!user) {

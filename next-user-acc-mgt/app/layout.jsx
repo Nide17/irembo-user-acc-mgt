@@ -1,11 +1,10 @@
-import useSWR from 'swr'
 import './globals.css'
 
 // TAILWIND CSS
 import 'tailwindcss/tailwind.css'
 
 // THE HEADER NAVIGATION
-import Header from './Header'
+import Header from './header'
 
 export const metadata = {
   title: 'User Account Management App',

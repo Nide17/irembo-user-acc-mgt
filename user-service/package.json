@@ -10,6 +10,13 @@
   },
   "author": "Parmenide",
   "license": "ISC",
+  "os": [
+    "darwin",
+    "linux",
+    "win32",
+    "win64"
+  ],
+  "arch": "any",
   "dependencies": {
     "aws-sdk": "^2.946.0",
     "bcryptjs": "^2.4.3",

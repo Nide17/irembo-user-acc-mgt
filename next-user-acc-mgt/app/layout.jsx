@@ -24,7 +24,6 @@ export default function RootLayout({ children }) {
     event.stopImmediatePropagation()
   })
 `
-
   // RETURN THE LAYOUT
   return (
     <html lang="en">

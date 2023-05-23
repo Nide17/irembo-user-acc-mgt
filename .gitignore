@@ -28,3 +28,6 @@ lerna-debug.log*
 */docker*
 *copy*
 *.next
+
+# Local Netlify folder
+.netlify

@@ -61,8 +61,6 @@ const getAccVerByUserId = async (req, res) => {
 // PUT http://localhost:5003/accvers/user/:userId - update accver by userId
 const updateAccVer = async (req, res) => {
 
-    console.log("\n\nobject update\n\n", req.body)
-
     // DESTRUCTURE THE REQUEST BODY
     const { firstName, lastName, phone, documentType, documentNumber } = req.body
     const img_file = req.file
@@ -91,7 +89,6 @@ const updateAccVer = async (req, res) => {
         // IF VERIFICATION NOT EXISTS, CREATE VERIFICATION
         else if (!verific && img_file) {
 
-            console.log("object create\n\n", req.body)
             // CREATE NEW VERIFICATION
             const newVer = await AccountVerification.create({
                 userId: req.params.userId,

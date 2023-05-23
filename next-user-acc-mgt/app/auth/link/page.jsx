@@ -57,7 +57,7 @@ const LoginLinkPage = () => {
                 <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-8">
                     <Link href="/" className='p-1 font-bold'>
                         <span className='block text-4xl text-blue-100 leading-8'>Login Link</span>
-                        <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Manage your data</span>
+                        <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Sign in with your email only</span>
                     </Link>
                 </div>
 

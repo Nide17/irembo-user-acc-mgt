@@ -57,9 +57,8 @@ const LoginPage = () => {
             // ATTEMPT TO LOGIN
             const loginResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login`, { email, password })
 
-            // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD AFTER 2 SECONDS IF LOGIN IS SUCCESSFUL
+            // SET SUCCESS MESSAGE AND SHOW MFA BOX IF MFA IS ENABLED
             if (loginResponse && loginResponse.data && loginResponse.data.token && loginResponse.data.user) {
-                setSuccess(true)
 
                 console.log(loginResponse.data)
 
@@ -82,7 +81,16 @@ const LoginPage = () => {
 
                     // SHOW MFA BOX IF OTP TO CONTINUE
                     if (sendOtp && sendOtp.data) {
+
+                        // SET SUCCESS MESSAGE
+                        setSuccess(true)
+
+                        // SET LOADING TO FALSE
+                        setLoadingLogin(false)
+
+                        // SHOW MFA BOX
                         setShowMfaBox(true)
+
                     }
                 }
 
@@ -126,7 +134,7 @@ const LoginPage = () => {
                         <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-4">
                             <Link href="/" className='p-1 font-bold'>
                                 <span className='block text-4xl text-blue-100 leading-8'>Login</span>
-                                <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Manage your data</span>
+                                <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Sign in to manage your account</span>
                             </Link>
                         </div>
 

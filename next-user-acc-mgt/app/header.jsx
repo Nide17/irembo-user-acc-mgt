@@ -1,14 +1,10 @@
 "use client"
 import { useState, useEffect } from 'react'
 import ProfilePic from './utils/profilePic'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import axios from 'axios'
 
 const Header = () => {
-
-    // ROUTER
-    const router = useRouter()
 
     // STATE VARIABLES
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -70,7 +66,7 @@ const Header = () => {
         localStorage.removeItem('user')
 
         // REDIRECT TO LOGIN PAGE
-        router.push('/login')
+        window.location.href = '/login'
     }
 
     // TOGGLE MENU FUNCTION ON MOBILE 
@@ -81,13 +77,24 @@ const Header = () => {
     return (
         <header className='fixed top-0 left-0 w-full z-10 bg-slate-100 text-slate-900 text-16 drop-shadow-md'>
 
-            <nav className="py-1 px-3 flex items-center columns-3">
-                <div className="p-2 flex-none w-120 h-16 flex items-center justify-center text-center">
+            <nav className="py-1 px-3 flex flex-col md:flex-row items-center columns-1 sm:columns-3">
+
+                <div className="w-full sm:w-120 h-16 p-2 flex items-center justify-between text-center">
                     <Link href="#" className='p-1 font-bold'>
-                        <span className='block text-2xl text-blue-500 leading-6'>User Account Management App</span>
-                        <span className='block text-[10px] text-slate-800 underline underline-offset-4 leading-6'>Manage, be fruitful</span>
+                        <span className='hidden sm:block text-xl md:text-2xl text-blue-500 leading-6'>User Account Management App</span>
+                        <span className='block sm:hidden text-xl md:text-2xl text-blue-500 leading-6'>UAM App</span>
+                        <span className='block text-sm md:text-base text-slate-800 underline underline-offset-4 leading-6'>Manage, be fruitful</span>
                     </Link>
+
+                    <div className={`hamburger inline sm:hidden ml-auto ${isMenuOpen ? "w-4 h-[2rem]" : ""}`} onClick={toggleMenu}>
+                        <span className={`w-5 h-[2px] bg-slate-900 block ${isMenuOpen ? "hidden" : ""}`}></span>
+                        <span className={`sm:w-5 h-[2px] bg-slate-900 block my-1 ${isMenuOpen ? "w-0 h-0 font-mono text-3xl my-auto text-blue-500" : ""}`}>
+                            {isMenuOpen ? "X" : ""}
+                        </span>
+                        <span className={`w-5 h-[2px] bg-slate-900 block ${isMenuOpen ? "hidden" : ""}`}></span>
+                    </div>
                 </div>
+
                 <div className={`${isMenuOpen ? "" : "hidden"} sm:flex grow justify-center sm:justify-end top-20 sm:top-0 h-72 sm:h-auto fixed sm:static z-10 sm:z-1 mr-3 sm:mr-0  w-full sm:w-auto`}>
 
                     <ul className={`flex flex-col sm:flex-row justify-center sm:justify-end items-center w-9/12 sm:w-auto mx-auto sm:mr-0 bg-slate-100`}>
@@ -133,14 +140,6 @@ const Header = () => {
                             isAuth={isAuth}
                         />}
                     {console.log('token: ', token, 'isAuth: ', isAuth)}
-                </div>
-
-                <div className={`hamburger inline sm:hidden ml-auto ${isMenuOpen ? "w-4 h-[2rem]" : ""}`} onClick={toggleMenu}>
-                    <span className={`w-5 h-[2px] bg-slate-900 block ${isMenuOpen ? "hidden" : ""}`}></span>
-                    <span className={`sm:w-5 h-[2px] bg-slate-900 block my-1 ${isMenuOpen ? "w-0 h-0 font-mono text-3xl my-auto text-blue-500" : ""}`}>
-                        {isMenuOpen ? "X" : ""}
-                    </span>
-                    <span className={`w-5 h-[2px] bg-slate-900 block ${isMenuOpen ? "hidden" : ""}`}></span>
                 </div>
             </nav>
         </header>

@@ -12,8 +12,7 @@ const protectionMiddleware = (req, res, next) => {
         return res.status(401).json({
             success: false,
             msg: 'No token, authorizaton Denied',
-            code: 'NO_TOKEN',
-            error: error
+            code: 'NO_TOKEN'
         })
     }
 
@@ -28,7 +27,6 @@ const protectionMiddleware = (req, res, next) => {
                 success: false,
                 msg: 'Token verification failed, authorization denied',
                 code: 'TOKEN_VERIFICATION_FAILED',
-                error: error
             })
         }
 
@@ -42,8 +40,7 @@ const protectionMiddleware = (req, res, next) => {
         return res.status(400).json({
             success: false,
             msg: 'Session expired',
-            code: 'SESSION_EXPIRED',
-            error: error
+            code: 'SESSION_EXPIRED'
         })
     }
 };

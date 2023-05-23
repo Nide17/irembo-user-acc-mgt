@@ -31,10 +31,8 @@ app.use('/users', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            code: 'USERS_ACCESSS_ERROR',
-            msg: 'Failed to access users',
-            status: 500,
-            error: error
+            status: error.response.status,
+            error: error.response.data
         })
     })
 })
@@ -56,10 +54,8 @@ app.use('/profiles', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            code: 'PROFILES_ACCESS_ERROR',
-            msg: 'Profiles access failed',
-            status: 500,
-            error: error
+            status: error.response.status,
+            error: error.response.data
         })
     })
 })
@@ -81,10 +77,8 @@ app.use('/settings', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            code: 'SETTINGS_ACCESS_ERROR',
-            msg: 'Failed to access settings',
-            status: 500,
-            error: error
+            status: error.response.status,
+            error: error.response.data
         })
     })
 })
@@ -106,10 +100,8 @@ app.use('/roles', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            code: 'FAILED_ROLE_REQUEST',
-            msg: 'Failed role request',
-            status: 500,
-            error: error
+            status: error.response.status,
+            error: error.response.data
         })
     })
 })
@@ -132,10 +124,8 @@ app.use('/auth', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            code: 'UNAUTHORIZED',
-            msg: 'Not Authorized',
-            status: 500,
-            error: error
+            status: error.response.status,
+            error: error.response.data
         })
     })
 })
@@ -158,10 +148,8 @@ app.use('/accvers', (req, res) => {
 
     }).catch(error => {
         res.status(500).send({
-            code: 'FAILED_VERIFICATION_REQUEST',
-            msg: 'Unsuccessful verification request',
-            status: 500,
-            error: error
+            status: error.response.status,
+            error: error.response.data
         })
     })
 })

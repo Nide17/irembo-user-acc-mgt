@@ -47,7 +47,7 @@ const ProfilePic = ({ token, isAuth }) => {
     else {
         // RETURN THE PROFILE PIC
         return (
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden shadow-md border-2 border-gray-200 mx-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden shadow-md border-2 border-gray-200 mx-auto my-2 sm:mx-4">
                 <Link href="profile/profilePhoto" passHref>
                     <Image
                         src={profilePic ? profilePic : '/images/profile.jpg'}

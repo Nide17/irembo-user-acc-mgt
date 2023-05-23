@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import useAuth from '../utils/useauth'
 import Loading from '../utils/loading'
+import Image from 'next/image'
 
 const DashboardPage = () => {
 
@@ -14,12 +15,16 @@ const DashboardPage = () => {
     const [isMfa, setIsMfa] = useState(false)
     const [profile, setProfile] = useState({})
     const [error, setError] = useState('')
+    const displayName = profile && profile.firstName ? profile.firstName : JSON.parse(user) && JSON.parse(user).email
+    const [veriStatus, setVeriStatus] = useState('unverified')
+    const displayImage = veriStatus === 'verified' ? '/images/verified.png' : veriStatus === 'unverified' ? '/images/unverified.png' : '/images/pending.gif'
+    const displayText = veriStatus === 'verified' ? 'Verified account' : veriStatus === 'unverified' ? 'Unverified account' : 'Pending verification'
 
     // FETCH USER PROFILE AND SETTINGS ON PAGE LOAD
     useEffect(() => {
 
         // SET LOADING TO TRUE
-        setLoading(false)
+        setLoading(true)
 
         // GET USER PROFILE
         const getUserProfile = async () => {
@@ -48,7 +53,7 @@ const DashboardPage = () => {
             // REQUEST USING ID
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user) && JSON.parse(user).id}`, {
-                    headers: {  'x-auth-token': token, 'Content-Type': 'application/json' },
+                    headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
                 })
 
                 // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
@@ -60,8 +65,36 @@ const DashboardPage = () => {
                 setError(error.response.data.msg)
             }
         }
+
+        // GET VERIFICATION STATUS
+        const getVerificationStatus = async () => {
+
+            // REQUEST USING ID
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user) && JSON.parse(user).id}`, {
+                    headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
+                })
+
+                console.log("Verification status: \n", response)
+
+                // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
+                response.data && setVeriStatus(response.data.status)
+
+            } catch (error) {
+                // IF ERROR, SET THE SETTINGS STATE TO NULL
+                setVeriStatus('unverified')
+                setError(error.response.data.msg)
+            }
+        }
+
+        // CALL THE FUNCTIONS
         getUserProfile()
         getUserSettings()
+        getVerificationStatus()
+
+        // SET LOADING TO FALSE
+        setLoading(false)
+
     }, [token, user])
 
     // IF LOADING, DISPLAY LOADING COMPONENT
@@ -80,9 +113,35 @@ const DashboardPage = () => {
 
     // IF AUTHENTICATED, DISPLAY DASHBOARD
     return (
-        <div className='flex flex-col items-center justify-center my-32'>
-            <div className="flex items-center justify-center">
-                <div className="flex flex-col items-center justify-center w-5/6 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
+        <div className='flex flex-col items-center justify-center mt-24'>
+
+            {/* VERIFIED ACCOUNT - Mark the account as verified - using badges (Twitter as an example) - NAME IF ANY, EMAIL OTHERWISE THEN ICON */}
+            {profile && profile &&
+
+                <div className="flex items-center justify-center w-full h-min p-3 mb-4 bg-slate-200 rounded-sm sm:hover:scale-90 sm:hover:bg-blue-200 transition duration-300 ease-in-out shadow-lg shadow-white">
+                    <div className="flex flex-row ml-auto">
+
+                        {/* <div className="flex flex-col items-center justify-right w-full ml-auto"> */}
+                        <div className="flex flex-col items-center justify-center w-full">
+                            <p className='mb-0 font-bold'>{displayName && displayName}</p>
+                            <small className={`${(veriStatus === 'verified') ? 'text-green-500' : (veriStatus === 'unverified') ? 'text-red-500' : 'text-yellow-500'} text-xs`}>{displayText}</small>
+                        </div>
+
+                        {console.log('Profile: ', profile, 'User: ', user)}
+                        <div className="w-8 h-8 sm:w-8 sm:h-6 rounded-full overflow-hidden shadow-md border-2 border-gray-200 mx-auto my-2 sm:mx-4">
+                            <Link href="profile/profilePhoto" passHref>
+                                <Image
+                                    src={displayImage && displayImage}
+                                    alt="Profile Image"
+                                    width={34}
+                                    height={34} />
+                            </Link>
+                        </div>
+                    </div>
+                </div>}
+
+            <div className="flex items-center justify-center my-24">
+                <div className="flex flex-col items-center justify-center w-11/12 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
                     <h1 className="text-3xl text-white font-bold mb-8">Dashboard</h1>
 
                     {!isMfa && // IF MFA IS NOT ENABLED, DISPLAY TOAST
@@ -113,12 +172,12 @@ const DashboardPage = () => {
             </div>
 
             {/* USER DETAILS */}
-            <div className="flex flex-col items-center justify-center w-5/6 sm:w-4/5 h-min p-4 sm:p-24 bg-blue-400 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white text-left mt-16">
+            <div className="flex flex-col items-center justify-center w-11/12 sm:w-4/5 h-min p-4 sm:p-24 bg-blue-400 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white text-left mt-16">
                 <h1 className="text-3xl text-white font-bold mb-8">User Details</h1>
                 {
                     Object.keys(profile).length > 0 && Object.keys(profile).map((key, index) => {
                         return (
-                            <div className="flex flex-row items-center w-full h-1/3 text-left text-sm sm:text-3xl" key={index}>
+                            <div className="flex flex-row items-center w-5/6 h-1/3 text-left text-xs sm:text-3xl" key={index}>
                                 <span className="text-xl text-white font-bold mr-2 overflow-ellipsis">{key}:</span>
                                 <span className="text-xl text-white font-bold overflow-ellipsis">{profile[key]}</span>
                             </div>

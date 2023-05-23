@@ -5,6 +5,7 @@ import axios from 'axios'
 import useAuth from '../utils/useauth'
 import Loading from '../utils/loading'
 import Image from 'next/image'
+import DashboardContent from './content'
 
 const DashboardPage = () => {
 
@@ -17,8 +18,9 @@ const DashboardPage = () => {
     const [error, setError] = useState('')
     const displayName = profile && profile.firstName ? profile.firstName : JSON.parse(user) && JSON.parse(user).email
     const [veriStatus, setVeriStatus] = useState('unverified')
-    const displayImage = veriStatus === 'verified' ? '/images/verified.png' : veriStatus === 'unverified' ? '/images/unverified.png' : '/images/pending.gif'
+    const displayIcon = veriStatus === 'verified' ? '/images/verified.png' : veriStatus === 'pending' ? '/images/pending.gif' : '/images/verified.png'
     const displayText = veriStatus === 'verified' ? 'Verified account' : veriStatus === 'unverified' ? 'Unverified account' : 'Pending verification'
+    const role = user && JSON.parse(user).roleId
 
     // FETCH USER PROFILE AND SETTINGS ON PAGE LOAD
     useEffect(() => {
@@ -124,67 +126,40 @@ const DashboardPage = () => {
                         {/* <div className="flex flex-col items-center justify-right w-full ml-auto"> */}
                         <div className="flex flex-col items-center justify-center w-full">
                             <p className='mb-0 font-bold'>{displayName && displayName}</p>
-                            <small className={`${(veriStatus === 'verified') ? 'text-green-500' : (veriStatus === 'unverified') ? 'text-red-500' : 'text-yellow-500'} text-xs`}>{displayText}</small>
+                            <small className={`
+                            ${(veriStatus === 'verified') ? 'text-green-500' : (veriStatus === 'unverified') ? 'text-red-500' : 'text-yellow-500'} 
+                            text-xs ${role === 2 ? 'hidden' : "inline"}`}>
+                                {displayText}
+                            </small>
                         </div>
 
-                        {console.log('Profile: ', profile, 'User: ', user)}
-                        <div className="w-8 h-8 sm:w-8 sm:h-6 rounded-full overflow-hidden shadow-md border-2 border-gray-200 mx-auto my-2 sm:mx-4">
-                            <Link href="profile/profilePhoto" passHref>
-                                <Image
-                                    src={displayImage && displayImage}
-                                    alt="Profile Image"
-                                    width={34}
-                                    height={34} />
-                            </Link>
-                        </div>
+                        {console.log('Profile: ', profile, 'User: ', user, 'role: ', role)}
+                        {
+                            role && role !== 2 ?
+                                <div className="w-8 h-8 sm:w-8 sm:h-6 rounded-full overflow-hidden shadow-md border-2 border-gray-200 mx-auto my-2 sm:mx-4">
+                                    <Link href="profile/profilePhoto" passHref>
+                                        <Image
+                                            src={displayIcon && displayIcon}
+                                            alt="Profile Image"
+                                            width={34}
+                                            height={34} />
+                                    </Link>
+                                </div> :
+                                <div className="flex items-center justify-center w-full h-full mx-4">
+                                    {/* LINK TO VERIFY OTHERS AS ADMIN */}
+                                    <Link href="dashboard/verify" passHref>
+                                        <span className="flex items-center justify-center w-full h-full text-sm font-bold cursor-pointer bg-green-500 hover:bg-green-300 text-white py-2 px-4 rounded transition duration-300 ease-in-out">
+                                            Verify users
+                                        </span>
+                                    </Link>
+                                </div>
+
+                        }
+
                     </div>
                 </div>}
 
-            <div className="flex items-center justify-center my-24">
-                <div className="flex flex-col items-center justify-center w-11/12 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
-                    <h1 className="text-3xl text-white font-bold mb-8">Dashboard</h1>
-
-                    {!isMfa && // IF MFA IS NOT ENABLED, DISPLAY TOAST
-                        <div id="toast-danger" className="flex items-center text-center w-full max-w-xs py-2 mb-4 text-gray-200 bg-white rounded-lg shadow dark:text-gray-200 dark:bg-red-700" role="alert">
-                            <div className="w-full ml-3 text-sm font-normal text-center">Please edit settings to allow MFA to secure your account!</div>
-                        </div>
-                    }
-
-                    <div className="flex flex-wrap items-center justify-center w-5/6 sm:w-4/5 h-2/3">
-                        <Link href="/profile/edit" className="w-1/2 flex items-center justify-center p-2">
-                            <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Edit Profile</span>
-                        </Link>
-                        <Link href="/verification" className="w-1/2 flex items-center justify-center p-2">
-                            <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Verify Account</span>
-                        </Link>
-                        <Link href="/auth/change" className="w-1/2 flex items-center justify-center p-2">
-                            <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Change Password</span>
-                        </Link>
-                        <Link href="/profile/settings" className="w-1/2 flex items-center justify-center p-2">
-                            <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Edit Settings
-                            </span>
-                        </Link>
-                        <Link href="profile/profilePhoto" className="w-1/2 flex items-center justify-center p-2">
-                            <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Change Profile Photo</span>
-                        </Link>
-                    </div>
-                </div>
-            </div>
-
-            {/* USER DETAILS */}
-            <div className="flex flex-col items-center justify-center w-11/12 sm:w-4/5 h-min p-4 sm:p-24 bg-blue-400 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white text-left mt-16">
-                <h1 className="text-3xl text-white font-bold mb-8">User Details</h1>
-                {
-                    Object.keys(profile).length > 0 && Object.keys(profile).map((key, index) => {
-                        return (
-                            <div className="flex flex-row items-center w-5/6 h-1/3 text-left text-xs sm:text-3xl" key={index}>
-                                <span className="text-xl text-white font-bold mr-2 overflow-ellipsis">{key}:</span>
-                                <span className="text-xl text-white font-bold overflow-ellipsis">{profile[key]}</span>
-                            </div>
-                        )
-                    })
-                }
-            </div>
+            <DashboardContent isMfa={isMfa} profile={profile} />
         </div>)
 }
 

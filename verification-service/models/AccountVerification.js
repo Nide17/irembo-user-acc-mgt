@@ -17,6 +17,21 @@ const AccountVerification = sequelize.define('AccountVerification', {
         },
         unique: true
     },
+    firstName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        // validate: {
+        //     isAlpha: true
+        // }
+    },
+    lastName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     documentType: {
         type: DataTypes.STRING,
         allowNull: true,

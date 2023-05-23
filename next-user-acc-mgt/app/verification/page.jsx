@@ -15,6 +15,9 @@ const VerificationPage = () => {
     const { isAuthenticated } = useAuth()
 
     // STATE VARIABLES
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
+    const [phone, setPhone] = useState('')
     const [documentType, setDocumentType] = useState('') // passport, nid, drivers_license, laissez_passer
     const [documentNumber, setDocumentNumber] = useState('')
     const [documentImage, setDocumentImage] = useState('')
@@ -46,6 +49,9 @@ const VerificationPage = () => {
 
                 // SET USER VERIFICATION
                 if (response && response.data) {
+                    setFirstName(response.data.firstName || '')
+                    setLastName(response.data.lastName || '')
+                    setPhone(response.data.phone || '')
                     setDocumentType(response.data.documentType || '')
                     setDocumentNumber(response.data.documentNumber || '')
                     setDocumentImage(response.data.documentImage || '')
@@ -60,7 +66,8 @@ const VerificationPage = () => {
 
                 // SET ERROR msg
                 else {
-                    setError("Error occured: ", response.data.msg)
+                    setError("Unable to find previous verification!")
+                    console.log("Error occured: ", response)
                     setSuccessMsg('')
                     setLoading(false)
                     // CLEAR msg AFTER 3 SECONDS
@@ -74,6 +81,7 @@ const VerificationPage = () => {
 
             } catch (error) {
                 setError('An error occurred! Please try again.')
+                console.log('An error occurred! Please try again.', error)
                 // CLEAR msg AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
@@ -88,6 +96,18 @@ const VerificationPage = () => {
     // HANDLE FORM SUBMISSION
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        // CHECK IF FIRST NAME, LAST NAME, PHONE, DOCUMENT TYPE, DOCUMENT NUMBER, DOCUMENT IMAGE ARE FILLED
+        if (!firstName || !lastName || !phone || !documentType || !documentNumber || !documentImage) {
+            setError('Please fill in all fields')
+            return error
+        }
+
+        // VALIDATE PHONE NUMBER
+        if (phone.length !== 10 || isNaN(phone)) {
+            setError('Phone number must be 10 digits')
+            return error
+        }
 
         // IF DOCUMENT TYPE IS PASSPORT OR LAISSEZ PASSER DOCUMENT NUMBER MUST BE 8 CHARACTERS
         if ((documentType === 'passport' || documentType === 'laissez_passer') && documentNumber.length !== 8) {
@@ -112,6 +132,9 @@ const VerificationPage = () => {
 
             // CREATE FORM DATA OBJECT TO SEND TO SERVER
             const formData = new FormData()
+            formData.append('firstName', firstName)
+            formData.append('lastName', lastName)
+            formData.append('phone', phone)
             formData.append('documentImage', documentImage)
             formData.append('documentType', documentType)
             formData.append('documentNumber', documentNumber)
@@ -141,6 +164,8 @@ const VerificationPage = () => {
         }
         catch (err) {
             setError('Something went wrong')
+            setLoading(false)
+            console.log(err)
             return err
         }
     }
@@ -189,6 +214,33 @@ const VerificationPage = () => {
                     </div>
                 )}
 
+                <input
+                    className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
+                    type="text"
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                />
+
+                <input
+                    className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
+                    type="text"
+                    placeholder="Last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                />
+
+                <input
+                    className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
+                    type="text"
+                    placeholder="Phone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                />
+
                 <select
                     className="w-5/6 sm:w-2/3 h-9 my-3 text-center sm:my-2 px-2 rounded-lg"
                     id="documentType"
@@ -217,6 +269,7 @@ const VerificationPage = () => {
                     type="file"
                     name="documentImage"
                     id="documentImage"
+                    accept="image/*"
                     onChange={(e) => setDocumentImage(e.target.files[0])}
                 />
 

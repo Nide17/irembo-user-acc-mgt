@@ -57,6 +57,8 @@ const LoginPage = () => {
             // ATTEMPT TO LOGIN
             const loginResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login`, { email, password })
 
+            console.log(loginResponse)
+
             // SET SUCCESS MESSAGE AND SHOW MFA BOX IF MFA IS ENABLED
             if (loginResponse && loginResponse.data && loginResponse.data.token && loginResponse.data.user) {
 
@@ -113,13 +115,17 @@ const LoginPage = () => {
                 }
             }
 
-            else setError("Error occured: ", loginResponse.data.msg)
-
+            // IF LOGIN FAILED, SHOW ERROR MESSAGE
+            else  { 
+                setError("Error occured: ", loginResponse.data.msg)
+                console.log("Error occured: ", loginResponse.data.msg)
+            }
             // SET LOADING TO FALSE
             setLoadingLogin(false)
 
         } catch (error) {
-            setError(error.loginResponse.data.msg)
+            console.log("error: ", error.response.data.error.msg)
+            setError(error.response.data.error.msg)
         }
     }
 

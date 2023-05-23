@@ -53,12 +53,17 @@ const getAccVerByUserId = async (req, res) => {
 // PUT http://localhost:5003/accvers/user/:userId - update accver by userId
 const updateAccVer = async (req, res) => {
 
+    console.log("\n\nobject update\n\n", req.body)
+
     // DESTRUCTURE THE REQUEST BODY
-    const { documentType, documentNumber } = req.body
+    const { firstName, lastName, phone, documentType, documentNumber } = req.body
     const img_file = req.file
 
     // VALIDATE THE REQUEST BODY
-    if (!documentType || !documentNumber) return res.status(400).json({ msg: 'Please enter all required fields!' })
+    if (!firstName || !lastName || !phone || !documentType || !documentNumber) return res.status(400).json({ msg: 'Please enter all required fields!' })
+
+    // VALIDATE THE PHONE NUMBER - 10 DIGITS, ONLY NUMBERS
+    if (phone.length !== 10 || isNaN(phone)) return res.status(400).json({ msg: 'Please enter a valid phone number!' })
 
     // VALIDATE THE FILE
     if (!img_file) {
@@ -77,8 +82,14 @@ const updateAccVer = async (req, res) => {
 
         // IF VERIFICATION NOT EXISTS, CREATE VERIFICATION
         else if (!verific && img_file) {
+
+            console.log("object create\n\n", req.body)
+            // CREATE NEW VERIFICATION
             const newVer = await AccountVerification.create({
                 userId: req.params.userId,
+                firstName,
+                lastName,
+                phone,
                 documentType,
                 documentNumber,
                 documentImage: img_file.location ? img_file.location : img_file.path,
@@ -88,10 +99,7 @@ const updateAccVer = async (req, res) => {
             if (!newVer) throw Error('Something went wrong while creating the verification!')
 
             // RETURN NEW VERIFICATION
-            res.status(200).json({
-                msg: 'Created successfully!',
-                verification: newVer
-            })
+            res.status(200).json(newVer)
         }
 
         // IF VERIFICATION EXISTS, UPDATE VERIFICATION
@@ -99,6 +107,9 @@ const updateAccVer = async (req, res) => {
             // IF CURRENT VERIFICATION PHOTO IS NULL AND NEW VERIFICATION PHOTO IS NOT NULL - UPLOAD NEW VERIFICATION PHOTO
             if (!verific.documentImage && img_file) {
                 const updatedVer = await AccountVerification.update({
+                    firstName,
+                    lastName,
+                    phone,
                     documentType,
                     documentNumber,
                     documentImage: img_file.location ? img_file.location : img_file.path,
@@ -113,10 +124,7 @@ const updateAccVer = async (req, res) => {
                 if (!updatedVer) throw Error('Something went wrong while updating the verification!')
 
                 // RETURN UPDATED VERIFICATION
-                res.status(200).json({
-                    msg: 'Updated successfully!',
-                    verification: updatedVer
-                })
+                res.status(200).json(updatedVer)
             }
 
             // IF CURRENT VERIFICATION PHOTO IS NOT NULL AND NEW VERIFICATION PHOTO IS NOT NULL - DELETE CURRENT VERIFICATION PHOTO AND UPLOAD NEW VERIFICATION PHOTO
@@ -133,6 +141,9 @@ const updateAccVer = async (req, res) => {
 
                 // UPLOAD NEW VERIFICATION PHOTO
                 const updatedVer = await AccountVerification.update({
+                    firstName,
+                    lastName,
+                    phone,
                     documentType,
                     documentNumber,
                     documentImage: img_file.location ? img_file.location : img_file.path,
@@ -147,10 +158,7 @@ const updateAccVer = async (req, res) => {
                 if (!updatedVer) throw Error('Something went wrong while updating the verification!')
 
                 // RETURN UPDATED VERIFICATION
-                res.status(200).json({
-                    msg: 'Verification updated successfully!',
-                    verification: updatedVer
-                })
+                res.status(200).json(updatedVer)
             }
 
             else {
@@ -161,6 +169,24 @@ const updateAccVer = async (req, res) => {
     } catch (err) {
         console.error('Error: ', err)
         res.status(400).json({ msg: err.msg })
+    }
+}
+
+// Private route - verify accver by id
+// PUT http://localhost:5003/accvers/verify/:id
+const verifyAccVer = async (req, res) => {
+    try {
+        const accver = await AccountVerification.update({
+            status: req.body.status
+        }, {
+            where: {
+                id: req.params.id
+            }
+        })
+        res.json(accver)
+    } catch (error) {
+        console.error('Error verifying accver by id', error)
+        res.status(500).json({ msg: 'Internal server error' })
     }
 }
 
@@ -184,5 +210,6 @@ module.exports = {
     getAccVerById,
     getAccVerByUserId,
     updateAccVer,
+    verifyAccVer,
     deleteAccVer
 }

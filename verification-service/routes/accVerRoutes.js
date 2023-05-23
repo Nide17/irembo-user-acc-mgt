@@ -22,6 +22,10 @@ router.get('/user/:userId', protectionMiddleware, accVerController.getAccVerByUs
 // PUT http://localhost:5003/accvers/user/:userId
 router.put('/user/:userId', protectionMiddleware, verificationUpload.single('documentImage'), accVerController.updateAccVer)
 
+// Private route - verify accver by id
+// PUT http://localhost:5003/accvers/verify/:id
+router.put('/verify/:id', protectionMiddleware, accVerController.verifyAccVer)
+
 // Private route - delete accver by id
 // DELETE http://localhost:5003/accvers/:id
 router.delete('/:id', protectionMiddleware, accVerController.deleteAccVer)

@@ -19,5 +19,8 @@
     "react-dom": "18.2.0",
     "supports-color": "^8.1.1",
     "tailwindcss": "3.3.2"
+  },
+  "devDependencies": {
+    "next": "13.4.2"
   }
 }

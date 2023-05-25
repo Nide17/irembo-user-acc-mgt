@@ -294,7 +294,7 @@ const updateUser = async (req, res) => {
         if (!user) {
             return res.json({
                 status: 400,
-                msg: 'Failed!'
+                msg: 'Failed to update user'
             })
         }
 

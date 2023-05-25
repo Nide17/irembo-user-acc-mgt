@@ -21,7 +21,7 @@ const useAuth = () => {
             // IF TOKEN IS PRESENT, CHECK IF IT IS VALID
             const checkToken = async () => {
                 try {
-                    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token }, {
+                    const tokenVerifyResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token }, {
                         headers: {
                             'x-auth-token': token,
                             'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ const useAuth = () => {
                     })
 
                     // IF TOKEN IS VALID, USER IS AUTHORIZED
-                    if (response && response.data) {
+                    if (tokenVerifyResponse && tokenVerifyResponse.data.status === 200) {
                         setIsAuthenticated(true)
                     }
 

@@ -21,7 +21,6 @@ const ProfilePic = ({ token, isAuth }) => {
                     },
                 })
 
-                console.log(photoResponse.data)
                 // IF SUCCESSFUL, SET PROFILE PIC, ELSE SET PROFILE PIC TO NULL
                 if (photoResponse && photoResponse.data.status === 200) {
                     setProfilePic(photoResponse.data.profile.profilePhoto)

@@ -37,8 +37,6 @@ const SettingsPage = () => {
                     }
                 })
 
-                console.log(settingsResponse.data)
-
                 // SET USER SETTINGS
                 if (settingsResponse.data.status === 200) {
                     setLoadingSettings(false)
@@ -160,7 +158,7 @@ const SettingsPage = () => {
 
             // SET ERROR MESSAGE
             else {
-                setError("Error occured: ", response.data.msg)
+                setError("Error occured: ", mfaResponse.data.msg)
                 setLoadingSettings(false)
 
                 // CLEAR MESSAGE AFTER 3 SECONDS

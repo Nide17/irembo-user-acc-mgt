@@ -71,7 +71,7 @@ const forgotPassword = async (req, res) => {
             html: `
                 <h1>Reset Password</h1>
                 <p>Click on the link below to reset your password</p>
-                <a href="${process.env.DOMAIN}/auth/reset/${resetToken}">Reset Password</a>
+                <a href="${process.env.CLIENT_SERVICE}/auth/reset/${resetToken}">Reset Password</a>
                 \nIf you didn't forget your password, please ignore this email!`
         }
 
@@ -104,7 +104,7 @@ const forgotPassword = async (req, res) => {
 }
 
 // RESET PASSWORD
-// PUT http://localhost:5001/reset-password - reset password
+// PUT http://localhost:5001/auth/reset-password - reset password
 const resetPassword = async (req, res) => {
 
     // DESTRUCTURE RESET TOKEN AND NEW PASSWORD
@@ -150,12 +150,13 @@ const resetPassword = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt)
 
         // UPDATE PASSWORD
-        const updatedUser = await axios.put(`${process.env.USER_SERVICE}/users/${resetTokenExists.userId}`, {
-            password: hashedPassword
+        const updUserResponse = await axios.put(`${process.env.USER_SERVICE}/users/${resetTokenExists.userId}`, {
+            password: hashedPassword,
+            resetToken
         })
 
         // CHECK IF USER UPDATED
-        if (!updatedUser.data) {
+        if (updUserResponse.data.status !== 200) {
             return res.json({
                 status: 400,
                 msg: 'Error updating password!'
@@ -163,7 +164,7 @@ const resetPassword = async (req, res) => {
         }
 
         // DELETE RESET TOKEN
-        await PswdReset.destroy({
+       await PswdReset.destroy({
             where: {
                 token: resetTokenDecrypted
             }
@@ -172,7 +173,7 @@ const resetPassword = async (req, res) => {
         // RETURN UPDATED USER
         return res.json({
             status: 200,
-            updatedUser: updatedUser.data
+            updatedUser: updUserResponse.data.user
         })
 
     } catch (error) {
@@ -203,8 +204,8 @@ const changePassword = async (req, res) => {
         // CHECK IF USER EXISTS
         if (userResponse.data.status !== 200) {
             return res.json({
-                status: 400,
-                msg: 'User does not exist!'
+                status: userResponse.response.status,
+                msg: userResponse.data.msg
             })
         }
 
@@ -265,7 +266,7 @@ const changePassword = async (req, res) => {
     } catch (error) {
         return res.json({
             status: 500,
-            msg: 'Internal server error',
+            msg: error.response.data.msg,
             error
         })
     }

@@ -55,7 +55,7 @@ const ProfilePhotoPage = () => {
             setLoadingProfilePhoto(true)
 
             // ATTEMPT TO UPLOAD PROFILE PHOTO
-            const photoResponse = await axios.put(`http://localhost:5002/profiles/${JSON.parse(user).id}/profilePhoto`, formData, {
+            const photoResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/${JSON.parse(user).id}/profilePhoto`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'x-auth-token': token
@@ -77,7 +77,7 @@ const ProfilePhotoPage = () => {
 
             // SET ERROR MESSAGE
             else {
-                setError("Error occured: ", response.data.msg)
+                setError("Error occured: ", photoResponse.data.msg)
             }
 
             // SET LOADING TO FALSE

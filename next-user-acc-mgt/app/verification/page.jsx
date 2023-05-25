@@ -40,7 +40,7 @@ const VerificationPage = () => {
                 setLoading(true)
 
                 // ATTEMPT TO FETCH USER VERIFICATION
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user).id}`, {
+                const existingResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user).id}`, {
                     headers: {
                         'x-auth-token': token,
                         'Content-Type': 'application/json'
@@ -48,13 +48,13 @@ const VerificationPage = () => {
                 })
 
                 // SET USER VERIFICATION
-                if (response && response.data) {
-                    setFirstName(response.data.firstName || '')
-                    setLastName(response.data.lastName || '')
-                    setPhone(response.data.phone || '')
-                    setDocumentType(response.data.documentType || '')
-                    setDocumentNumber(response.data.documentNumber || '')
-                    setDocumentImage(response.data.documentImage || '')
+                if (existingResponse && existingResponse.data.status === 200) {
+                    setFirstName(existingResponse.data.accver.firstName || '')
+                    setLastName(existingResponse.data.accver.lastName || '')
+                    setPhone(existingResponse.data.accver.phone || '')
+                    setDocumentType(existingResponse.data.accver.documentType || '')
+                    setDocumentNumber(existingResponse.data.accver.documentNumber || '')
+                    setDocumentImage(existingResponse.data.accver.documentImage || '')
                     setLoading(false)
                     setSuccessMsg('Data retrieved successfully')
 
@@ -138,14 +138,14 @@ const VerificationPage = () => {
             formData.append('documentNumber', documentNumber)
 
             // UPDATE DOCUMENT TYPE, DOCUMENT NUMBER, DOCUMENT IMAGE
-            const response = await axios.put(`http://localhost:5003/accvers/user/${JSON.parse(user).id}`, formData, {
+            const verResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user).id}`, formData, {
                 headers: {
                     'x-auth-token': token,
                     'Content-Type': 'multipart/form-data'
                 },
             })
 
-            if (response) {
+            if (verResponse && verResponse.data.status === 200) {
                 setLoading(false)
                 setSuccessMsg('Verification request successful')
 
@@ -156,7 +156,7 @@ const VerificationPage = () => {
             }
             else {
                 setLoading(false)
-                setError('Error occurred: ' + response.data.msg)
+                setError('Error occurred: ' + verResponse.data.msg)
                 return error
             }
         }
@@ -184,7 +184,7 @@ const VerificationPage = () => {
     // IF USER IS AUTHENTICATED, SHOW VERIFICATION PAGE
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
+            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white mt-20" onSubmit={handleSubmit}>
 
                 <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-4">
                     <Link href="/" className='p-1 font-bold'>

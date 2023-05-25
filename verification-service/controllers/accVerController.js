@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk')
 const AccountVerification = require('../models/AccountVerification')
+const axios = require('axios')
 
 // UTILS
 const sendEmailWithNodemailer = require('../utils/sendEmailWithNodemailer')
@@ -119,12 +120,20 @@ const updateAccVer = async (req, res) => {
     // DESTRUCTURE THE REQUEST BODY
     const { firstName, lastName, phone, documentType, documentNumber } = req.body
     const img_file = req.file
-
+    
     // VALIDATE THE REQUEST BODY
     if (!firstName || !lastName || !phone || !documentType || !documentNumber) {
+        const emptyFields = []
+
+        // PUSH ALL EMPTY FIELDS TO THE ARRAY AT ONCE
+        for (const [key, value] of Object.entries(req.body)) {
+            if (!value) {
+                emptyFields.push(key)
+            }
+        }
         return res.json({
             status: 400,
-            msg: 'Please enter all required fields!'
+            msg: `Please provide ${emptyFields.join(', ')}!`
         })
     }
 
@@ -141,7 +150,7 @@ const updateAccVer = async (req, res) => {
     if (!img_file) {
         return res.json({
             status: 400,
-            msg: 'Document image is required!1'
+            msg: 'Document image is required!'
         })
     }
 
@@ -156,7 +165,7 @@ const updateAccVer = async (req, res) => {
         if (!verific && !img_file) {
             return res.json({
                 status: 400,
-                msg: 'Document image is required!2'
+                msg: 'Document image is required!'
             })
         }
 

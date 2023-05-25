@@ -35,14 +35,14 @@ const MfaBox = ({ email, password, userId, jwtToken, setIsAuthenticated }) => {
             setLoadingMfa(true)
 
             // ATTEMPT TO CHECK OTP CODE
-            const Verify2FAresponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-two-fa`, { email, password, userId, twoFactorToken }, { headers: { 'x-auth-token': jwtToken } })
+            const verify2FAresponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-two-fa`, { email, password, userId, twoFactorToken }, { headers: { 'x-auth-token': jwtToken } })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (Verify2FAresponse && Verify2FAresponse.data) {
+            if (verify2FAresponse && verify2FAresponse.data.status === 200) {
 
                 // SAVE TOKEN AND USER DATA TO LOCAL STORAGE
-                localStorage.setItem('token', Verify2FAresponse.data.token)
-                localStorage.setItem('user', JSON.stringify(Verify2FAresponse.data.user))
+                localStorage.setItem('token', verify2FAresponse.data.token)
+                localStorage.setItem('user', JSON.stringify(verify2FAresponse.data.user))
 
                 // SET AUTHENTICATED TO TRUE
                 setIsAuthenticated(true)
@@ -72,9 +72,9 @@ const MfaBox = ({ email, password, userId, jwtToken, setIsAuthenticated }) => {
 
     return (
         <div className="flex items-center justify-center h-screen">
-            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 py-4 mt-20 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
+            <form className="flex flex-col items-center justify-center w-5/6 sm:w-full h-4/5 py-4 mt-20 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
 
-                <div className="flex-none w-120 h-16 flex items-center justify-center text-center p-4 my-4">
+                <div className="flex-none h-16 flex items-center justify-center text-center p-4 my-4">
                     <Link href="/" className='p-1 font-bold'>
                         <span className='block text-4xl text-blue-100 leading-6 my-2'>Provide OTP code</span>
                         <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Check your email for the code</span>

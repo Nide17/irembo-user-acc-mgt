@@ -28,10 +28,10 @@ const ForgetPage = () => {
             setLoadingForget(true)
 
             // ATTEMPT TO LOGIN
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/forgot-password`, { email })
+            const forgotResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/forgot-password`, { email })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response && response.data) {
+            if (forgotResponse && forgotResponse.data.status === 200) {
                 setSuccess(true)
             }
 

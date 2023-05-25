@@ -48,22 +48,20 @@ const RegisterPage = () => {
         try {
             setRegError('')
             setRegisterLoading(true)
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/users`, { email, password })
+            const usersResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/users`, { email, password })
 
-            if (response && response.data) {
+            if (usersResponse && usersResponse.data.status === 200) {
                 setRegSuccess(true)
                 setRegisterLoading(false)
 
                 // REDIRECT TO LOGIN PAGE AFTER 2 SECONDS
-                if (response) {
-                    setTimeout(() => {
-                        router.push('/login')
-                    }, 5000)
-                }
+                setTimeout(() => {
+                    router.push('/login')
+                }, 3000)
             }
             else {
                 setRegisterLoading(false)
-                setError("Error occured: ", response.data.msg)
+                setError("Error occured: ", usersResponse.data.msg)
             }
         }
         catch (err) {

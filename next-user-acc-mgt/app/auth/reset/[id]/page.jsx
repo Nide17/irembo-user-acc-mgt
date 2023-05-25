@@ -3,7 +3,7 @@ import Link from 'next/link'
 import axios from 'axios'
 import { useState } from 'react'
 import Loading from '../../../utils/loading'
-import { useParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 
 const ResetPage = () => {
     const [password, setPassword] = useState('')
@@ -13,8 +13,7 @@ const ResetPage = () => {
     const [loadingReset, setLoadingReset] = useState(false)
 
     // GET RESET TOKEN FROM URL
-    const router = useParams()
-    const resetToken = router.id
+    const resetToken = usePathname().split('/').pop()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -43,14 +42,25 @@ const ResetPage = () => {
             setLoadingReset(true)
 
             // ATTEMPT TO RESET PASSWORD
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/reset-password`, { resetToken, password })
+            const resetResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/reset-password`, { resetToken, password }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response && response.data) {
+            if (resetResponse && resetResponse.data.status === 200) {
                 setSuccess(true)
+
+                // REDIRECT TO LOGIN PAGE AFTER 5 SECONDS
+                setTimeout(() => {
+                    window.location.href = '/auth/login'
+                }, 5000)
             }
 
-            else setError("Error occured: ", response.data.msg)
+            else {
+                setError(`Error occured: ${resetResponse.data.msg}`)
+            }
 
             // SET LOADING TO FALSE
             setLoadingReset(false)
@@ -62,10 +72,7 @@ const ResetPage = () => {
         } catch (error) {
             // SET LOADING TO FALSE
             setLoadingReset(false)
-
-            // SET ERROR MESSAGE
-            const err = error.response.data.msg
-            setError(err)
+            setError('Something went wrong. Please try again.')
         }
     }
 

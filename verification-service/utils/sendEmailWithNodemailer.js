@@ -22,7 +22,7 @@ const sendEmailWithNodemailer = async (req, res, emailData) => {
         const sendMail = await transporter.sendMail(emailData)
 
         if (!sendMail) {
-            console.log('Cannot send email')
+            console.log('\n\nCannot send email\n\n')
             return false
         }
 
@@ -32,11 +32,8 @@ const sendEmailWithNodemailer = async (req, res, emailData) => {
         }
 
     } catch (error) {
-        return res.json({
-            status: 500,
-            msg: 'Internal server error',
-            error
-        })
+        console.log(error)
+        return false
     }
 }
 

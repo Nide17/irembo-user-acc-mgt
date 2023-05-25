@@ -1,16 +1,16 @@
 const express = require('express')
 const userController = require('../controllers/userController')
-const protectionMiddleware = require('../middlewares/protectionMiddleware')
+const userProtection = require('../middlewares/userProtection')
 const router = express.Router()
 require('dotenv').config()
 
 // Private route
 // GET http://localhost:5002/users/ - get all users
-router.get('/', protectionMiddleware([2]), userController.getAllUsers)
+router.get('/', userProtection([2]), userController.getAllUsers)
 
 // Private route
 // GET http://localhost:5002/users/:id - get user by id
-router.get('/:id', protectionMiddleware([2]), userController.getUserById)
+router.get('/:id', userProtection([1, 2, 3]), userController.getUserById)
 
 // Pubic route
 // GET http://localhost:5002/users/link/:id - get user by link and id
@@ -26,10 +26,10 @@ router.post('/', userController.createUser)
 
 // Private route
 // PUT http://localhost:5002/users/:id - update user by id
-router.put('/:id', protectionMiddleware([1, 2, 3]), userController.updateUser)
+router.put('/:id', userProtection([1, 2, 3]), userController.updateUser)
 
 // Private route
 // DELETE http://localhost:5002/users/:id - delete user by id
-router.delete('/:id', protectionMiddleware([2]), userController.deleteUser)
+router.delete('/:id', userProtection([2]), userController.deleteUser)
 
 module.exports = router

@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react'
 import Loading from '../../utils/loading'
 import useAuth from '../../utils/useauth'
 
-
 const VerificationPage = () => {
 
     // TO CHECK AUTHENTICATION
@@ -79,8 +78,10 @@ const VerificationPage = () => {
             if (verifyResponse && verifyResponse.data.status === 200) {
                 setLoadingVers(false)
 
-                // RELAOD VERIFICATION PAGE
-                window.location.reload()
+                // RELAOD VERIFICATION PAGE TO REFLECT CHANGES AFTER 1 SECONDS
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000)
             }
 
             // SET ERROR MESSAGE

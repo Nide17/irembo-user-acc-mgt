@@ -31,10 +31,10 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
     // ATTEMPT TO UPDATE USER PROFILE
     try {
       // CALL UPDATE USER FUNCTION
-      const response = await updateUser(firstName, lastName, gender, dateOfBirth, maritalStatus, nationality)
+      const updateUserResponse = await updateUser(firstName, lastName, gender, dateOfBirth, maritalStatus, nationality)
 
       // IF SUCCESSFUL, SET SUCCESS STATE
-      if (response && response.data) {
+      if (updateUserResponse && updateUserResponse.data.status === 200) {
 
         // SET SUCCESS STATE
         setSuccess(true)

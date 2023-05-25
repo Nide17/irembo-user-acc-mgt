@@ -28,15 +28,15 @@ const LoginLinkPage = () => {
             setLoadingLink(true)
 
             // ATTEMPT TO LOGIN
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login-link`, { email })
+            const linkResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login-link`, { email })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response && response.data) {
+            if (linkResponse && linkResponse.data.status === 200) {
                 setSuccess(true)
             }
 
             else {
-                setError("Error occured: ", response.data.msg)
+                setError("Error occured: ", linkResponse.data.msg)
             }
 
             // SET LOADING TO FALSE

@@ -48,19 +48,21 @@ const DashboardContent = ({ profile, isMfa }) => {
 
                 {
                     <div className='flex flex-row items-center justify-around'>
-                        <div className='w-11/12 sm:w-2/5 p-4 sm:p-8 border rounded-lg flex mx-0 sm:mx-16'>
+                        <div className='w-11/12 sm:w-2/5 p-4 sm:p-0 border-2 rounded-lg flex mx-0 sm:mx-16'>
                             <Image
                                 src={profilePic ? profilePic : '/images/profile.jpg'}
                                 alt="Profile Image"
-                                width={64}
-                                height={64} />
+                                width={240}
+                                height={240}
+                                className='rounded-lg'
+                            />
                         </div>
 
                         <div className='w-11/12 sm:w-3/5 p-4'>
                             <p className='w-max text-slate-100'> <span className='font-bold'>Nationality:</span> {profile && profile.nationality}</p>
                             <p className='w-max text-slate-100'> <span className='font-bold'>Marital status:</span> {profile && profile.maritalStatus}</p>
                             <p className='w-max text-slate-100'> <span className='font-bold'>Gender:</span> {profile && profile.gender}</p>
-                            <p className='w-max text-slate-100'> <span className='font-bold'>Date of Birth:</span> {profile && moment(profile.dateOfBirth).format('DD-MM-YYYY')}</p>
+                            <p className='w-max text-slate-100'> <span className='font-bold'>Date of Birth:</span> {profile && profile.dateOfBirth && moment(profile.dateOfBirth).format('DD-MM-YYYY')}</p>
                             <p className='w-max text-slate-100'> <span className='font-bold'>Age:</span> {profile && profile.age}</p>
                             <p className='w-max text-slate-100'><span className='font-bold'>Registered on</span> {profile && moment(profile.createdAt).format('DD-MM-YYYY')}</p>
                         </div>

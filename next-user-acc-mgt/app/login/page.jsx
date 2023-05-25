@@ -57,16 +57,14 @@ const LoginPage = () => {
             // ATTEMPT TO LOGIN
             const loginResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login`, { email, password })
 
-            console.log('loginResponse', loginResponse)
-
             // SET SUCCESS MESSAGE AND SHOW MFA BOX IF MFA IS ENABLED
             if (loginResponse && loginResponse.data.status === 200) {
 
                 // CHECK IF USER HAS MFA ENABLED
-                const mfa = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${loginResponse.data.user.id}`, { headers: { 'x-auth-token': loginResponse.data.token } })
+                const mfaResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${loginResponse.data.user.id}`, { headers: { 'x-auth-token': loginResponse.data.token } })
 
                 // IF MFA IS ENABLED, SHOW MFA BOX
-                if (mfa && mfa.data && mfa.data.mfa) {
+                if (mfaResponse && mfaResponse.data.status === 200 && mfaResponse.data.settings.mfa) {
 
                     // SEND EMAIL TO USER WITH OTP CODE FOR MFA VERIFICATION
                     const sendOtp = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/two-fa`, { email, password }, { headers: { 'x-auth-token': loginResponse.data.token } })
@@ -120,7 +118,6 @@ const LoginPage = () => {
             setLoadingLogin(false)
 
         } catch (error) {
-            // console.log(error)
             setError("error")
         }
     }
@@ -152,16 +149,11 @@ const LoginPage = () => {
                             </div>
                         )}
 
-                        {
-                            console.log(error)
-                        }
-
                         {!loadingLogin && !error && success && (
                             <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
                                 <p className="text-center text-green-900 text-lg">Login successful</p>
                             </div>
                         )}
-
 
                         <input
                             className="w-5/6 sm:w-2/3 h-10 my-4 text-center sm:my-2 px-2 rounded-lg"

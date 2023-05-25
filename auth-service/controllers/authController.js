@@ -63,8 +63,6 @@ const loginUser = async (req, res) => {
                 })
             }
 
-            console.log(user)
-
             // IF ALL IS GOOD, SIGN AND GENERATE TOKEN
             const token = jwt.sign({
                 id: user.id,

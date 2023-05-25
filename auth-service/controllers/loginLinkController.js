@@ -53,7 +53,7 @@ const loginLink = async (req, res) => {
         const saveLoginToken = await LoginLink.create({
             token: hashedLoginToken,
             expiration: expiryDate,
-            userId: user.data.id,
+            userId: user.id,
             used: false
         })
 
@@ -175,13 +175,12 @@ const verifyLink = async (req, res) => {
 
         // GET USER FROM RESPONSE
         const user = userResponse.data.user
-        console.log(user)
 
         // GENERATE JWT TOKEN
         const jwtToken = jwt.sign({
-            id: user.data.id,
-            email: user.data.email,
-            role: user.data.roleId
+            id: user.id,
+            email: user.email,
+            role: user.roleId
         }, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h'
         })
@@ -190,7 +189,7 @@ const verifyLink = async (req, res) => {
         return res.json({
             status: 200,
             token: jwtToken,
-            user: user.data,
+            user: user,
             msg: `Login successful!`
         })
 

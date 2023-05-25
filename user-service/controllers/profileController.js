@@ -136,7 +136,7 @@ const updateProfile = async (req, res) => {
 const updateUserProfilePhoto = async (req, res) => {
 
     // CHECK IF FILE IS MISSING
-    if (!req.file) {
+    if (!req.body && !req.file) {
         return res.json({
             status: 404,
             msg: 'File is missing!',
@@ -145,7 +145,7 @@ const updateUserProfilePhoto = async (req, res) => {
     }
     // CHECK IF FILE IS AN IMAGE
     else {
-        const img_file = req.file
+        const img_file = req.boy || req.file
 
         try {
             // FIND PROFILE

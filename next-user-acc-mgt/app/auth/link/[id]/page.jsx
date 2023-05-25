@@ -21,10 +21,10 @@ const VerifyLink = () => {
                 setLoadingVerify(true)
 
                 // ATTEMPT TO VERIFY LINK
-                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-link/${router.id}`, { token: router.id })
+                const verifyResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-link/${router.id}`, { token: router.id })
 
                 // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-                if (response && response.data) {
+                if (verifyResponse && verifyResponse.data.status === 200) {
 
                     // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
                     setSuccess(true)
@@ -33,8 +33,8 @@ const VerifyLink = () => {
                     setLoadingVerify(false)
 
                     // STORE TOKEN AND USER DATA IN LOCAL STORAGE
-                    localStorage.setItem('token', response.data.token)
-                    localStorage.setItem('user', JSON.stringify(response.data.user))
+                    localStorage.setItem('token', verifyResponse.data.token)
+                    localStorage.setItem('user', JSON.stringify(verifyResponse.data.user))
 
                     // REDIRECT TO DASHBOARD
                     window.location.href = '/dashboard'
@@ -42,7 +42,8 @@ const VerifyLink = () => {
 
                 else {
                     // SET ERROR MESSAGE
-                    setError("Error occured: ", response.data.msg)
+                    setError("Error occured: ", verifyResponse.data.msg)
+                    
                     setSuccess(false)
                     router.push('/auth/link')
                 }

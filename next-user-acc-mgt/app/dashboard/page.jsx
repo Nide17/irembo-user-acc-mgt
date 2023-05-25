@@ -23,8 +23,10 @@ const DashboardPage = () => {
             JSON.parse(user) && JSON.parse(user).email
 
     const [veriStatus, setVeriStatus] = useState('unverified')
-    const displayIcon = veriStatus === 'verified' ? '/images/verified.png' : veriStatus === 'pending' ? '/images/pending.gif' : '/images/verified.png'
+    const displayIcon = veriStatus === 'verified' ? '/images/verified.png' : veriStatus === 'pending' ? '/images/pending.gif' : '/images/unverified.png'
+
     const displayText = veriStatus === 'verified' ? 'Verified account' : veriStatus === 'unverified' ? 'Unverified account' : 'Pending verification'
+
     const role = user && JSON.parse(user).roleId
 
     // FETCH USER PROFILE AND SETTINGS ON PAGE LOAD
@@ -67,7 +69,7 @@ const DashboardPage = () => {
 
                 // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
                 if (settingsResponse.data.status === 200) {
-                    setIsMfa(settingsResponse.data.mfa)
+                    setIsMfa(settingsResponse.data.settings.mfa)
                 }
 
             } catch (error) {

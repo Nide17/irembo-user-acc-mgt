@@ -55,7 +55,7 @@ const ProfilePhotoPage = () => {
             setLoadingProfilePhoto(true)
 
             // ATTEMPT TO UPLOAD PROFILE PHOTO
-            const response = await axios.put(`http://localhost:5002/profiles/${JSON.parse(user).id}/profilePhoto`, formData, {
+            const photoResponse = await axios.put(`http://localhost:5002/profiles/${JSON.parse(user).id}/profilePhoto`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'x-auth-token': token
@@ -63,7 +63,7 @@ const ProfilePhotoPage = () => {
             })
 
             // SET SUCCESS MESSAGE
-            if (response && response.data) {
+            if (photoResponse && photoResponse.data.status === 200) {
                 setSuccess(true)
 
                 // SET LOADING TO FALSE WHEN USER STATE IS SET
@@ -107,7 +107,7 @@ const ProfilePhotoPage = () => {
 
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-2/3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
+            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 py-4 mt-20 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
 
                 <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-8">
                     <Link href="/" className='p-1 font-bold'>

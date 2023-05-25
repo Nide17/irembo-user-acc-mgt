@@ -14,16 +14,17 @@ const ProfilePic = ({ token, isAuth }) => {
         // GET PROFILE PIC
         const getProfilePic = async () => {
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user) && JSON.parse(user).id}`, {
+                const photoResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user) && JSON.parse(user).id}`, {
                     headers: {
                         'x-auth-token': token,
                         'Content-Type': 'application/json',
                     },
                 })
 
+                console.log(photoResponse.data)
                 // IF SUCCESSFUL, SET PROFILE PIC, ELSE SET PROFILE PIC TO NULL
-                if (response && response.data) {
-                    setProfilePic(response.data.profilePhoto)
+                if (photoResponse && photoResponse.data.status === 200) {
+                    setProfilePic(photoResponse.data.profile.profilePhoto)
                 }
             
                 else setProfilePic(null)

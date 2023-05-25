@@ -6,11 +6,11 @@ require('dotenv').config()
 
 // Private route
 // GET http://localhost:5002/users/ - get all users
-router.get('/', protectionMiddleware, userController.getAllUsers)
+router.get('/', protectionMiddleware([2]), userController.getAllUsers)
 
 // Private route
 // GET http://localhost:5002/users/:id - get user by id
-router.get('/:id', protectionMiddleware, userController.getUserById)
+router.get('/:id', protectionMiddleware([2]), userController.getUserById)
 
 // Pubic route
 // GET http://localhost:5002/users/link/:id - get user by link and id
@@ -26,10 +26,10 @@ router.post('/', userController.createUser)
 
 // Private route
 // PUT http://localhost:5002/users/:id - update user by id
-router.put('/:id', userController.updateUser)
+router.put('/:id', protectionMiddleware([1, 2, 3]), userController.updateUser)
 
 // Private route
 // DELETE http://localhost:5002/users/:id - delete user by id
-router.delete('/:id', protectionMiddleware, userController.deleteUser)
+router.delete('/:id', protectionMiddleware([2]), userController.deleteUser)
 
 module.exports = router

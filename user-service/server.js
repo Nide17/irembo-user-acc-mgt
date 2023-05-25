@@ -3,7 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 require('dotenv').config()
-const PORT = process.env.USER_SERVICE || 5002
+const PORT = process.env.PORT || 5002
 
 // IMPORTING CONNECTION TO POSTGRESQL DATABASE
 const sequelize = require('./config/db')
@@ -26,7 +26,7 @@ try {
     sequelize.authenticate()
     console.log('User service connected to the database ...')
 } catch (error) {
-    console.error('Unable to connect to the database:', error)
+    console.log('Unable to connect to the database:', error)
 }
 
 // STARTING SERVER

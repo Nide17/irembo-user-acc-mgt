@@ -1,6 +1,8 @@
 const AWS = require('aws-sdk')
 const AccountVerification = require('../models/AccountVerification')
 
+// UTILS
+const sendEmailWithNodemailer = require('../utils/sendEmailWithNodemailer')
 const s3Config = new AWS.S3({
     accessKeyId: process.env.AWS_USER_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_USER_SECRET_ACCESS_KEY,
@@ -10,6 +12,7 @@ const s3Config = new AWS.S3({
 
 // GET http://localhost:5003/accvers - get all accvers
 const getAllAccVers = async (req, res) => {
+
     try {
 
         // RETURN ALL, SORT BY STATUS DESCENDING AND CREATEDAT ASCENDING
@@ -20,9 +23,23 @@ const getAllAccVers = async (req, res) => {
             ]
         })
 
-        res.json(accvers)
+        // IF NO ACCVERS FOUND
+        if (!accvers) {
+            return res.json({
+                status: 404,
+                msg: 'No account verifications found'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            accvers
+        })
+
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })
@@ -31,15 +48,35 @@ const getAllAccVers = async (req, res) => {
 
 // GET http://localhost:5003/accvers/:id - get accver by id
 const getAccVerById = async (req, res) => {
+
     try {
         const accver = await AccountVerification.findOne({
             where: {
                 id: req.params.id
             }
         })
-        res.json(accver)
+
+        // IF NO ACCVER FOUND
+        if (!accver) {
+            return res.json({
+                status: 404,
+                msg: 'Account verification not found'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            accver
+        })
+
+
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error', error })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -52,9 +89,27 @@ const getAccVerByUserId = async (req, res) => {
                 userId: req.params.userId
             }
         })
-        res.json(accver)
+
+        // IF NO ACCVER FOUND
+        if (!accver) {
+            return res.json({
+                status: 404,
+                msg: 'Account verification not found'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            accver
+        })
+
     } catch (error) {
-        res.status(500).json({ msg: error, error })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -66,14 +121,28 @@ const updateAccVer = async (req, res) => {
     const img_file = req.file
 
     // VALIDATE THE REQUEST BODY
-    if (!firstName || !lastName || !phone || !documentType || !documentNumber) return res.status(400).json({ msg: 'Please enter all required fields!' })
+    if (!firstName || !lastName || !phone || !documentType || !documentNumber) {
+        return res.json({
+            status: 400,
+            msg: 'Please enter all required fields!'
+        })
+    }
 
     // VALIDATE THE PHONE NUMBER - 10 DIGITS, ONLY NUMBERS
-    if (phone.length !== 10 || isNaN(phone)) return res.status(400).json({ msg: 'Please enter a valid phone number!' })
+    if (phone.length !== 10 || isNaN(phone)) {
+
+        return res.json({
+            status: 400,
+            msg: 'Please enter a valid phone number!'
+        })
+    }
 
     // VALIDATE THE FILE
     if (!img_file) {
-        return res.status(400).json({ msg: 'Document image is required!1' })
+        return res.json({
+            status: 400,
+            msg: 'Document image is required!1'
+        })
     }
 
     try {
@@ -84,7 +153,12 @@ const updateAccVer = async (req, res) => {
             }
         })
 
-        if (!verific && !img_file) throw Error('Document image is required!')
+        if (!verific && !img_file) {
+            return res.json({
+                status: 400,
+                msg: 'Document image is required!2'
+            })
+        }
 
         // IF VERIFICATION NOT EXISTS, CREATE VERIFICATION
         else if (!verific && img_file) {
@@ -101,10 +175,18 @@ const updateAccVer = async (req, res) => {
                 status: 'pending',
             })
 
-            if (!newVer) throw Error('Something went wrong while creating the verification!')
+            if (!newVer) {
+                return res.json({
+                    status: 400,
+                    msg: 'Something went wrong while creating the verification!'
+                })
+            }
 
             // RETURN NEW VERIFICATION
-            res.status(200).json(newVer)
+            return res.json({
+                status: 200,
+                newVer
+            })
         }
 
         // IF VERIFICATION EXISTS, UPDATE VERIFICATION
@@ -126,10 +208,18 @@ const updateAccVer = async (req, res) => {
                     }
                 })
 
-                if (!updatedVer) throw Error('Something went wrong while updating the verification!')
+                if (!updatedVer) {
+                    return res.json({
+                        status: 400,
+                        msg: 'Something went wrong while updating the verification!'
+                    })
+                }
 
                 // RETURN UPDATED VERIFICATION
-                res.status(200).json(updatedVer)
+                return res.json({
+                    status: 200,
+                    updatedVer
+                })
             }
 
             // IF CURRENT VERIFICATION PHOTO IS NOT NULL AND NEW VERIFICATION PHOTO IS NOT NULL - DELETE CURRENT VERIFICATION PHOTO AND UPLOAD NEW VERIFICATION PHOTO
@@ -141,7 +231,13 @@ const updateAccVer = async (req, res) => {
                 }
 
                 s3Config.deleteObject(params, (err, data) => {
-                    if (err) console.error('Error deleting verification document', err)
+                    if (err) {
+                        return res.json({
+                            status: 500,
+                            msg: 'Something went wrong while deleting the verification!',
+                            err
+                        })
+                    }
                 })
 
                 // UPLOAD NEW VERIFICATION PHOTO
@@ -160,26 +256,42 @@ const updateAccVer = async (req, res) => {
                     }
                 })
 
-                if (!updatedVer) throw Error('Something went wrong while updating the verification!')
+                if (!updatedVer) {
+                    return res.json({
+                        status: 400,
+                        msg: 'Something went wrong while updating the verification!'
+                    })
+                }
 
                 // RETURN UPDATED VERIFICATION
-                res.status(200).json(updatedVer)
+                return res.json({
+                    status: 200,
+                    updatedVer
+                })
             }
 
             else {
-                throw Error('Something went wrong, please check your inputs!')
+                return res.json({
+                    status: 400,
+                    msg: 'Something went wrong while updating the verification'
+                })
             }
 
         }
     } catch (err) {
-        console.error('Error: ', err)
-        res.status(400).json({ msg: err.msg })
+        return res.json({
+            status: 400,
+            msg: 'Internal server error',
+            err
+        })
     }
 }
 
 // Private route - verify accver by id
 // PUT http://localhost:5003/accvers/verify/:id
 const verifyAccVer = async (req, res) => {
+
+    // ATTEMPT TO UPDATE VERIFICATION STATUS
     try {
         const accver = await AccountVerification.update({
             status: req.body.status
@@ -188,10 +300,89 @@ const verifyAccVer = async (req, res) => {
                 id: req.params.id
             }
         })
-        res.json(accver)
+
+        // IF ACVER NOT UPDATED
+        if (!accver) {
+            return res.json({
+                status: 400,
+                msg: 'Something went wrong while updating the verification!'
+            })
+        }
+
+        // IF ACCOUNT VERIFIED, LET'S SEND UPDATE NOTIFICATION TO THE USER
+        else {
+
+            // GET THE USER EMAIL ASSOCIATED WITH THE DOCUMENT - req.body.userId
+            const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/${req.body.userId}`, {
+                headers: {
+                    'Content-Type': req.headers['content-type'],
+                    'x-auth-token': req.headers['x-auth-token']
+                }
+            })
+
+            // CHECK IF USER EXISTS
+            if (userResponse.data.status !== 200) {
+                return res.json({
+                    status: 400,
+                    msg: 'User does not exist!'
+                })
+            }
+
+            // GET USER FROM RESPONSE
+            const user = userResponse.data.user
+
+            // EMAIL CONTENT
+            const emailContent = req.body.status === 'verified' ? 'Good news!\nYour account has been verified!\n' : 'Bad news.\nYour verification request has been declined:\n'
+            const reasonMessage = req.body.reasonMessage || 'Thanks!'
+
+            // EMAIL
+            const emailData = {
+                from: process.env.SMTP_USER,
+                to: user.email,
+                subject: 'Account verification update',
+                html: `
+                <h1>Account Verification</h1>
+                <p>${emailContent}</p>
+                <a href="${process.env.CLIENT_SERVICE}/verification">Check that</a>
+                <p>${reasonMessage}</p>
+                \nIf you receive this email by mistake, please ignore it!`
+            }
+
+            // SEND NOTIFICATION EMAIL 
+            if (req.body.status === 'verified' || req.body.status === 'unverified') {
+                const sendMail = await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
+
+                // CHECK IF EMAIL SENT
+                if (!sendMail) {
+                    return res.json({
+                        status: 400,
+                        msg: 'Error sending email!'
+                    })
+                }
+                else {
+                    // RETURN EMAIL SENT
+                    return res.json({
+                        status: 200,
+                        msg: 'Email sent!'
+                    })
+                }
+            }
+
+            else {
+                // SEND SUCCESS RESPONSE
+                return res.json({
+                    status: 200,
+                    accver
+                })
+            }
+        }
+
     } catch (error) {
-        console.error('Error verifying accver by id', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        return res.json({
+            status: 400,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -203,10 +394,26 @@ const deleteAccVer = async (req, res) => {
                 id: req.params.id
             }
         })
-        res.json(accver)
+
+        // IF NOT DELETE
+        if (!accver) {
+            return res.json({
+                status: 400,
+                msg: 'Something went wrong while deleting the verification!'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            accver
+        })
     } catch (error) {
-        console.error('Error deleting accver by id', error)
-        res.status(500).json({ msg: 'Internal server error' })
+        return res.json({
+            status: 400,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 

@@ -72,7 +72,7 @@ const MfaBox = ({ email, password, userId, jwtToken, setIsAuthenticated }) => {
 
     return (
         <div className="flex items-center justify-center h-screen">
-            <form className="flex flex-col items-center justify-center w-5/6 sm:w-full h-2/3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
+            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 py-4 mt-20 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
 
                 <div className="flex-none w-120 h-16 flex items-center justify-center text-center p-4 my-4">
                     <Link href="/" className='p-1 font-bold'>

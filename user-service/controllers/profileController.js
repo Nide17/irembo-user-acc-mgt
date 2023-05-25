@@ -24,16 +24,21 @@ const getProfileByUserId = async (req, res) => {
         })
 
         if (!profile) {
-            res.status(404).json({
+            return res.json({
+                status: 404,
                 msg: 'Profile not found',
                 profile: null
             })
         }
         else {
-            res.status(200).json(profile)
+            return res.json({
+                status: 200,
+                profile
+            })
         }
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })
@@ -71,10 +76,21 @@ const updateProfile = async (req, res) => {
                 nationality
             })
 
-            if (!createdUserProfile) throw Error('Something went wrong while creating the profile!')
+            if (!createdUserProfile) {
+                return res.json({
+                    status: 400,
+                    msg: 'Something went wrong while creating the profile!',
+                    profile: null
+                })
+            }
 
-            res.json(createdUserProfile)
+            // RETURN NEW PROFILE
+            return res.json({
+                status: 200,
+                createdUserProfile
+            })
         }
+
         else {
             // UPDATE PROFILE
             const updatedUserProfile = await UserProfile.update({
@@ -92,12 +108,22 @@ const updateProfile = async (req, res) => {
                 }
             })
 
-            if (!updatedUserProfile) throw Error('Something went wrong while updating the profile!')
+            if (!updatedUserProfile)
+                return res.json({
+                    status: 400,
+                    msg: 'Something went wrong while updating the profile!',
+                    profile: null
+                })
 
-            res.json(updatedUserProfile)
+            // RETURN UPDATED PROFILE
+            return res.json({
+                status: 200,
+                updatedUserProfile
+            })
         }
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })
@@ -111,7 +137,11 @@ const updateUserProfilePhoto = async (req, res) => {
 
     // CHECK IF FILE IS MISSING
     if (!req.file) {
-        throw Error('Image is missing');
+        return res.json({
+            status: 404,
+            msg: 'File is missing!',
+            profile: null
+        })
     }
     // CHECK IF FILE IS AN IMAGE
     else {
@@ -134,10 +164,19 @@ const updateUserProfilePhoto = async (req, res) => {
                     updatedAt: new Date()
                 })
 
-                if (!newProfile) throw Error('Something went wrong while creating the profile!')
+                if (!newProfile) {
+                    return res.json({
+                        status: 400,
+                        msg: 'Something went wrong while creating the profile!',
+                        profile: null
+                    })
+                }
 
                 // RETURN NEW PROFILE
-                res.status(200).json(newProfile)
+                return res.json({
+                    status: 200,
+                    newProfile
+                })
             }
 
             // IF PROFILE EXISTS, UPDATE PROFILE PHOTO
@@ -153,10 +192,19 @@ const updateUserProfilePhoto = async (req, res) => {
                         }
                     })
 
-                    if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
+                    if (!updatedProfile) {
+                        return res.json({
+                            status: 400,
+                            msg: 'Something went wrong while updating the profile!',
+                            profile: null
+                        })
+                    }
 
                     // RETURN UPDATED PROFILE
-                    res.status(200).json(updateProfile)
+                    return res.json({
+                        status: 200,
+                        updatedProfile
+                    })
                 }
 
                 // IF CURRENT PROFILE PHOTO IS NOT NULL AND NEW PROFILE PHOTO IS NOT NULL - DELETE CURRENT PROFILE PHOTO AND UPLOAD NEW PROFILE PHOTO
@@ -168,7 +216,13 @@ const updateUserProfilePhoto = async (req, res) => {
                     }
 
                     s3Config.deleteObject(params, (err, data) => {
-                        if (err) console.error('Error deleting user profile photo', err)
+                        if (err) {
+                            return res.json({
+                                status: 400,
+                                msg: 'Something went wrong while deleting old profile photo!',
+                                profile: null
+                            })
+                        }
                     })
 
                     // UPLOAD NEW PROFILE PHOTO
@@ -181,20 +235,34 @@ const updateUserProfilePhoto = async (req, res) => {
                         }
                     })
 
-                    if (!updatedProfile) throw Error('Something went wrong while updating the profile!')
+                    if (!updatedProfile) {
+                        return res.json({
+                            status: 400,
+                            msg: 'Something went wrong while updating the profile!',
+                            profile: null
+                        })
+                    }
 
                     // RETURN UPDATED PROFILE
-                    res.status(200).json(updatedProfile)
+                    res.json({
+                        status: 200,
+                        updatedProfile
+                    })
                 }
-                else
-                    throw Error('Something went wrong while updating the profile!')
+                else {
+                    return res.json({
+                        status: 400,
+                        msg: 'Something went wrong while updating the profile!',
+                        profile: null
+                    })
+                }
             }
         } catch (err) {
-            res.status(400).json({
-                msg: err.msg,
+            return res.json({
+                status: 500,
+                msg: 'Internal Server Error',
                 err
             })
-            throw Error(err)
         }
     }
 }

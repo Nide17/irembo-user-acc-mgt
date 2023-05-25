@@ -10,11 +10,36 @@ const validatePassword = require('../utils/validatePassword')
 
 // GET http://localhost:5002/users/ - get all users
 const getAllUsers = async (req, res) => {
+
     try {
+        // ATTEMPT TO GET ALL USERS FROM DATABASE
         const users = await User.findAll()
-        res.json(users)
+
+        // IF NO USERS FOUND
+        if (!users) {
+            return res.json({
+                status: 404,
+                msg: 'No users found'
+            })
+        }
+
+        // IF USERS FOUND, REMOVE PASSWORD FROM EACH USER
+        users.forEach(user => {
+            user.password = undefined
+        })
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            users
+        })
+
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -28,19 +53,81 @@ const getUserById = async (req, res) => {
             }
         })
 
+        // IF NO USER FOUND
         if (!user) {
-            res.status(404).json({ msg: 'User not found' })
+            return res.json({
+                status: 404,
+                msg: 'User not found'
+            })
         }
 
-        res.json(user)
+        // IF USER FOUND, REMOVE PASSWORD FROM USER
+        // user.password = undefined
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            user
+        })
+
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
+// GET http://localhost:5002/users/email/:email - get user by email
+// RETURNS USER OBJECT IF USER EXISTS, AND NULL IF USER DOES NOT EXIST
+const getUserByEmail = async (req, res) => {
+
+    // VALIDATE USER EMAIL
+    if (!validateEmail(req.params.email)) {
+        return res.json({
+            status: 400,
+            msg: 'Invalid email'
+        })
+    }
+
+    // GET USER BY EMAIL
+    try {
+        const user = await User.findOne({
+            where: {
+                email: req.params.email
+            }
+        })
+
+        // IF USER EXISTS, RETURN USER OBJECT
+        if (!user) {
+            res.json({
+                status: 404,
+                msg: 'User not found'
+            })
+        }
+
+        // IF USER DOES NOT EXIST, RETURN NULL
+        else {
+            return res.json({
+                status: 200,
+                user
+            })
+        }
+
+    } catch (error) {
+        return res.json({
+            status: 500,
+            msg: 'Internal server error while getting user by email',
+            error
+        })
+    }
+}
+
+
 // GET http://localhost:5002/users/:id - get user by id
 const getUserByLinkId = async (req, res) => {
-    
+
     try {
         const user = await User.findOne({
             where: {
@@ -48,17 +135,27 @@ const getUserByLinkId = async (req, res) => {
             }
         })
 
+        // IF NO USER FOUND
         if (!user) {
-            res.status(404).json({ msg: 'User not found' })
+            return res.json({
+                status: 404,
+                msg: 'User not found'
+            })
         }
 
-        res.json({
-            id: user.id,
-            email: user.email,
-            roleId: user.roleId,
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            user
         })
+
+        // CATCH ANY OTHER ERRORS AND SEND INTERNAL SERVER ERROR RESPONSE
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -70,22 +167,26 @@ const createUser = async (req, res) => {
 
     // VALIDATE USER DATA
     if (!email || !password) {
-        res.status(400).json({ msg: 'All fields are required' })
-        return
+        return res.json({
+            status: 400,
+            msg: 'Please provide email and password'
+        })
     }
 
     // VALIDATE USER EMAIL
     if (!validateEmail(email)) {
-        res.status(400).json({ msg: 'Invalid email' })
-        return
+        return res.json({
+            status: 400,
+            msg: 'Invalid email'
+        })
     }
 
     // VALIDATE USER PASSWORD
     if (!validatePassword(password)) {
-        res.status(400).json({
+        return res.json({
+            status: 400,
             msg: 'Password should be greater than 7 and having special characters, number, and uppercase and lowercase letters'
         })
-        return
     }
 
     // CREATE NEW USER
@@ -94,8 +195,10 @@ const createUser = async (req, res) => {
         const userExists = await User.findOne({ where: { email } })
 
         if (userExists) {
-            res.status(400).json({ msg: 'User with that email already exists' })
-            return
+            return res.json({
+                status: 400,
+                msg: 'User with that email already exists'
+            })
         }
 
         // HASH THE PASSWORD
@@ -121,26 +224,39 @@ const createUser = async (req, res) => {
 
             // IF PROFILE IS NOT CREATED, DELETE THE USER AND RETURN ERROR msg
             if (!userProfile) {
-               const destroyed = await User.destroy({
+                const destroyed = await User.destroy({
                     where: {
-                       id: user.id
+                        id: user.id
                     }
                 })
 
-                if(!destroyed) {
-                    res.status(500).json({ msg: 'Failed!' })
+                if (!destroyed) {
+                    return res.json({
+                        status: 400,
+                        msg: 'Failed!'
+                    })
                 }
                 else {
-                    res.status(200).json({ msg: 'Success!' })
+                    return res.json({
+                        status: 200,
+                        msg: 'Success!'
+                    })
                 }
             }
         }
 
         // RETURN THE USER, ALL IS WELL
-        res.status(200).json(user)
+        return res.json({
+            status: 200,
+            user
+        })
 
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -159,7 +275,10 @@ const updateUser = async (req, res) => {
         })
 
         if (!userExists) {
-            res.status(400).json({ msg: 'User with that id does not exist' })
+            return res.json({
+                status: 400,
+                msg: 'User with that id does not exist'
+            })
         }
 
         const user = await User.update({
@@ -170,9 +289,27 @@ const updateUser = async (req, res) => {
                 id: req.params.id
             }
         })
-        res.json(user)
+
+        // IF USER IS NOT UPDATED SUCCESSFULLY, RETURN ERROR msg
+        if (!user) {
+            return res.json({
+                status: 400,
+                msg: 'Failed!'
+            })
+        }
+
+        // RETURN THE USER, ALL IS WELL
+        return res.json({
+            status: 200,
+            user
+        })
+
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -182,40 +319,39 @@ const deleteUser = async (req, res) => {
         const userid = await User.findByPk(req.params.id)
 
         if (!userid) {
-            res.status(404).json({ msg: 'User not found' })
+            return res.json({
+                status: 404,
+                msg: 'User not found'
+            })
         }
+
         else {
             const user = await User.destroy({
                 where: {
                     id: req.params.id
                 }
             })
-            res.json(user)
+
+            // IF USER IS NOT DELETED SUCCESSFULLY, RETURN ERROR msg
+            if (!user) {
+                return res.json({
+                    status: 400,
+                    msg: 'Failed!'
+                })
+            }
+
+            // RETURN THE USER, ALL IS WELL
+            return res.json({
+                status: 200,
+                user
+            })
         }
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error' })
-    }
-}
-
-// GET http://localhost:5002/users/email/:email - get user by email
-// RETURNS USER OBJECT IF USER EXISTS, AND NULL IF USER DOES NOT EXIST
-const getUserByEmail = async (req, res) => {
-
-    // VALIDATE USER EMAIL
-    if (!validateEmail(req.params.email)) {
-        res.status(400).json({ msg: 'Invalid email' })
-    }
-
-    // GET USER BY EMAIL
-    try {
-        const user = await User.findOne({
-            where: {
-                email: req.params.email
-            }
+        res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
         })
-        return res.json(user)
-    } catch (error) {
-        return res.status(500).json({ msg: 'Internal server error' })
     }
 }
 

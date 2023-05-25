@@ -10,7 +10,6 @@ const OTPcode = require('../models/OTPcode')
 const sendEmailWithNodemailer = require('../utils/sendEmailWithNodemailer')
 const validateEmail = require('../utils/validateEmail')
 const generateOTP = require('../utils/otpService')
-const checkOTP = require('../utils/checkOTP')
 
 // 2FA
 // POST http://localhost:5001/2fa - 2fa
@@ -21,24 +20,35 @@ const twoFactorAuth = async (req, res) => {
 
     // CHECK FOR VALIDITY OF EMAIL
     if (!validateEmail(email)) {
-        return res.status(400).json({ msg: 'Please enter a valid email' })
+        return res.json({
+            status: 400,
+            msg: 'Please enter a valid email'
+        })
     }
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
+        const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
 
         // CHECK IF USER EXISTS
-        if (!user) {
-            return res.status(400).json({ msg: 'User does not exist!' })
+        if (userResponse.data.status !== 200) {
+            return res.json({
+                status: 400,
+                msg: userResponse.data.msg
+            })
         }
 
+        const user = userResponse.data.user
+
         // CHECK IF PASSWORD IS CORRECT
-        const isPasswordCorrect = await bcrypt.compare(password, user.data.password)
+        const isPasswordCorrect = await bcrypt.compare(password, user.password)
 
         // CHECK IF PASSWORD IS CORRECT
         if (!isPasswordCorrect) {
-            return res.status(400).json({ msg: 'Password is incorrect!' })
+            return res.json({
+                status: 400,
+                msg: 'Password is incorrect!'
+            })
         }
 
         // GENERATE 2FA TOKEN
@@ -48,13 +58,16 @@ const twoFactorAuth = async (req, res) => {
         const savedOTPcode = await OTPcode.create({
             otpCode: twoFactorToken,
             expiresAt: Date.now() + 5 * 60 * 1000,
-            userId: user.data.id,
+            userId: user.id,
             used: false
         })
 
         // CHECK IF 2FA TOKEN SAVED
         if (!savedOTPcode) {
-            return res.status(500).json({ msg: 'Error saving 2fa token' })
+            return res.json({
+                status: 500,
+                msg: 'Error saving 2fa token'
+            })
         }
 
         // SEND EMAIL
@@ -70,13 +83,29 @@ const twoFactorAuth = async (req, res) => {
         }
 
         // SEND EMAIL
-        await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
+        const sendMail = await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
+
+        // CHECK IF EMAIL SENT
+        if (!sendMail) {
+            return res.json({
+                status: 500,
+                msg: 'Error sending email'
+            })
+        }
 
         // RETURN EMAIL SENT SUCCESSFULLY
-        res.status(200).json({ msg: `OTP sent successfully!` })
+        return res.json({
+            status: 200,
+            msg: `OTP sent to ${email}`
+        })
 
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error', error })
+        return res.json({
+
+            status: 500,
+            msg: 'Internal server error while sending 2FA email',
+            error
+        })
     }
 }
 
@@ -89,24 +118,36 @@ const verifyTwoFactorAuth = async (req, res) => {
 
     // CHECK FOR VALIDITY OF EMAIL
     if (!validateEmail(email)) {
-        return res.status(400).json({ msg: 'Please enter a valid email' })
+        return res.json({
+            status: 400,
+            msg: 'Please enter a valid email'
+        })
     }
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
+        const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
 
         // CHECK IF USER EXISTS
-        if (!user) {
-            return res.status(400).json({ msg: 'User does not exist!' })
+        if (userResponse.data.status !== 200) {
+            return res.json({
+                status: 400,
+                msg: 'User does not exist!'
+            })
         }
 
+        // GET USER FROM RESPONSE
+        const user = userResponse.data.user
+
         // CHECK IF PASSWORD IS CORRECT
-        const isPasswordCorrect = await bcrypt.compare(password, user.data.password)
+        const isPasswordCorrect = await bcrypt.compare(password, user.password)
 
         // CHECK IF PASSWORD IS CORRECT
         if (!isPasswordCorrect) {
-            return res.status(400).json({ msg: 'Password is incorrect!' })
+            return res.json({
+                status: 400,
+                msg: 'Password is incorrect!'
+            })
         }
 
         // CHECK IF TOKEN EXISTS
@@ -119,17 +160,26 @@ const verifyTwoFactorAuth = async (req, res) => {
 
         // IF TOKEN DOES NOT EXIST
         if (!tokenExists) {
-            return res.status(400).json({ msg: 'Invalid token!' })
+            return res.json({
+                status: 400,
+                msg: 'Invalid token!'
+            })
         }
 
         // CHECK IF TOKEN HAS EXPIRED
         if (tokenExists.expiration < Date.now()) {
-            return res.status(400).json({ msg: 'Token has expired!' })
+            return res.json({
+                status: 400,
+                msg: 'Token has expired!'
+            })
         }
 
         // CHECK IF TOKEN HAS BEEN USED
         if (tokenExists.used) {
-            return res.status(400).json({ msg: 'Token has been used!' })
+            return res.json({
+                status: 400,
+                msg: 'Token has been used!'
+            })
         }
 
         // UPDATE TOKEN TO USED
@@ -143,21 +193,41 @@ const verifyTwoFactorAuth = async (req, res) => {
 
         // CHECK IF TOKEN UPDATED
         if (!updateToken) {
-            return res.status(500).json({ msg: 'Error updating token!' })
+            return res.json({
+                status: 500,
+                msg: 'Error updating token!'
+            })
         }
 
+        console.log(user)
+
         // IF ALL IS GOOD, SIGN AND GENERATE TOKEN
-        const token = jwt.sign({ id: user.data.id, email: user.data.email }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
+        const token = jwt.sign({ 
+            id: user.id, 
+            email: user.email,
+            role: user.roleId            
+        }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
 
         if (!token) {
-            return res.status(400).json({ msg: 'Couldnt sign in, try again!' })
+            return res.json({
+                status: 400,
+                msg: 'Couldnt sign in, try again!'
+            })
         }
 
         // RETURN TOKEN AND USER
-        return res.status(200).json({ token, user: user.data })
+        return res.json({
+            status: 200,
+            token,
+            user
+        })
 
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error', error })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 

@@ -40,9 +40,9 @@ const protectionMiddleware = (req, res, next) => {
             success: false,
             msg: 'Session expired',
             code: 'SESSION_EXPIRED',
-            error: error
+            error
         })
     }
-};
+}
 
-module.exports = protectionMiddleware;
+module.exports = protectionMiddleware

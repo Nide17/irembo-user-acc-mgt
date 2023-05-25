@@ -1,5 +1,5 @@
 // OTP SERVICE
-const otpGenerator = require('otp-generator');
+const otpGenerator = require('otp-generator')
 
 // GENERATE OTP
 const generateOTP = () => {
@@ -9,8 +9,8 @@ const generateOTP = () => {
         upperCase: true,
         specialChars: false,
         alphabets: false
-    });
+    })
 }
 
 // EXPORTS
-module.exports = generateOTP;
+module.exports = generateOTP

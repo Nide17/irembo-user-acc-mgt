@@ -11,6 +11,7 @@ const Role = db.define('role', {
     role: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
             isAlpha: true,
             notEmpty: true,

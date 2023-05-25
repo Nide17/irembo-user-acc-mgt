@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+const { DataTypes } = require('sequelize')
+const sequelize = require('../config/db')
 
 // ACCOUNT VERIFICATION
 const AccountVerification = sequelize.define('AccountVerification', {
@@ -62,8 +62,13 @@ const AccountVerification = sequelize.define('AccountVerification', {
             notEmpty: true
         },
         defaultValue: 'unverified'
-    }
-});
+    },
+    reasonMessage: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+
+})
 
 // EXPORT MODEL TO BE USED IN OTHER FILES
-module.exports = AccountVerification;
+module.exports = AccountVerification

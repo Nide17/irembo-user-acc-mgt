@@ -57,8 +57,10 @@ const LoginPage = () => {
             // ATTEMPT TO LOGIN
             const loginResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/login`, { email, password })
 
+            console.log('loginResponse', loginResponse)
+
             // SET SUCCESS MESSAGE AND SHOW MFA BOX IF MFA IS ENABLED
-            if (loginResponse && loginResponse.data && loginResponse.data.token && loginResponse.data.user) {
+            if (loginResponse && loginResponse.data.status === 200) {
 
                 // CHECK IF USER HAS MFA ENABLED
                 const mfa = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${loginResponse.data.user.id}`, { headers: { 'x-auth-token': loginResponse.data.token } })
@@ -99,6 +101,9 @@ const LoginPage = () => {
                     // SET AUTHENTICATED TO TRUE
                     setIsAuthenticated(true)
 
+                    // SET SUCCESSFUL
+                    setSuccess(true)
+
                     // REDIRECT TO DASHBOARD
                     setTimeout(() => {
                         window.location.href = '/dashboard'
@@ -109,13 +114,14 @@ const LoginPage = () => {
 
             // IF LOGIN FAILED, SHOW ERROR MESSAGE
             else  { 
-                setError("Error occured: ", loginResponse.data.msg)
+                setError(`Error: ${loginResponse.data.msg}`)
             }
             // SET LOADING TO FALSE
             setLoadingLogin(false)
 
         } catch (error) {
-            setError(error.response.data.error.msg)
+            // console.log(error)
+            setError("error")
         }
     }
 
@@ -125,9 +131,9 @@ const LoginPage = () => {
             {/* LOGIN FORM */}
             {
                 !showMfaBox && (
-                    <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-2/3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
+                    <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 py-4 mt-20 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
 
-                        <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-4">
+                        <div className="flex-none w-120 h-16 flex items-center justify-center text-center mb-4">
                             <Link href="/" className='p-1 font-bold'>
                                 <span className='block text-4xl text-blue-100 leading-8'>Login</span>
                                 <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Sign in to manage your account</span>
@@ -145,6 +151,10 @@ const LoginPage = () => {
                                 <p className="text-center text-red-700 text-sm">{error}</p>
                             </div>
                         )}
+
+                        {
+                            console.log(error)
+                        }
 
                         {!loadingLogin && !error && success && (
                             <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
@@ -167,19 +177,19 @@ const LoginPage = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                        <button type="submit" className="w-5/6 sm:w-2/3 h-10 my-4 text-center sm:my-2 rounded-lg bg-slate-900 text-white">
+                        <button type="submit" className="w-5/6 sm:w-2/3 h-8 my-4 text-center sm:my-2 rounded-lg bg-slate-900 text-white">
                             Login
                         </button>
 
-                        <p className="my-5 text-center text-white text-sm underline underline-offset-4">
+                        <p className="my-3 text-center text-white text-sm underline underline-offset-4">
                             <Link href="/auth/link">Use a link</Link>
                         </p>
 
-                        <p className="my-5 text-center text-white text-sm underline underline-offset-4">
+                        <p className="my-3 text-center text-white text-sm underline underline-offset-4">
                             <Link href="/auth/forget">Forgot password?</Link>
                         </p>
 
-                        <p className="text-center text-slate-300 text-sm underline underline-offset-4 font-bold">
+                        <p className="text-center text-slate-300 text-sm underline underline-offset-4 font-bold mb-4">
                             <Link href="/register">Don't have an account? Sign up</Link>
                         </p>
                     </form>

@@ -19,9 +19,24 @@ const sendEmailWithNodemailer = async (req, res, emailData) => {
             maxMessages: Infinity
         })
 
-        const info = await transporter.sendMail(emailData)
+        const sendMail = await transporter.sendMail(emailData)
+
+        if (!sendMail) {
+            console.log('Cannot send email')
+            return false
+        }
+
+        else {
+            console.log(`Email sent to ${emailData.to} successfully!`)
+            return true
+        }
+
     } catch (error) {
-        console.error('Error sending email with nodemailer', error)
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 

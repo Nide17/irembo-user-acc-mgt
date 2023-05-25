@@ -5,7 +5,7 @@ const app = express()
 const axios = require('axios')
 
 require('dotenv').config()
-const PORT = process.env.GATEWAY || 5000
+const PORT = process.env.PORT || 5000
 
 // MIDDLEWARES
 app.use(cors()) // ALLOW OTHER DOMAINS TO ACCESS THIS SERVER
@@ -15,6 +15,8 @@ app.use(express.urlencoded({ extended: false })) // PARSE URL ENCODED DATA FROM 
 // HANDLE ALL REQUESTS TO MICROSERVICES
 // ALL TYPE OF REQUESTS TO /users WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/users', (req, res) => {
+
+    console.log("REQUEST TO /users")
 
     // REDIRECT ALL REQUESTS TO /users (USING AXIOS)
     axios({
@@ -29,19 +31,22 @@ app.use('/users', (req, res) => {
             'x-auth-token': req.headers['x-auth-token']
         }
     }).then(response => {
+
         // SUCCESSFUL REQUEST
         res.status(200).send(response.data)
 
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data || error.response || error || error.response || error
+            error: JSON.parse(JSON.stringify(error.response.data))
         })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /profiles WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/profiles', (req, res) => {
+
+    console.log("REQUEST TO /profiles")
 
     // REDIRECT ALL REQUESTS TO /profiles (USING AXIOS)
     axios({
@@ -58,13 +63,15 @@ app.use('/profiles', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data || error.response || error
+            error: JSON.parse(JSON.stringify(error.response.data))
         })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /settings WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/settings', (req, res) => {
+
+    console.log("REQUEST TO /settings")
 
     // REDIRECT ALL REQUESTS TO /settings (USING AXIOS)
     axios({
@@ -81,13 +88,15 @@ app.use('/settings', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data || error.response || error
+            error: JSON.parse(JSON.stringify(error.response.data))
         })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /roles WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/roles', (req, res) => {
+
+    console.log("REQUEST TO /roles")
 
     // REDIRECT ALL REQUESTS TO /roles (USING AXIOS)
     axios({
@@ -104,13 +113,16 @@ app.use('/roles', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data || error.response || error
+            // error: error.response
+            error: JSON.parse(JSON.stringify(error.response.data))
         })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /auth WILL BE REDIRECTED TO AUTH SERVICE MICROSERVICE
 app.use('/auth', (req, res) => {
+
+    console.log("REQUEST TO /auth")
 
     // REDIRECT ALL REQUESTS TO /auth (USING AXIOS)
     axios({
@@ -128,13 +140,15 @@ app.use('/auth', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data || error.response || error
+            error: JSON.parse(JSON.stringify(error.response.data))
         })
     })
 })
 
 // ALL TYPE OF REQUESTS TO /accvers WILL BE REDIRECTED TO VERIFICATION SERVICE MICROSERVICE
 app.use('/accvers', (req, res) => {
+
+    console.log("REQUEST TO /accvers")
 
     // REDIRECT ALL REQUESTS TO /accvers (USING AXIOS)
     axios({
@@ -152,7 +166,7 @@ app.use('/accvers', (req, res) => {
     }).catch(error => {
         res.status(500).send({
             // status: error.response.status,
-            error: error.response.data || error.response || error
+            error: JSON.parse(JSON.stringify(error.response.data))
         })
     })
 })

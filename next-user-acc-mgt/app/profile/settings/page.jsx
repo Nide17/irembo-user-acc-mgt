@@ -31,23 +31,26 @@ const SettingsPage = () => {
                 setLoadingSettings(true)
 
                 // ATTEMPT TO FETCH USER SETTINGS
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, {
+                const settingsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, {
                     headers: {
                         'x-auth-token': token
                     }
                 })
 
+                console.log(settingsResponse.data)
+
                 // SET USER SETTINGS
-                if (response) {
+                if (settingsResponse.data.status === 200) {
                     setLoadingSettings(false)
-                    setNotifications(response.data.notifications)
-                    setMfa(response.data.mfa)
+                    setNotifications(settingsResponse.data.settings.notifications)
+                    setMfa(settingsResponse.data.settings.mfa)
                 }
 
                 // SET ERROR MESSAGE
                 else {
                     setLoadingSettings(false)
                     setError('An error occurred! Please refresh.')
+
                     // CLEAR MESSAGE AFTER 3 SECONDS
                     setTimeout(() => {
                         setError('')
@@ -60,6 +63,7 @@ const SettingsPage = () => {
             } catch (error) {
                 setError('Something went wrong! refresh.')
                 setLoadingSettings(false)
+
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
@@ -88,14 +92,14 @@ const SettingsPage = () => {
             setLoadingSettings(true)
 
             // ATTEMPT TO UPDATE USER SETTINGS
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, { notifications: !notifications }, {
+            const notiResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, { notifications: !notifications }, {
                 headers: {
                     'x-auth-token': token,
                 }
             })
 
             // SET SUCCESS MESSAGE
-            if (response) {
+            if (notiResponse && notiResponse.data.status === 200) {
                 setSuccess(true)
                 setLoadingSettings(false)
 
@@ -139,14 +143,15 @@ const SettingsPage = () => {
             setSuccess(false)
             setLoadingSettings(true)
             // ATTEMPT TO UPDATE USER SETTINGS
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, { mfa: !mfa }, {
+            const mfaResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user).id}`, { mfa: !mfa }, {
                 headers: { 'x-auth-token': token }
             })
 
             // SET SUCCESS MESSAG
-            if (response && response.data) {
+            if (mfaResponse && mfaResponse.data.status === 200) {
                 setSuccess(true)
                 setLoadingSettings(false)
+
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
                     setSuccess(false)
@@ -157,6 +162,7 @@ const SettingsPage = () => {
             else {
                 setError("Error occured: ", response.data.msg)
                 setLoadingSettings(false)
+
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
@@ -164,8 +170,10 @@ const SettingsPage = () => {
             }
 
         } catch (error) {
+            
             setError('Something went wrong! Please try again.')
             setLoadingSettings(false)
+
             // CLEAR MESSAGE AFTER 3 SECONDS
             setTimeout(() => {
                 setError('')
@@ -189,7 +197,7 @@ const SettingsPage = () => {
 
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-2/3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
+            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 py-4 mt-20 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
 
                 <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-8">
                     <Link href="/" className='p-1 font-bold'>

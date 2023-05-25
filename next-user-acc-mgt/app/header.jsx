@@ -25,7 +25,7 @@ export default function Header() {
             const checkToken = async () => {
                 try {
                     // CALL THE API TO CHECK IF TOKEN IS VALID
-                    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token }, {
+                    const tokenResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token }, {
                         headers: {
                             'x-auth-token': token,
                             'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export default function Header() {
                     })
 
                     // IF TOKEN IS VALID, USER IS AUTHORIZED
-                    if (response && response.data) {
+                    if (tokenResponse && tokenResponse.data.status === 200) {
                         setIsAuth(true)
                     }
 
@@ -61,9 +61,12 @@ export default function Header() {
 
     // LOGOUT USER
     const logout = () => {
+
         setIsAuth(false)
         localStorage.removeItem('token')
         localStorage.removeItem('user')
+
+        // CALL THE BACKEND FOR LOGOUT
 
         // REDIRECT TO LOGIN PAGE
         window.location.href = '/login'

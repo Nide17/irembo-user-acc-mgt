@@ -35,7 +35,6 @@ const PasswordChangePage = () => {
             // RETURN TRUE IF password IS VALID, FALSE OTHERWISE
             passwordRegex.test(oldPswd)
             setError('Please enter a valid password')
-            console.error('Please enter a valid password')
             return
         }
 
@@ -43,14 +42,12 @@ const PasswordChangePage = () => {
             // RETURN TRUE IF password IS VALID, FALSE OTHERWISE
             passwordRegex.test(oldPswd)
             setError('Please enter a valid password')
-            console.error('Please enter a valid password')
             return
         }
 
         // VALIDATE PASSWORDS 
         if (oldPswd === newPswd) {
             setError('New password can not the same as the old password')
-            console.error('New password can not the same as the old password')
             return;
         }
 
@@ -62,13 +59,13 @@ const PasswordChangePage = () => {
             setLoadingChange(true)
 
             // ATTEMPT TO RESET PASSWORD
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/change-password`, { oldPswd, newPswd, userId },
+            const pswdResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/change-password`, { oldPswd, newPswd, userId },
                 {
                     headers: { 'x-auth-token': token }
                 })
 
             // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
-            if (response && response.data) {
+            if (pswdResponse && pswdResponse.data.status === 200) {
                 setSuccess(true)
                 setLoadingChange(false)
 
@@ -80,7 +77,7 @@ const PasswordChangePage = () => {
                 }, 3000)
             }
 
-            else setError(response.data.msg)
+            else setError(pswdResponse.data.msg)
 
             // SET LOADING TO FALSE
             setLoadingChange(false)
@@ -106,12 +103,12 @@ const PasswordChangePage = () => {
 
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-2/3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
+            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 py-4 mt-20 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
 
                 <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-8">
                     <Link href="/" className='p-1 font-bold'>
                         <span className='block text-4xl text-blue-100 leading-8'>Change your password</span>
-                        <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Please provide complex password.</span>
+                        <span className='block text-[12px] text-slate-800 underline underline-offset-4 leading-6'>Please provide strong password.</span>
                     </Link>
                 </div>
 

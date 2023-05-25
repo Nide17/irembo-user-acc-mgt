@@ -1,15 +1,29 @@
-const Role = require('../models/Role');
+const Role = require('../models/Role')
 
 // GET http://localhost:5002/roles - get all roles
 const getAllRoles = async (req, res) => {
     try {
-        const roles = await Role.findAll();
-        res.json(roles);
+        const roles = await Role.findAll()
+
+        // IF NO ROLES FOUND
+        if (!roles) {
+            return res.json({
+                status: 404,
+                msg: 'No roles found'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            roles
+        })
     } catch (error) {
-        res.status(500).json({ 
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
-         });
+        })
     }
 }
 
@@ -20,13 +34,28 @@ const getRoleById = async (req, res) => {
             where: {
                 id: req.params.id
             }
-        });
-        res.json(role);
+        })
+
+        // IF NO ROLE FOUND
+        if (!role) {
+            return res.json({
+                status: 404,
+                msg: 'Role not found'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            role
+        })
+
     } catch (error) {
-        res.status(500).json({ 
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
-         });
+        })
     }
 }
 
@@ -35,13 +64,28 @@ const createRole = async (req, res) => {
     try {
         const role = await Role.create({
             role: req.body.role
-        });
-        res.json(role);
+        })
+
+        // IF ROLE NOT CREATED
+        if (!role) {
+            return res.json({
+                status: 400,
+                msg: 'Role not created'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            role
+        })
+
     } catch (error) {
-        res.status(500).json({ 
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
-         });
+        })
     }
 }
 
@@ -54,13 +98,29 @@ const updateRole = async (req, res) => {
             where: {
                 id: req.params.id
             }
-        });
-        res.json(role);
+        })
+
+        // IF ROLE NOT UPDATED
+        if (!role) {
+            return res.json({
+                status: 400,
+                msg: 'Role not updated'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            role
+        })
+
     } catch (error) {
-        res.status(500).json({ 
+
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
-         });
+        })
     }
 }
 
@@ -71,13 +131,29 @@ const deleteRole = async (req, res) => {
             where: {
                 id: req.params.id
             }
-        });
-        res.json(role);
+        })
+
+        // IF ROLE NOT DELETED
+        if (!role) {
+            return res.json({
+                status: 400,
+                msg: 'Role not deleted'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            role
+        })
+
     } catch (error) {
-        res.status(500).json({ 
+
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
-         });
+        })
     }
 }
 
@@ -87,4 +163,4 @@ module.exports = {
     createRole,
     updateRole,
     deleteRole
-};
+}

@@ -32,17 +32,19 @@ const EditProfilePage = () => {
 
             try {
                 // ATTEMPT TO FETCH USER PROFILE
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`, {
+                const profileResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`, {
                     headers: {
                         'x-auth-token': token
                     }
                 })
 
                 // IF SUCCESSFUL, SET PROFILE STATE
-                if (response && response.data) setProfile(response.data)
+                if (profileResponse && profileResponse.data.status === 200) {
+                    setProfile(profileResponse.data.profile)
+                }
 
                 // SET ERROR MESSAGE
-                else setError("Error occured: ", response.data.msg)
+                else setError("Error occured: ", profileResponse.data.msg)
 
             } catch (error) {
                 // SET ERROR MESSAGE
@@ -71,7 +73,7 @@ const EditProfilePage = () => {
             setError('')
 
             // ATTEMPT TO UPDATE USER PROFILE
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`,
+            const profResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`,
                 { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality },
                 {
                     headers: {
@@ -81,10 +83,10 @@ const EditProfilePage = () => {
                 })
 
             // IF SUCCESSFUL, SET SUCCESS STATE
-            if (response && response.status === 200) {
-                return response
+            if (profResponse && profResponse.data.status === 200) {
+                return profResponse
             }
-            else setError("Error occured: ", response.data.msg)
+            else setError("Error occured: ", profResponse.data.msg)
         }
         catch (err) {
             setError('Error updating user profile')

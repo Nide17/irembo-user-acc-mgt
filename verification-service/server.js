@@ -3,7 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 require('dotenv').config()
-const PORT = process.env.VERIFICATION_SERVICE || 5003
+const PORT = process.env.PORT || 5003
 
 // IMPORTING CONNECTION TO POSTGRESQL DATABASE
 const sequelize = require('./config/db')
@@ -16,13 +16,13 @@ const accVerRoutes = require('./routes/accVerRoutes')
 app.use(cors()) // ALLOW OTHER DOMAINS TO ACCESS THIS SERVER
 app.use(express.json()) // PARSE JSON DATA FROM REQUEST BODY - POST/PUT REQUESTS
 
-// TESTING DATABASE CONNECTION AND SYNCING MODELS
+// TESTING DATABASE CONNECTION AND SYNCING MODELS TO DB
 try {
     sequelize.sync({ force: false })
     sequelize.authenticate()
     console.log('Verification service connected to the database ...')
 } catch (error) {
-    console.error('Unable to connect to the database:', error)
+    console.log('Unable to connect to the database:', error)
 }
 
 // STARTING SERVER

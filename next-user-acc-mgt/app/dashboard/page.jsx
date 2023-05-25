@@ -16,7 +16,12 @@ const DashboardPage = () => {
     const [isMfa, setIsMfa] = useState(false)
     const [profile, setProfile] = useState({})
     const [error, setError] = useState('')
-    const displayName = profile && profile.firstName ? profile.firstName : JSON.parse(user) && JSON.parse(user).email
+
+    const { firstName, lastName } = profile
+    const displayName = profile && firstName && lastName ? firstName + ' ' + lastName :
+        firstName && !lastName ? firstName : !firstName && lastName ? lastName :
+            JSON.parse(user) && JSON.parse(user).email
+
     const [veriStatus, setVeriStatus] = useState('unverified')
     const displayIcon = veriStatus === 'verified' ? '/images/verified.png' : veriStatus === 'pending' ? '/images/pending.gif' : '/images/verified.png'
     const displayText = veriStatus === 'verified' ? 'Verified account' : veriStatus === 'unverified' ? 'Unverified account' : 'Pending verification'
@@ -33,14 +38,16 @@ const DashboardPage = () => {
 
             // ATTEMPT TO GET USER PROFILE
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user) && JSON.parse(user).id}`, {
+                const userResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user) && JSON.parse(user).id}`, {
                     headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
                 })
 
-                if (response && response.data) {
-                    setProfile(response.data)
+                if (userResponse && userResponse.data.status === 200) {
+                    setProfile(userResponse.data.profile)
                 }
+
                 else setProfile({})
+
             } catch (error) {
 
                 // IF ERROR, SET THE PROFILE STATE TO NULL
@@ -54,12 +61,14 @@ const DashboardPage = () => {
 
             // REQUEST USING ID
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user) && JSON.parse(user).id}`, {
+                const settingsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${JSON.parse(user) && JSON.parse(user).id}`, {
                     headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
                 })
 
                 // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
-                response.data.mfa && setIsMfa(response.data.mfa)
+                if (settingsResponse.data.status === 200) {
+                    setIsMfa(settingsResponse.data.mfa)
+                }
 
             } catch (error) {
                 // IF ERROR, SET THE SETTINGS STATE TO NULL
@@ -73,12 +82,14 @@ const DashboardPage = () => {
 
             // REQUEST USING ID
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user) && JSON.parse(user).id}`, {
+                const verResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/user/${JSON.parse(user) && JSON.parse(user).id}`, {
                     headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
                 })
 
                 // IF SUCCESSFUL, SET THE SETTINGS STATE, ELSE SET THE SETTINGS STATE TO NULL
-                response.data && setVeriStatus(response.data.status)
+                if (verResponse.data.status === 200) {
+                    setVeriStatus(verResponse.data.accver.status)
+                }
 
             } catch (error) {
                 // IF ERROR, SET THE SETTINGS STATE TO NULL
@@ -113,16 +124,15 @@ const DashboardPage = () => {
 
     // IF AUTHENTICATED, DISPLAY DASHBOARD
     return (
-        <div className='flex flex-col items-center justify-center mt-24'>
+        <div className='flex flex-col items-center justify-center mt-24 w-full'>
 
             {/* VERIFIED ACCOUNT - Mark the account as verified - using badges (Twitter as an example) - NAME IF ANY, EMAIL OTHERWISE THEN ICON */}
             {profile && profile &&
 
-                <div className="flex items-center justify-center w-full h-min p-3 mb-4 bg-slate-200 rounded-sm sm:hover:scale-90 sm:hover:bg-blue-200 transition duration-300 ease-in-out shadow-lg shadow-white">
+                <div className="flex items-center justify-center w-full h-min p-3 mb-4 bg-slate-200 rounded-sm sm:hover:scale-95 sm:hover:bg-blue-200 transition duration-300 ease-in-out shadow-lg shadow-white t1">
                     <div className="flex flex-row ml-auto">
 
-                        {/* <div className="flex flex-col items-center justify-right w-full ml-auto"> */}
-                        <div className="flex flex-col items-center justify-center w-full">
+                        <div className="flex flex-col items-center justify-center">
                             <p className='mb-0 font-bold'>{displayName && displayName}</p>
                             <small className={`
                             ${(veriStatus === 'verified') ? 'text-green-500' : (veriStatus === 'unverified') ? 'text-red-500' : 'text-yellow-500'} 
@@ -133,26 +143,23 @@ const DashboardPage = () => {
 
                         {
                             role && role !== 2 ?
-                                <div className="w-8 h-8 sm:w-8 sm:h-6 rounded-full overflow-hidden shadow-md border-2 border-gray-200 mx-auto my-2 sm:mx-4">
-                                    <Link href="profile/profilePhoto" passHref>
-                                        <Image
-                                            src={displayIcon && displayIcon}
-                                            alt="Profile Image"
-                                            width={34}
-                                            height={34} />
-                                    </Link>
+                                <div className="w-8 h-8 sm:w-8 rounded-full overflow-hidden shadow-md border-2 border-gray-200 mx-auto my-2 sm:mx-4">
+                                    <Image
+                                        src={displayIcon && displayIcon}
+                                        alt="Profile Image"
+                                        width={34}
+                                        height={34} />
                                 </div> :
-                                <div className="flex items-center justify-center w-full h-full mx-4">
+
+                                <div className="flex items-center justify-center h-full mx-4">
                                     {/* LINK TO VERIFY OTHERS AS ADMIN */}
                                     <Link href="dashboard/verify" passHref>
-                                        <span className="flex items-center justify-center w-full h-full text-sm font-bold cursor-pointer bg-green-500 hover:bg-green-300 text-white py-2 px-4 rounded transition duration-300 ease-in-out">
+                                        <span className="flex items-center justify-center h-full text-sm font-bold cursor-pointer bg-green-500 hover:bg-green-300 text-white py-2 px-4 rounded transition duration-300 ease-in-out">
                                             Verify users
                                         </span>
                                     </Link>
                                 </div>
-
                         }
-
                     </div>
                 </div>}
 

@@ -19,17 +19,26 @@ const loginLink = async (req, res) => {
 
     // CHECK FOR VALIDITY OF EMAIL
     if (!validateEmail(email)) {
-        return res.status(400).json({ msg: 'Please enter a valid email' })
+        return res.json({
+            status: 400,
+            msg: 'Please enter a valid email'
+        })
     }
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`, {})
+        const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`, {})
 
         // CHECK IF USER EXISTS
-        if (!user) {
-            return res.status(400).json({ msg: 'User does not exist!' })
+        if (userResponse.data.status !== 200) {
+            return res.json({
+                status: 400,
+                msg: 'User does not exist!'
+            })
         }
+
+        // GET USER FROM RESPONSE
+        const user = userResponse && userResponse.data.user
 
         // GENERATE LOGIN TOKEN
         const loginToken = crypto.randomBytes(20).toString('hex')
@@ -50,7 +59,10 @@ const loginLink = async (req, res) => {
 
         // CHECK IF LOGIN TOKEN SAVED
         if (!saveLoginToken) {
-            return res.status(400).json({ msg: 'Error saving login token!' })
+            return res.json({
+                status: 400,
+                msg: 'Error saving login token!'
+            })
         }
 
         // SEND EMAIL
@@ -61,18 +73,33 @@ const loginLink = async (req, res) => {
             html: `
                 <h1>Login Link</h1>
                 <p>Click on the link below to login</p>
-                <a href="${process.env.CLIENT_SERVICE_PORT}/auth/link/${loginToken}">Login Link</a>
+                <a href="${process.env.CLIENT_SERVICE}/auth/link/${loginToken}">Login Link</a>
                 \nIf you didn't request a login link, please ignore this email!`
         }
 
         // SEND EMAIL
-        await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
+        const sendMail = await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
 
-        // RETURN EMAIL SENT SUCCESSFULLY
-        res.status(200).json({ msg: 'Email sent successfully' })
+        // CHECK IF EMAIL SENT
+        if (!sendMail) {
+            return res.json({
+                status: 400,
+                msg: 'Error sending email!'
+            })
+        }
+
+        // RETURN EMAIL SENT
+        return res.json({
+            status: 200,
+            msg: 'Email sent!'
+        })
 
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error', error })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -96,17 +123,26 @@ const verifyLink = async (req, res) => {
 
         // CHECK IF TOKEN EXISTS
         if (!tokenExists) {
-            return res.status(400).json({ msg: 'Invalid token!' })
+            return res.json({
+                status: 400,
+                msg: 'Invalid token!'
+            })
         }
 
         // CHECK IF TOKEN HAS EXPIRED
         if (tokenExists.expiration < Date.now()) {
-            return res.status(400).json({ msg: 'Token has expired!' })
+            return res.json({
+                status: 400,
+                msg: 'Token has expired!'
+            })
         }
 
         // CHECK IF TOKEN HAS BEEN USED
         if (tokenExists.used) {
-            return res.status(400).json({ msg: 'Token has been used!' })
+            return res.json({
+                status: 400,
+                msg: 'Token has been used!'
+            })
         }
 
         // UPDATE TOKEN TO USED
@@ -120,34 +156,47 @@ const verifyLink = async (req, res) => {
 
         // CHECK IF TOKEN UPDATED
         if (!updateToken) {
-            return res.status(400).json({ msg: 'Error updating token!' })
+            return res.json({
+                status: 400,
+                msg: 'Error updating token!'
+            })
         }
 
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.env.USER_SERVICE}/users/link/${tokenExists.userId}`)
+        const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/link/${tokenExists.userId}`)
 
         // CHECK IF USER EXISTS
-        if (!user) {
-            return res.status(400).json({ msg: 'User does not exist!' })
+        if (userResponse.data.status !== 200) {
+            return res.json({
+                status: 400,
+                msg: 'User does not exist!'
+            })
         }
+
+        // GET USER FROM RESPONSE
+        const user = userResponse.data.user
+        console.log(user)
 
         // GENERATE JWT TOKEN
         const jwtToken = jwt.sign({
             id: user.data.id,
-            email: user.data.email
+            email: user.data.email,
+            role: user.data.roleId
         }, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h'
         })
 
         // RETURN JWT TOKEN
-        res.status(200).json({
+        return res.json({
+            status: 200,
             token: jwtToken,
             user: user.data,
             msg: `Login successful!`
         })
 
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })

@@ -26,14 +26,12 @@ const ResetPage = () => {
             // RETURN TRUE IF password IS VALID, FALSE OTHERWISE
             passwordRegex.test(password)
             setError('Please enter a valid password')
-            console.error('Please enter a valid password')
             return
         }
 
         // VALIDATE PASSWORDS 
         if (password !== password2) {
             setError('Passwords do not match')
-            console.error('Passwords do not match')
             return;
         }
 
@@ -73,7 +71,7 @@ const ResetPage = () => {
 
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-2/3 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
+            <form className="flex flex-col items-center justify-center w-5/6 sm:w-2/5 h-4/5 py-4 mt-20 bg-blue-500 rounded-lg sm:hover:scale-110 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white" onSubmit={handleSubmit}>
 
                 <div className="flex-none w-120 h-16 flex items-center justify-center text-center my-8">
                     <Link href="/" className='p-1 font-bold'>

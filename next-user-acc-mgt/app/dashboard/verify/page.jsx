@@ -16,12 +16,12 @@ const VerificationPage = () => {
     // STATE VARIABLES
     const [vers, setVers] = useState()
     const [error, setError] = useState('')
-    const [success, setSuccess] = useState(false)
     const [loadingVers, setLoadingVers] = useState(false)
 
     // FETCH USER ID AND TOKEN FROM LOCAL STORAGE
     const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    const userRole = JSON.parse(user).roleId
 
     // FETCH ALL VERIFICATION REQUESTS
     useEffect(() => {
@@ -32,11 +32,11 @@ const VerificationPage = () => {
                 setLoadingVers(true)
 
                 // ATTEMPT TO FETCH ALL VERIFICATION REQUESTS
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers`, { headers: { 'x-auth-token': token } })
+                const versResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers`, { headers: { 'x-auth-token': token } })
 
                 // SET VERIFICATION REQUESTS
-                if (response) {
-                    setVers(response.data)
+                if (versResponse && versResponse.data.status === 200) {
+                    setVers(versResponse.data.accvers)
                 }
 
                 // SET ERROR MESSAGE
@@ -66,17 +66,17 @@ const VerificationPage = () => {
     }, [])
 
     // HANDLE VERIFICATION REQUEST
-    const handleVerify = async (id, status) => {
+    const handleVerify = async (id, userId, status) => {
         try {
             // CLEAR ERROR MESSAGE
             setError('')
             setLoadingVers(true)
 
             // ATTEMPT TO VERIFY USER
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/verify/${id}`, { status }, { headers: { 'x-auth-token': token } })
+            const verifyResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/accvers/verify/${id}`, { userId, status }, { headers: { 'x-auth-token': token } })
 
             // SET VERIFICATION REQUESTS
-            if (response) {
+            if (verifyResponse && verifyResponse.data.status === 200) {
                 setLoadingVers(false)
 
                 // RELAOD VERIFICATION PAGE
@@ -91,7 +91,6 @@ const VerificationPage = () => {
                 setTimeout(() => {
                     setError('')
                 }, 3000)
-
             }
 
             // SET LOADING TO FALSE
@@ -100,6 +99,7 @@ const VerificationPage = () => {
         } catch (error) {
             setLoadingVers(false)
             setError('An error occurred! Please refresh.')
+
             // CLEAR MESSAGE AFTER 3 SECONDS
             setTimeout(() => {
                 setError('')
@@ -107,7 +107,12 @@ const VerificationPage = () => {
         }
     }
 
-    return (
+    // IF NOT AUTHENTICATED, DISPLAY MESSAGE
+    if (!isAuthenticated || userRole !== 2) {
+        return <p>You are not allowed to access this page!</p>
+    }
+
+    else return (
         <div className='flex flex-col items-center justify-center mt-24'>
 
             <div className="flex flex-col items-center justify-center w-11/12 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-99 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
@@ -132,7 +137,6 @@ const VerificationPage = () => {
 
                                 <tbody>
                                     {
-
                                         vers && vers.map((ver, index) => (
                                             <tr key={index} className='text-gray-700'>
                                                 <td className='w-12 py-2 px-4 border-b'>
@@ -147,7 +151,7 @@ const VerificationPage = () => {
                                                     <Link href={ver.documentImage}>
 
                                                         <span className='flex flex-row'>
-                                                            <span className='mr-2 capitalize'>
+                                                            <span className='mr-2 capitalize w-3/4'>
                                                                 {ver.documentType}
                                                             </span>
                                                             <Image
@@ -172,7 +176,7 @@ const VerificationPage = () => {
                                                             <input type="checkbox"
                                                                 value={ver.status === 'verified' ? true : false}
                                                                 className="sr-only peer"
-                                                                onChange={() => handleVerify(ver.id, ver.status === 'verified' ? 'unverified' : 'verified')}
+                                                                onChange={() => handleVerify(ver.id, ver.userId, ver.status === 'verified' ? 'unverified' : 'verified')}
                                                                 checked={ver.status === 'verified' ? true : false}
                                                             />
 
@@ -192,5 +196,4 @@ const VerificationPage = () => {
         </div>
     )
 }
-
 export default VerificationPage

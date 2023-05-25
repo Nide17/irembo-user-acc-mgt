@@ -2,11 +2,29 @@ const Settings = require('../models/Settings')
 
 // GET http://localhost:5002/settings - get all settings
 const getAllSettings = async (req, res) => {
+
     try {
+
+        // FIND ALL SETTINGS
         const stgs = await Settings.findAll()
-        res.json(stgs)
+
+        // IF NO SETTINGS FOUND
+        if (!stgs) {
+            return res.json({
+                status: 404,
+                msg: 'No settings found'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            stgs
+        })
+
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })
@@ -21,9 +39,24 @@ const getSettingsById = async (req, res) => {
                 id: req.params.id
             }
         })
-        res.json(settings)
+
+        // IF NO SETTINGS FOUND
+        if (!settings) {
+            return res.json({
+                status: 404,
+                msg: 'Settings not found'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            settings
+        })
+
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })
@@ -34,7 +67,7 @@ const getSettingsById = async (req, res) => {
 const getSettingsByUserId = async (req, res) => {
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { userId } = req.params
-
+    
     // IF USER HAS SETTINGS, RETURN SETTINGS
     try {
         const settings = await Settings.findOne({
@@ -51,20 +84,36 @@ const getSettingsByUserId = async (req, res) => {
                 mfa: false
             })
 
+            // IF SETTINGS CANNOT BE CREATED
             if (!createdSettings) {
-                throw Error('Something went wrong while creating the settings!')
+                return res.json({
+                    status: 400,
+                    msg: 'Something went wrong while creating the settings!'
+                })
             }
+
+            // SEND SUCCESS RESPONSE
             else {
-                res.status(200).json(createdSettings)
+
+                return res.json({
+                    status: 200,
+                    createdSettings
+                })
             }
         }
 
+        // SEND SUCCESS RESPONSE IF USER HAS SETTINGS
         else {
-            res.status(200).json(settings)
+            return res.json({
+                status: 200,
+                settings
+            })
         }
 
     } catch (error) {
-        res.status(500).json({
+
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })
@@ -78,10 +127,23 @@ const createSettings = async (req, res) => {
             name: req.body.name
         })
 
-        res.json(settings)
+        // IF NO SETTINGS FOUND
+        if (!settings) {
+            return res.json({
+                status: 400,
+                msg: 'Something went wrong while creating the settings!'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            settings
+        })
 
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })
@@ -104,11 +166,23 @@ const updateSettings = async (req, res) => {
             }
         })
 
-        if (!settings) throw Error('Something went wrong while updating the settings!')
+        // IF NO SETTINGS FOUND
+        if (!settings) {
+            return res.json({
+                status: 404,
+                msg: 'Settings not found'
+            })
+        }
 
-        res.json(settings)
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            settings
+        })
+
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })
@@ -123,9 +197,24 @@ const deleteSettings = async (req, res) => {
                 id: req.params.id
             }
         })
-        res.json(settings)
+
+        // IF NO SETTINGS FOUND
+        if (!settings) {
+            return res.json({
+                status: 404,
+                msg: 'Settings not found'
+            })
+        }
+
+        // SEND SUCCESS RESPONSE
+        return res.json({
+            status: 200,
+            settings
+        })
+
     } catch (error) {
-        res.status(500).json({
+        return res.json({
+            status: 500,
             msg: 'Internal server error',
             error
         })

@@ -14,30 +14,42 @@ const loginUser = async (req, res) => {
 
     // SIMPLE VALIDATION
     if (!email || !password) {
-        return res.status(400).json({ msg: 'Please fill all fields' })
+        return res.json({
+            status: 400,
+            msg: 'Please fill all fields'
+        })
     }
 
     // CHECK FOR VALIDITY OF EMAIL
     if (!validateEmail(email)) {
-        return res.status(400).json({ msg: 'Please enter a valid email' })
+        return res.json({
+            status: 400,
+            msg: 'Please enter a valid email'
+        })
     }
 
     // TRYING TO GET USER
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const response = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
+        const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
 
         // IF USER NOT FOUND, RETURN ERROR
-        if (!response.data) {
-            return res.status(404).json({ msg: 'User not found!' })
+        if (userResponse.data.status !== 200) {
+            return res.json({
+                status: 404,
+                msg: 'User not found!'
+            })
         }
 
         // GET USER FROM RESPONSE
-        const user = response.data
+        const user = userResponse && userResponse.data.user
 
         // CHECK IF USER EXISTS
         if (!user) {
-            return res.status(400).json({ msg: 'User does not exist!' })
+            return res.json({
+                status: 404,
+                msg: 'User does not exist!'
+            })
         }
 
         else {
@@ -45,23 +57,44 @@ const loginUser = async (req, res) => {
             const isMatch = await bcrypt.compare(password, user.password)
 
             if (!isMatch) {
-                return res.status(400).json({ msg: 'Invalid credentials!' })
+                return res.json({
+                    status: 400,
+                    msg: 'Invalid credentials!'
+                })
             }
 
+            console.log(user)
+
             // IF ALL IS GOOD, SIGN AND GENERATE TOKEN
-            const token = jwt.sign({ id: user.id, email }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
+            const token = jwt.sign({
+                id: user.id,
+                email,
+                role: user.roleId
+            }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
 
             // IF TOKEN NOT GENERATED, RETURN ERROR
             if (!token) {
-                return res.status(400).json({ msg: 'Couldnt sign in, try again!' })
+                return res.json({
+                    status: 400,
+                    msg: 'Couldnt sign in, try again!'
+                })
             }
 
             // RETURN TOKEN AND USER
-            return res.status(200).json({ token, user: user })
+            return res.json({
+                status: 200,
+                token,
+                user
+            })
         }
 
     } catch (error) {
-        return res.status(500).json({ msg: 'Internal server error', error })
+
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -74,7 +107,8 @@ const verifyToken = async (req, res) => {
 
     // IF NO TOKEN FOUND, RETURN ERROR
     if (!token) {
-        return res.status(401).json({
+        return res.json({
+            status: 401,
             success: false,
             msg: 'No token, authorizaton Denied',
             code: 'NO_TOKEN'
@@ -87,7 +121,8 @@ const verifyToken = async (req, res) => {
 
         // IF TOKEN IS NOT VERIFIED, RETURN ERROR
         if (!verified) {
-            return res.status(401).json({
+            return res.json({
+                status: 401,
                 success: false,
                 msg: 'Token verification failed, authorization denied',
                 code: 'TOKEN_VERIFICATION_FAILED'
@@ -99,7 +134,8 @@ const verifyToken = async (req, res) => {
             req.user = verified
 
             // RETURN SUCCESS
-            res.status(200).json({
+            res.json({
+                status: 200,
                 success: true,
                 msg: 'Token verified',
                 code: 'TOKEN_VERIFIED',
@@ -107,25 +143,17 @@ const verifyToken = async (req, res) => {
             })
         }
     } catch (error) {
-        return res.status(400).json({
+        return res.json({
+            status: 500,
             success: false,
             msg: 'Invalid token, authorizaton Denied',
-            code: 'INVALID_TOKEN'
+            code: 'INVALID_TOKEN',
+            error
         })
     }
 }
-
-// LOGOUT - logout user
-const logoutUser = async (req, res) => {
-
-    // IMPLEMENT LOGOUT
-    res.status(200).json({ msg: 'Logged out successfully!' })
-}
-
-
 // EXPORTS
 module.exports = {
     loginUser,
-    logoutUser,
     verifyToken
 }

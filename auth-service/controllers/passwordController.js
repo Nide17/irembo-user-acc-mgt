@@ -20,16 +20,23 @@ const forgotPassword = async (req, res) => {
 
     // CHECK FOR VALIDITY OF EMAIL
     if (!validateEmail(email)) {
-        return res.status(400).json({ msg: 'Please enter a valid email' })
+        return res.json({
+            status: 400,
+            msg: 'Please enter a valid email'
+        })
     }
 
     try {
+
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.USER_SERVICE}/users/email/${email}`)
+        const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/email/${email}`)
 
         // CHECK IF USER EXISTS
-        if (!user) {
-            return res.status(400).json({ msg: 'User does not exist!' })
+        if (userResponse.data.status !== 200) {
+            return res.json({
+                status: 400,
+                msg: 'User does not exist!'
+            })
         }
 
         // GENERATE RESET TOKEN
@@ -45,12 +52,15 @@ const forgotPassword = async (req, res) => {
         const saveResetToken = await PswdReset.create({
             token: hashedResetToken,
             expiryDate,
-            userId: user.data.id
+            userId: userResponse.data.user.id
         })
 
         // CHECK IF RESET TOKEN SAVED
         if (!saveResetToken) {
-            console.error('Error saving reset token')
+            return res.json({
+                status: 400,
+                msg: 'Error saving reset token!'
+            })
         }
 
         // SEND EMAIL
@@ -66,15 +76,30 @@ const forgotPassword = async (req, res) => {
         }
 
         // SEND EMAIL
-        await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
+        const sendMail = await sendEmailWithNodemailer.sendEmailWithNodemailer(req, res, emailData)
 
-        // RETURN EMAIL SENT SUCCESSFULLY
-        res.status(200).json({
-            msg: `Email sent successfully!`
-        })
+        // CHECK IF EMAIL SENT
+        if (!sendMail) {
+            return res.json({
+                status: 400,
+                msg: 'Error sending email!'
+            })
+        }
+
+        else {
+            // RETURN EMAIL SENT SUCCESSFULLY
+            return res.json({
+                status: 200,
+                msg: `Reset email sent to ${email} successfully!`
+            })
+        }
 
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error', error })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -98,17 +123,26 @@ const resetPassword = async (req, res) => {
 
         // CHECK IF RESET TOKEN EXISTS
         if (!resetTokenExists) {
-            return res.status(400).json({ msg: 'Invalid reset token!' })
+            return res.json({
+                status: 400,
+                msg: 'Invalid reset token!'
+            })
         }
 
         // CHECK IF RESET TOKEN HAS EXPIRED
         if (resetTokenExists.expiryDate < Date.now()) {
-            return res.status(401).json({ msg: 'Reset token has expired!' })
+            return res.json({
+                status: 401,
+                msg: 'Reset token has expired!'
+            })
         }
 
         // CHECK IF NEW PASSWORD IS CORRECT
         if (!validatePassword(password)) {
-            return res.status(403).json({ msg: 'Password must be atleast 8 characters long and contain atleast 1 uppercase, 1 lowercase, 1 number and 1 special character' })
+            return res.json({
+                status: 400,
+                msg: 'Password must be atleast 8 characters long and contain atleast 1 uppercase, 1 lowercase, 1 number and 1 special character'
+            })
         }
 
         // HASH NEW PASSWORD
@@ -120,13 +154,33 @@ const resetPassword = async (req, res) => {
             password: hashedPassword
         })
 
+        // CHECK IF USER UPDATED
+        if (!updatedUser.data) {
+            return res.json({
+                status: 400,
+                msg: 'Error updating password!'
+            })
+        }
+
+        // DELETE RESET TOKEN
+        await PswdReset.destroy({
+            where: {
+                token: resetTokenDecrypted
+            }
+        })
+
         // RETURN UPDATED USER
-        res.status(200).json({
+        return res.json({
+            status: 200,
             updatedUser: updatedUser.data
         })
 
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error', error })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 
@@ -139,7 +193,7 @@ const changePassword = async (req, res) => {
 
     try {
         // ASK THE USER SERVICE FOR THIS USER
-        const user = await axios.get(`${process.USER_SERVICE}/users/${userId}`, {
+        const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/${userId}`, {
             headers: {
                 'Content-Type': req.headers['content-type'],
                 'x-auth-token': req.headers['x-auth-token']
@@ -147,20 +201,32 @@ const changePassword = async (req, res) => {
         })
 
         // CHECK IF USER EXISTS
-        if (!user) {
-            return res.status(400).json({ msg: 'User does not exist!' })
+        if (userResponse.data.status !== 200) {
+            return res.json({
+                status: 400,
+                msg: 'User does not exist!'
+            })
         }
 
+        // GET USER FROM RESPONSE
+        const user = userResponse.data.user
+
         // CHECK IF OLD PASSWORD IS CORRECT
-        const isMatch = await bcrypt.compare(oldPswd, user.data.password)
+        const isMatch = await bcrypt.compare(oldPswd, user.password)
 
         if (!isMatch) {
-            return res.status(400).json({ msg: 'Invalid old credentials!' })
+            return res.json({
+                status: 400,
+                msg: 'Invalid old credentials!'
+            })
         }
 
         // CHECK IF NEW PASSWORD IS CORRECT
         if (!validatePassword(newPswd)) {
-            return res.status(400).json({ msg: 'Password must be atleast 8 characters long and contain atleast 1 uppercase, 1 lowercase, 1 number and 1 special character' })
+            return res.json({
+                status: 400,
+                msg: 'Password must be atleast 8 characters long and contain atleast 1 uppercase, 1 lowercase, 1 number and 1 special character'
+            })
         }
 
         // HASH NEW PASSWORD
@@ -169,27 +235,39 @@ const changePassword = async (req, res) => {
 
         // CHECK IF NEW PASSWORD IS SAME AS OLD PASSWORD
         if (oldPswd === newPswd) {
-            return res.status(400).json({ msg: 'New password cannot be same as old password!' })
+            return res.json({
+                status: 400,
+                msg: 'New password cannot be same as old password!'
+            })
         }
 
         // UPDATE PASSWORD
-        const updatedUser = await axios.put(`${process.env.USER_SERVICE}/users/${req.user.id}`, { password: hashedPassword }, {
+        const updatedUserResponse = await axios.put(`${process.env.USER_SERVICE}/users/${req.user.id}`, { password: hashedPassword }, {
             headers: {
                 'x-auth-token': req.headers['x-auth-token'],
             }
         })
 
         // RETURN UPDATED USER
-        if (!updatedUser) {
-            return res.status(400).json({ msg: '\n\n\nAn error occured!' })
+        if (updatedUserResponse.data.status !== 200) {
+            return res.json({
+                status: 400,
+                msg: '\n\n\nPassword can not be updated!'
+            })
         }
 
-        res.status(200).json({
-            updatedUser: updatedUser.data // res.status(200).json(updatedUser) - Error changing password TypeError: Converting circular structure to JSON
+        // RETURN UPDATED USER
+        return res.json({
+            status: 200,
+            updatedUser: updatedUserResponse.data.user // - Error changing password TypeError: Converting circular structure to JSON
         })
 
     } catch (error) {
-        res.status(500).json({ msg: 'Internal server error', error })
+        return res.json({
+            status: 500,
+            msg: 'Internal server error',
+            error
+        })
     }
 }
 

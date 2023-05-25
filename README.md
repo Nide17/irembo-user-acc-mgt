@@ -85,5 +85,5 @@ This is a user account management solution built with Node.js runtime, Express f
 Note: Make sure you have Node.js and Postgres, installed and configured on your system and AWS S3 service to store images and Gmail account configured to send emails and their credentials before running the solution.
 
 Of course, there is a room for improvement on this soultion. So, feel free to provide feedback and improve suggestions.
- 
+
 If you have any questions or issues with environment variables, please contact me on <nidedrogba@gmail.com>.

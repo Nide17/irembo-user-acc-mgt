@@ -21,7 +21,7 @@ const VerificationPage = () => {
     // FETCH USER ID AND TOKEN FROM LOCAL STORAGE
     const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
-    const userRole = JSON.parse(user).roleId
+    const userRole = user && JSON.parse(user).roleId
 
     // FETCH ALL VERIFICATION REQUESTS
     useEffect(() => {

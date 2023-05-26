@@ -61,10 +61,12 @@ const RegisterPage = () => {
             }
             else {
                 setRegisterLoading(false)
-                setError("Error occured: ", usersResponse.data.msg)
+                setRegError("Error occured: ", usersResponse.data.msg)
+                console.log(usersResponse)
             }
         }
         catch (err) {
+            console.log(err)
             setRegError('Error signing up!')
         }
 

@@ -81,6 +81,7 @@ This is a user account management solution built with Node.js runtime, Express f
 **Access the application:**
 
 * Open your web browser and visit <http://localhost:3000> to access the user account management application.
+* Finally, the deployed online version is available on <https://irembo-user-acc-mgt.vercel.app/>
 
 Note: Make sure you have Node.js and Postgres, installed and configured on your system and AWS S3 service to store images and Gmail account configured to send emails and their credentials before running the solution.
 

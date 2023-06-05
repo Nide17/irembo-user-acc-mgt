@@ -38,7 +38,7 @@ This is a user account management solution built with Node.js runtime, Express f
 
 **Configure the Postgres database and environment variables:*
 
-* Create a postgres database for each microservice, such as user, auth, and verification, and provide the database connection details in the .env file for each microservice as shown here: [<https://drive.google.com/file/d/1Okws5a5-Xqs1rB8VMeAChiTMLmzOVf5y/view?usp=drive_link>](https://drive.google.com/file/d/1Okws5a5-Xqs1rB8VMeAChiTMLmzOVf5y/view?usp=drive_link)
+* Create a postgres database for each microservice, such as user, auth, and verification, and provide the database connection details in the .env file for each microservice as shown here: [<https://drive.google.com/drive/folders/1DayfXpwHOYZD0qzSukHFaz8KufgWeJHp?usp=sharing>](https://drive.google.com/drive/folders/1DayfXpwHOYZD0qzSukHFaz8KufgWeJHp?usp=sharing)
 
 * Provide the necessary environment variables, i.e., the (.env.local) file for frontend and (.env) for each of the backend microservices and gateway as such examples: NEXT_PUBLIC_API_GATEWAY, DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DOMAIN, DB_PORT, USER_SERVICE, AUTH_SERVICE, CLIENT_SERVICE, JWT_SECRET_KEY, SMTP_HOST=smtp.gmail.com, SMTP_PORT=465, SMTP_USER, SMTP_PASSWORD, USER_PROFILE_PHOTOS, AWS_USER_ACCESS_KEY_ID, AWS_USER_SECRET_ACCESS_KEY, JWT_EXPIRES_IN=15m, to provide database connection details, AWS S3 credentials, and other configuration values as shown below or through the above link:
 

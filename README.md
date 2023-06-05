@@ -54,7 +54,7 @@ This is a user account management solution built with Node.js runtime, Express f
 
 **Installing the dependencies:*
   
-* Install dependencies by runnig the following command inside /irembo-user-acc-mgt/irembo-user-acc-mgt directory to install dependencies for the API gateway, frontend, and backend microservices all at once:
+* Install dependencies by runnig the following command inside /irembo-user-acc-mgt/api-gateway directory to install dependencies for the API gateway, frontend, and backend microservices all at once:
   
   > npm run install-dev
 

@@ -1,12 +1,3 @@
-/**
- * id	INTEGER	Unique identifier for the login link
-user_id	INTEGER	Foreign key referencing the user associated with the link
-token	VARCHAR	Unique token generated for the login link
-expiration	TIMESTAMP	Expiration timestamp for the login link
-created_at	TIMESTAMP	Timestamp for when the login link was created
-used	BOOLEAN	Flag indicating if the login link has been used
- */
-
 const { DataTypes } = require('sequelize')
 const db = require('../config/db')
 

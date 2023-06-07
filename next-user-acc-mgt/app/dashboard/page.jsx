@@ -150,7 +150,8 @@ const DashboardPage = () => {
                                         src={displayIcon && displayIcon}
                                         alt="Profile Image"
                                         width={34}
-                                        height={34} />
+                                        height={34} 
+                                        priority />
                                 </div> :
 
                                 <div className="flex items-center justify-center h-full mx-4">
@@ -165,7 +166,7 @@ const DashboardPage = () => {
                     </div>
                 </div>}
 
-            <DashboardContent isMfa={isMfa} profile={profile} />
+            <DashboardContent user={user} isMfa={isMfa} profile={profile} />
         </div>)
 }
 

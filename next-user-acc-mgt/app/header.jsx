@@ -66,8 +66,6 @@ export default function Header() {
         localStorage.removeItem('token')
         localStorage.removeItem('user')
 
-        // CALL THE BACKEND FOR LOGOUT
-
         // REDIRECT TO LOGIN PAGE
         window.location.href = '/login'
     }

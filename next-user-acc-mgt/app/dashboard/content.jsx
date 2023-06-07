@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import moment from 'moment'
 
-const DashboardContent = ({ profile, isMfa }) => {
+const DashboardContent = ({ user, profile, isMfa }) => {
 
     const fName = profile && profile.firstName || ''
     const lName = profile && profile.lastName || ''
@@ -25,9 +25,11 @@ const DashboardContent = ({ profile, isMfa }) => {
                         <Link href="/profile/edit" className="w-1/2 flex items-center justify-center p-2">
                             <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Edit Profile</span>
                         </Link>
-                        <Link href="/verification" className="w-1/2 flex items-center justify-center p-2">
-                            <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Verify Account</span>
-                        </Link>
+                        {JSON.parse(user).roleId !== 2 &&
+                            <Link href="/verification" className="w-1/2 flex items-center justify-center p-2">
+                                <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Verify Account</span>
+                            </Link>
+                        }
                         <Link href="/auth/change" className="w-1/2 flex items-center justify-center p-2">
                             <span className='flex flex-wrap items-center justify-center text-xl text-white font-bold bg-amber-600 h-32 w-40 p-4 rounded-lg'>Change Password</span>
                         </Link>
@@ -55,6 +57,7 @@ const DashboardContent = ({ profile, isMfa }) => {
                                 width={240}
                                 height={240}
                                 className='rounded-lg'
+                                priority
                             />
                         </div>
 

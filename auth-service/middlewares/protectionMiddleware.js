@@ -9,7 +9,8 @@ const protectionMiddleware = (req, res, next) => {
 
     // IF NO TOKEN FOUND, RETURN ERROR
     if (!token) {
-        return res.status(401).json({
+        return res.json({
+            status: 401,
             success: false,
             msg: 'No token, authorizaton Denied',
             code: 'NO_TOKEN',
@@ -22,7 +23,8 @@ const protectionMiddleware = (req, res, next) => {
 
         // IF TOKEN IS NOT VERIFIED, RETURN ERROR
         if (!verified) {
-            return res.status(401).json({
+            return res.json({
+                status: 401,
                 success: false,
                 msg: 'Token verification failed, authorization denied',
                 code: 'TOKEN_VERIFICATION_FAILED'
@@ -36,7 +38,8 @@ const protectionMiddleware = (req, res, next) => {
         next()
     }
     catch (error) {
-        return res.status(400).json({
+        return res.json({
+            status: 401,
             success: false,
             msg: 'Session expired',
             code: 'SESSION_EXPIRED',

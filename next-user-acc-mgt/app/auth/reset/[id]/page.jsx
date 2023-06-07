@@ -54,7 +54,7 @@ const ResetPage = () => {
 
                 // REDIRECT TO LOGIN PAGE AFTER 5 SECONDS
                 setTimeout(() => {
-                    window.location.href = '/auth/login'
+                    window.location.href = '/login'
                 }, 5000)
             }
 

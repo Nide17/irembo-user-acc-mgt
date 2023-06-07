@@ -1,8 +1,9 @@
 const express = require('express')
-const router = express.Router()
 const profileController = require('../controllers/profileController')
 const userProtection = require('../middlewares/userProtection')
 const { profileUpload } = require('../middlewares/profileUpload')
+
+const router = express.Router() // INITIALIZE EXPRESS ROUTER USED FOR DEFINING ROUTES FOR DIFFERENT ENDPOINTS
 
 // Private route - get setting by userId
 // GET http://localhost:5002/profiles/user/:userId

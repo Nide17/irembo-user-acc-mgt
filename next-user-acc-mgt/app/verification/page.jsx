@@ -156,7 +156,7 @@ const VerificationPage = () => {
             }
             else {
                 setLoading(false)
-                setError('Error occurred: ' + verResponse.data.msg)
+                setError(`Error occurred: ${verResponse.data.msg}`)
                 return error
             }
         }
@@ -171,15 +171,6 @@ const VerificationPage = () => {
     if (!isAuthenticated) {
         return <p>Please log in to verify your account.</p>
     }
-
-    // // IF LOADING, SHOW LOADING PAGE
-    // if (loading) {
-    //     return (
-    //         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-    //             <Loading />
-    //         </div>
-    //     )
-    // }
 
     // IF USER IS AUTHENTICATED, SHOW VERIFICATION PAGE
     return (

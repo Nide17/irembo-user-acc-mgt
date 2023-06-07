@@ -77,7 +77,7 @@ const ProfilePhotoPage = () => {
 
             // SET ERROR MESSAGE
             else {
-                setError("Error occured: ", photoResponse.data.msg)
+                setError(`Error occured: ${photoResponse.data.msg}`)
             }
 
             // SET LOADING TO FALSE

@@ -16,6 +16,7 @@ const VerificationPage = () => {
     const [vers, setVers] = useState()
     const [error, setError] = useState('')
     const [loadingVers, setLoadingVers] = useState(false)
+    const [success, setSuccess] = useState(false)
 
     // FETCH USER ID AND TOKEN FROM LOCAL STORAGE
     const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null
@@ -40,8 +41,10 @@ const VerificationPage = () => {
 
                 // SET ERROR MESSAGE
                 else {
-                    setLoadingVers(false)
+                    // SET SUCCESS STATE
+                    setSuccess(false)
                     setError('An error occurred! Please refresh.')
+
                     // CLEAR MESSAGE AFTER 3 SECONDS
                     setTimeout(() => {
                         setError('')
@@ -53,7 +56,11 @@ const VerificationPage = () => {
 
             } catch (error) {
                 setLoadingVers(false)
+
+                // SET SUCCESS STATE
+                setSuccess(false)
                 setError('An error occurred! Please refresh.')
+
                 // CLEAR MESSAGE AFTER 3 SECONDS
                 setTimeout(() => {
                     setError('')
@@ -66,6 +73,7 @@ const VerificationPage = () => {
 
     // HANDLE VERIFICATION REQUEST
     const handleVerify = async (id, userId, status) => {
+
         try {
             // CLEAR ERROR MESSAGE
             setError('')
@@ -78,10 +86,10 @@ const VerificationPage = () => {
             if (verifyResponse && verifyResponse.data.status === 200) {
                 setLoadingVers(false)
 
-                // RELAOD VERIFICATION PAGE TO REFLECT CHANGES AFTER 1 SECONDS
+                // RELAOD VERIFICATION PAGE TO REFLECT CHANGES AFTER 3 SECONDS
                 setTimeout(() => {
                     window.location.reload()
-                }, 2000)
+                }, 3000)
             }
 
             // SET ERROR MESSAGE
@@ -119,79 +127,90 @@ const VerificationPage = () => {
             <div className="flex flex-col items-center justify-center w-11/12 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-99 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
                 <h1 className="text-3xl text-white font-bold my-8">Verify users</h1>
 
+                {/* NOTIFICATION - LOADING, ERROR, SUCCESS */}
+                {loadingVers && !error && !success && (
+                    <div className="flex items-center justify-center pb-2">
+                        <Loading />
+                    </div>
+                )}
+
+                {error && (
+                    <div className="flex items-center justify-center h-16 mx-2 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-100">
+                        <p className="text-center text-red-700 text-sm">{error}</p>
+                    </div>)}
+
+                {!loadingVers && !error && success && (
+                    <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
+                        <p className="text-center text-green-900 text-lg">Success, status updated ...</p>
+                    </div>
+                )}
+
                 <div className="flex flex-wrap items-center justify-center w-full">
-                    {
-                        loadingVers ?
+                    <table className="min-w-full bg-white border border-gray-300">
+                        <thead>
+                            <tr className='text-white bg-slate-200 font-extrabold uppercase text-left'>
+                                <th className='w-12 py-2 px-4 bg-black border-b'>#</th>
+                                <th className='py-2 px-4 bg-black border-b'>Name</th>
+                                <th className='py-2 px-4 bg-black border-b'>Document Type</th>
+                                <th className='py-2 px-4 bg-black border-b'>Document Number</th>
+                                <th className='py-2 px-4 bg-black border-b w-1/12'>Action</th>
+                            </tr>
+                        </thead>
 
-                            <Loading /> :
+                        <tbody>
+                            {
+                                vers && vers.map((ver, index) => (
+                                    <tr key={index} className='text-gray-700'>
+                                        <td className='w-12 py-2 px-4 border-b'>
+                                            {index + 1}
+                                        </td>
 
-                            <table className="min-w-full bg-white border border-gray-300">
-                                <thead>
-                                    <tr className='text-white bg-slate-200 font-extrabold uppercase text-left'>
-                                        <th className='w-12 py-2 px-4 bg-black border-b'>#</th>
-                                        <th className='py-2 px-4 bg-black border-b'>Name</th>
-                                        <th className='py-2 px-4 bg-black border-b'>Document Type</th>
-                                        <th className='py-2 px-4 bg-black border-b'>Document Number</th>
-                                        <th className='py-2 px-4 bg-black border-b w-1/12'>Action</th>
+                                        <td className='py-2 px-4 border-b'>
+                                            {ver.firstName + ' ' + ver.lastName}
+                                        </td>
+
+                                        <td className='py-2 px-4 border-b'>
+                                            <Link href={ver.documentImage}>
+
+                                                <span className='flex flex-row'>
+                                                    <span className='mr-2 capitalize w-3/4'>
+                                                        {ver.documentType === 'nid' ? 'National ID' : ver.documentType}
+                                                    </span>
+                                                    <Image
+                                                        src="/images/download.gif"
+                                                        alt="Profile Image"
+                                                        width={24}
+                                                        height={4}
+                                                        style={{ width: '8%', height: 'auto' }}
+                                                        priority
+                                                    />
+                                                </span>
+                                            </Link>
+                                        </td>
+
+                                        <td className='py-2 px-4 border-b'>
+                                            <b>
+                                                {ver.documentNumber}
+                                            </b>
+                                        </td>
+
+                                        <td className='py-2 px-4 border-b w-6/12 flex'>
+                                            <select
+                                                className={`h-9 my-3 sm:m-2 px-2 text-center rounded-lg ${ver.status === 'verified' ? 'text-green-700' : ver.status === 'unverified' ? 'text-red-700' : 'text-gray-700'} font-bold bg-white border border-gray-300 focus:border-yellow-500`}
+                                                id="status"
+                                                value={ver && ver.status ? ver.status : "SELECT DECISION"}
+                                                onChange={(event) => handleVerify(ver.id, ver.userId, event.target.value)}
+                                                required
+                                            >
+                                                <option value="verified" className='bg-green-600 text-white'>VERIFIED</option>
+                                                <option value="unverified" className='bg-red-500 text-white'>UNVERIFIED</option>
+                                                <option value="pending" className='bg-gray-500 text-white'>PENDING</option>
+                                            </select>
+                                        </td>
                                     </tr>
-                                </thead>
-
-                                <tbody>
-                                    {
-                                        vers && vers.map((ver, index) => (
-                                            <tr key={index} className='text-gray-700'>
-                                                <td className='w-12 py-2 px-4 border-b'>
-                                                    {index + 1}
-                                                </td>
-
-                                                <td className='py-2 px-4 border-b'>
-                                                    {ver.firstName + ' ' + ver.lastName}
-                                                </td>
-
-                                                <td className='py-2 px-4 border-b'>
-                                                    <Link href={ver.documentImage}>
-
-                                                        <span className='flex flex-row'>
-                                                            <span className='mr-2 capitalize w-3/4'>
-                                                                {ver.documentType}
-                                                            </span>
-                                                            <Image
-                                                                src="/images/download.gif"
-                                                                alt="Profile Image"
-                                                                width={24}
-                                                                height={4}
-                                                            />
-                                                        </span>
-                                                    </Link>
-                                                </td>
-
-                                                <td className='py-2 px-4 border-b'>
-                                                    <b>
-                                                        {ver.documentNumber}
-                                                    </b>
-                                                </td>
-
-                                                <td className='py-2 px-4 border-b w-2/12'>
-                                                    {
-                                                        <label className="relative inline-flex items-left cursor-pointer w-5/6 sm:w-2/3 h-10 my-2">
-                                                            <input type="checkbox"
-                                                                value={ver.status === 'verified' ? true : false}
-                                                                className="sr-only peer"
-                                                                onChange={() => handleVerify(ver.id, ver.userId, ver.status === 'verified' ? 'unverified' : 'verified')}
-                                                                checked={ver.status === 'verified' ? true : false}
-                                                            />
-
-                                                            <span className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-100 rounded-full peer dark:bg-gray-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-100 peer-checked:bg-green-400"></span>
-
-                                                            <span className="ml-3 text-sm font-medium text-gray-100 dark:text-gray-300"></span>
-                                                        </label>
-                                                    }
-                                                </td>
-                                            </tr>
-                                        ))}
-                                </tbody>
-                            </table>
-                    }
+                                ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

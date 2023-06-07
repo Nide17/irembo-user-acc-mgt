@@ -1,9 +1,10 @@
-"use client";
-import { useState } from 'react'
+"use client"
+import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Loading from '../utils/loading';
+import { useRouter } from 'next/navigation'
+import Loading from '../utils/loading'
+import useAuth from '../utils/useauth'
 
 const RegisterPage = () => {
 
@@ -15,54 +16,65 @@ const RegisterPage = () => {
     const [regError, setRegError] = useState('')
     const [regSuccess, setRegSuccess] = useState(false)
     const [registerLoading, setRegisterLoading] = useState(false)
-    const router = useRouter()
 
+    const router = useRouter()
+    const { isAuthenticated, setIsAuthenticated } = useAuth()
+
+    // CHECK IF USER IS AUTHENTICATED AND REDIRECT TO DASHBOARD
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push('/dashboard')
+        }
+    }, [isAuthenticated])
+
+    // WHEN USER SUBMITS THE FORM, REGISTER THE USER
     const handleSubmit = async (e) => {
         e.preventDefault()
 
         // Check for empty fields
         if (!email || !password || !password2) {
             setRegError('Please fill in all fields')
-            return;
+            return
         }
 
         // Check for valid email address 
         const re = /\S+@\S+\.\S+/
         if (!re.test(email)) {
             setRegError('Please enter a valid email address')
-            return;
+            return
         }
 
         // Check if passwords match
         if (password !== password2) {
             setRegError('Passwords do not match')
-            return;
+            return
         }
 
         // Check password length
         if (password.length < 6) {
             setRegError('Password must be at least 6 characters')
-            return;
+            return
         }
 
         try {
             setRegError('')
             setRegisterLoading(true)
+
+            // REGISTERING THE USER
             const usersResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/users`, { email, password })
 
             if (usersResponse && usersResponse.data.status === 200) {
                 setRegSuccess(true)
                 setRegisterLoading(false)
 
-                // REDIRECT TO LOGIN PAGE AFTER 2 SECONDS
+                // REDIRECT TO LOGIN PAGE AFTER 3 SECONDS
                 setTimeout(() => {
-                    router.push('/login')
+                    window.location.href = '/login'
                 }, 3000)
             }
             else {
                 setRegisterLoading(false)
-                setRegError("Error occured: ", usersResponse.data.msg)
-                console.log(usersResponse)
+                setRegError(`Error occured: ${usersResponse.data.msg}`)
             }
         }
         catch (err) {

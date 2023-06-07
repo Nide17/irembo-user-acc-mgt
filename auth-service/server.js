@@ -17,9 +17,9 @@ app.use(express.json()) // PARSE JSON DATA FROM REQUEST BODY - POST/PUT REQUESTS
 
 // TESTING DATABASE CONNECTION AND SYNCING MODELS
 try {
+    sequelize.authenticate() // TESTING DATABASE CONNECTION
     // sequelize.sync({ force: true })
     sequelize.sync({ force: false })
-    sequelize.authenticate()
     console.log('Auth service connected to database ...')
 } catch (error) {
     console.log('Unable to connect auth to the database:', error)

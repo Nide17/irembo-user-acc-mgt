@@ -46,7 +46,6 @@ const MfaBox = ({ email, password, userId, jwtToken, setIsAuthenticated }) => {
 
                 // SET AUTHENTICATED TO TRUE
                 setIsAuthenticated(true)
-
                 setSuccess(true)
 
                 // REDIRECT TO DASHBOARD AFTER 2 SECONDS

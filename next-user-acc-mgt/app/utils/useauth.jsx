@@ -1,8 +1,8 @@
 // CUSTOM HOOK FOR PROTECTING ROUTES FROM UNAUTHORIZED USERS
 "use client"
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import axios from 'axios'
 
 const useAuth = () => {
 
@@ -24,8 +24,7 @@ const useAuth = () => {
                     const tokenVerifyResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/verify-token`, { token }, {
                         headers: {
                             'x-auth-token': token,
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
+                            'Content-Type': 'application/json'
                         },
                     })
 

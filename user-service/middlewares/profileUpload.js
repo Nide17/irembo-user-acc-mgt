@@ -12,7 +12,6 @@ const s3Config = new AWS.S3({
 })
 
 const fileFilter = (req, file, callback) => {
-
     const allowedFileTypes = ['image/jpeg', 'image/png', 'image/svg', 'image/jpg', 'image/gif', 'image/JPG', 'image/JPEG', 'image/PNG', 'image/SVG', 'image/GIF']
 
     if (allowedFileTypes.includes(file.mimetype)) {

@@ -36,7 +36,7 @@ const LoginLinkPage = () => {
             }
 
             else {
-                setError("Error occured: ", linkResponse.data.msg)
+                setError(`Error occured: ${linkResponse.data.msg}`)
             }
 
             // SET LOADING TO FALSE

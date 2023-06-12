@@ -341,7 +341,7 @@ const verifyAccVer = async (req, res) => {
             const user = userResponse.data.user
 
             // EMAIL CONTENT
-            const emailContent = req.body.status === 'verified' ? 'Good news!\nYour account has been verified!\n' : 'Bad news.\nYour verification request has been declined:\n'
+            const emailContent = req.body.status === 'verified' ? 'Good news!\nYour account has been verified!\n' : req.body.status === 'unverified' ? 'Bad news.\nYour verification request has been declined:\n' : null
             const reasonMessage = req.body.reasonMessage || 'Thanks!'
 
             // EMAIL

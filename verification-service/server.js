@@ -18,8 +18,8 @@ app.use(express.json()) // PARSE JSON DATA FROM REQUEST BODY - POST/PUT REQUESTS
 
 // TESTING DATABASE CONNECTION AND SYNCING MODELS TO DB
 try {
-    sequelize.sync({ force: false })
-    sequelize.authenticate()
+    sequelize.authenticate() // TESTING DATABASE CONNECTION
+    sequelize.sync({ force: false }) // SYNCING MODELS TO DB
     console.log('Verification service connected to the database ...')
 } catch (error) {
     console.log('Unable to connect to the database:', error)

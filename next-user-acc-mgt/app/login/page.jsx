@@ -1,6 +1,6 @@
 "use client"
-import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import useAuth from '../utils/useauth'
@@ -28,7 +28,7 @@ const LoginPage = () => {
         if (isAuthenticated) {
             router.push('/dashboard')
         }
-    }, [isAuthenticated, router])
+    }, [isAuthenticated])
 
     // HANDLE FORM SUBMISSION
     const handleSubmit = async (e) => {
@@ -64,7 +64,7 @@ const LoginPage = () => {
                 const mfaResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_GATEWAY}/settings/user/${loginResponse.data.user.id}`, { headers: { 'x-auth-token': loginResponse.data.token } })
 
                 // IF MFA IS ENABLED, SHOW MFA BOX
-                if (mfaResponse && mfaResponse.data.status === 200 && mfaResponse.data.settings.mfa) {
+                if (mfaResponse && mfaResponse.data.status === 200 && mfaResponse.data.settings && mfaResponse.data.settings.mfa) {
 
                     // SEND EMAIL TO USER WITH OTP CODE FOR MFA VERIFICATION
                     const sendOtp = await axios.post(`${process.env.NEXT_PUBLIC_API_GATEWAY}/auth/two-fa`, { email, password }, { headers: { 'x-auth-token': loginResponse.data.token } })
@@ -174,7 +174,7 @@ const LoginPage = () => {
                         </button>
 
                         <p className="my-3 text-center text-white text-sm underline underline-offset-4">
-                            <Link href="/auth/link">Use a link</Link>
+                            <Link href="/auth/link">Use a login link</Link>
                         </p>
 
                         <p className="my-3 text-center text-white text-sm underline underline-offset-4">

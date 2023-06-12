@@ -1,12 +1,3 @@
-/**
- * id	INTEGER	Unique identifier for the OTP code
-user_id	INTEGER	ID of the user associated with the OTP code
-otp_code	VARCHAR(6)	OTP code (6-digit)
-created_at	TIMESTAMP	Timestamp when the OTP code was created
-expires_at	TIMESTAMP	Timestamp indicating the expiration time of the OTP code
-used    BOOLEAN	Flag indicating if the OTP code has been used
- */
-
 const { DataTypes } = require('sequelize')
 const db = require('../config/db')
 

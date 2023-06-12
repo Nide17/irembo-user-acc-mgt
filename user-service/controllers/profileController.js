@@ -1,11 +1,11 @@
 const AWS = require('aws-sdk')
-require('dotenv').config()
 const moment = require('moment')
+require('dotenv').config()
 
 // MODELS
 const UserProfile = require('../models/UserProfile')
 
-// UTILS
+// UTILS - AWS S3 CONFIG FOR PROFILE PHOTOS
 const s3Config = new AWS.S3({
     accessKeyId: process.env.AWS_USER_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_USER_SECRET_ACCESS_KEY,

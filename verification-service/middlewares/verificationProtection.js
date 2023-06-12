@@ -9,7 +9,8 @@ const verificationProtection = (roles) => (req, res, next) => {
 
     // IF NO TOKEN FOUND, RETURN ERROR
     if (!token) {
-        return res.status(401).json({
+        return res.json({
+            status: 401,
             success: false,
             msg: 'No token, authorizaton Denied',
             code: 'NO_TOKEN'
@@ -34,7 +35,8 @@ const verificationProtection = (roles) => (req, res, next) => {
 
         // IF USER IS NOT AUTHORIZED, RETURN ERROR
         if (!authorized) {
-            return res.status(401).json({
+            return res.json({
+                status: 401,
                 success: false,
                 msg: 'You are not authorized to access this resource',
                 code: 'NOT_AUTHORIZED'
@@ -49,7 +51,8 @@ const verificationProtection = (roles) => (req, res, next) => {
         }
     }
     catch (error) {
-        return res.status(400).json({
+        return res.json({
+            status: 400,
             success: false,
             msg: 'Session expired',
             code: 'SESSION_EXPIRED'

@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs") // FOR HASHING PASSWORDS
 
 // MODELS
 const User = require('../models/User')
@@ -8,7 +8,7 @@ const UserProfile = require('../models/UserProfile')
 const validateEmail = require('../utils/validateEmail')
 const validatePassword = require('../utils/validatePassword')
 
-// GET http://localhost:5002/users/ - get all users
+// GET http://localhost:5002/users - get all users
 const getAllUsers = async (req, res) => {
 
     try {
@@ -60,9 +60,6 @@ const getUserById = async (req, res) => {
                 msg: 'User not found'
             })
         }
-
-        // IF USER FOUND, REMOVE PASSWORD FROM USER
-        // user.password = undefined
 
         // SEND SUCCESS RESPONSE
         return res.json({
@@ -125,7 +122,7 @@ const getUserByEmail = async (req, res) => {
 }
 
 
-// GET http://localhost:5002/users/:id - get user by id
+// GET http://localhost:5002/users/:id - get user link by id
 const getUserByLinkId = async (req, res) => {
 
     try {

@@ -25,7 +25,7 @@ const ProfilePic = ({ token, isAuth }) => {
                 if (photoResponse && photoResponse.data.status === 200) {
                     setProfilePic(photoResponse.data.profile.profilePhoto)
                 }
-            
+
                 else setProfilePic(null)
             }
 
@@ -37,13 +37,13 @@ const ProfilePic = ({ token, isAuth }) => {
 
         // CALL THE FUNCTION
         getProfilePic()
-    }, [])
+    }, [user])
 
     // IF USER IS NOT LOGGED IN, RETURN NULL
     if (!isAuth) {
         return null
     }
-    
+
     else {
         // RETURN THE PROFILE PIC
         return (
@@ -53,7 +53,8 @@ const ProfilePic = ({ token, isAuth }) => {
                         src={profilePic ? profilePic : '/images/profile.jpg'}
                         alt="Profile Image"
                         width={64}
-                        height={64} />
+                        height={64}
+                        priority />
                 </Link>
             </div>
 

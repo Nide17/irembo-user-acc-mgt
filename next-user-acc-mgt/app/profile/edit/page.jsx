@@ -44,7 +44,7 @@ const EditProfilePage = () => {
                 }
 
                 // SET ERROR MESSAGE
-                else setError("Error occured: ", profileResponse.data.msg)
+                else setError(`Error occured: ${profileResponse.data.msg}`)
 
             } catch (error) {
                 // SET ERROR MESSAGE
@@ -86,7 +86,7 @@ const EditProfilePage = () => {
             if (profResponse && profResponse.data.status === 200) {
                 return profResponse
             }
-            else setError("Error occured: ", profResponse.data.msg)
+            else setError(`Error occured: ${profResponse.data.msg}`)
         }
         catch (err) {
             setError('Error updating user profile')

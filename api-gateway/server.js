@@ -1,20 +1,22 @@
 // IMPORTING REQUIRED MODULES
 const express = require('express')
 const cors = require('cors')
-const app = express()
 const axios = require('axios')
 const multer = require('multer')
 const FormData = require('form-data')
 
-require('dotenv').config()
-const PORT = process.env.PORT || 5000
+const app = express() // INITIALIZE OR CREATING AN EXPRESS APP
 
-// MIDDLEWARES
+require('dotenv').config() // LOAD ALL ENVIRONMENT VARIABLES FROM .env FILE
+
+const PORT = process.env.PORT || 5000 // PORT NUMBER AT WHICH THE SERVER WILL RUN
+
+// MIDDLEWARES - FUNCTIONS THAT EXECUTE FIRST WHEN A REQUEST IS MADE TO THE SERVER
 app.use(cors()) // ALLOW OTHER DOMAINS TO ACCESS THIS SERVER
 app.use(express.json()) // PARSE JSON DATA FROM REQUEST BODY - POST/PUT REQUESTS
 app.use(express.urlencoded({ extended: true })) // PARSE URL ENCODED DATA FROM REQUEST BODY - POST/PUT REQUESTS
 
-// HANDLE ALL REQUESTS TO MICROSERVICES
+// HANDLE ALL REQUESTS TO MICROSERVICES - /users, /profiles, /settings, /auth, /roles, /accvers
 // ALL TYPE OF REQUESTS TO /users WILL BE REDIRECTED TO USER SERVICE MICROSERVICE
 app.use('/users', (req, res) => {
 
@@ -26,8 +28,7 @@ app.use('/users', (req, res) => {
         url: `${process.env.USER_SERVICE}${req.originalUrl}`,
 
         // IF REQUEST BODY CONTAINS FILE, SEND FILE INSTEAD OF JSON DATA
-        data: req.file ? req.file : req.body,
-
+        data: req.body,
         headers: {
             'Content-Type': req.headers['content-type'],
             'x-auth-token': req.headers['x-auth-token']
@@ -52,16 +53,16 @@ app.use('/profiles', (req, res) => {
     const formData = new FormData()
 
     // USE MULTER TO PARSE FILE FROM REQUEST BODY AND APPEND TO FORM DATA OBJECT
-    const profilePhoto = multer().single('profilePhoto')
+    const profilePhotoMulterInstance = multer().single('profilePhoto')
 
-    profilePhoto(req, res, (err) => {
+    profilePhotoMulterInstance(req, res, (err) => {
         if (err) {
             console.log(err)
             return
         }
 
         // APPEND FILE TO FORM DATA OBJECT
-        if(req.file) {
+        if (req.file) {
             console.log('FILE FOUND')
             formData.append('profilePhoto', req.file.buffer, req.file.originalname)
         }
@@ -167,26 +168,26 @@ app.use('/accvers', (req, res) => {
 
     console.log("REQUEST TO /accvers")
 
-// CREATE FORM DATA OBJECT TO SEND TO SERVER (IF REQUEST BODY CONTAINS FILE)
+    // CREATE FORM DATA OBJECT TO SEND TO SERVER (IF REQUEST BODY CONTAINS FILE)
     const formData = new FormData()
 
     // USE MULTER TO PARSE FILE FROM REQUEST BODY AND APPEND TO FORM DATA OBJECT
-    const documentImage = multer().single('documentImage')
+    const documentImageMulterInstance = multer().single('documentImage')
 
-    documentImage(req, res, (err) => {
+    documentImageMulterInstance(req, res, (err) => {
         if (err) {
             console.log(err)
             return
         }
 
         // APPEND FILE TO FORM DATA OBJECT
-        if(req.file) {
+        if (req.file) {
             console.log('FILE FOUND')
             formData.append('documentImage', req.file.buffer, req.file.originalname)
         }
 
         // APPEND ALL OTHER FIELDS TO FORM DATA OBJECT IF THEY EXIST
-        if(req.body) {
+        if (req.body) {
             for (const [key, value] of Object.entries(req.body)) {
                 formData.append(key, value)
             }

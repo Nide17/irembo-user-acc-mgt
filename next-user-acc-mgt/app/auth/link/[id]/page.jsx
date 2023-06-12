@@ -42,7 +42,7 @@ const VerifyLink = () => {
 
                 else {
                     // SET ERROR MESSAGE
-                    setError("Error occured: ", verifyResponse.data.msg)
+                    setError(`Error occured: ${verifyResponse.data.msg}`)
                     
                     setSuccess(false)
                     router.push('/auth/link')

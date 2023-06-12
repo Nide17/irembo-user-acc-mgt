@@ -158,7 +158,7 @@ const SettingsPage = () => {
 
             // SET ERROR MESSAGE
             else {
-                setError("Error occured: ", mfaResponse.data.msg)
+                setError(`Error occured: ${mfaResponse.data.msg}`)
                 setLoadingSettings(false)
 
                 // CLEAR MESSAGE AFTER 3 SECONDS

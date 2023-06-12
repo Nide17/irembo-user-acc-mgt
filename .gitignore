@@ -33,3 +33,11 @@ lerna-debug.log*
 .netlify
 ./docker config.md
 */env/config.js
+
+*.docx
+*.doc
+*.pdf
+*.xlsx
+*.xls
+*.pptx
+*.ppt

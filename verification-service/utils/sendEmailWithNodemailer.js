@@ -32,7 +32,7 @@ const sendEmailWithNodemailer = async (req, res, emailData) => {
         }
 
     } catch (error) {
-        console.log(error)
+        console.log('\n\nError sending email\n\n')
         return false
     }
 }

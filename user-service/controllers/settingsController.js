@@ -129,7 +129,6 @@ const getSettingsByUserId = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
         return res.json({
             status: 500,
             msg: 'Internal server error',

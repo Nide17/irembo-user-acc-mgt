@@ -105,6 +105,7 @@ app.use('/settings', (req, res) => {
         res.status(200).send(response.data)
 
     }).catch(error => {
+        console.log(error)
         res.status(500).send({
             error: JSON.parse(JSON.stringify(error.response.data))
         })

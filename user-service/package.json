@@ -19,6 +19,7 @@
   "arch": "any",
   "dependencies": {
     "aws-sdk": "^2.946.0",
+    "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "concurrently": "^8.0.1",
     "cors": "^2.8.5",

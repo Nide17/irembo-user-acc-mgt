@@ -1,4 +1,5 @@
 const Settings = require('../models/Settings')
+const axios = require('axios')
 
 // GET http://localhost:5002/settings - get all settings
 const getAllSettings = async (req, res) => {
@@ -67,9 +68,27 @@ const getSettingsById = async (req, res) => {
 const getSettingsByUserId = async (req, res) => {
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { userId } = req.params
-    
+
     // IF USER HAS SETTINGS, RETURN SETTINGS
     try {
+
+        // ASK THE USER SERVICE FOR THIS USER
+        const userResponse = await axios.get(`${process.env.USER_SERVICE}/users/${userId}`, {
+            headers: {
+                'Content-Type': req.headers['content-type'],
+                'x-auth-token': req.headers['x-auth-token']
+            }
+        })
+
+        // CHECK IF USER EXISTS
+        if (userResponse.data.status !== 200) {
+            return res.json({
+                status: 400,
+                msg: 'User does not exist!'
+            })
+        }
+
+        // CHECK IF USER HAS SETTINGS ALREADY
         const settings = await Settings.findOne({
             where: {
                 userId
@@ -94,7 +113,6 @@ const getSettingsByUserId = async (req, res) => {
 
             // SEND SUCCESS RESPONSE
             else {
-
                 return res.json({
                     status: 200,
                     createdSettings
@@ -111,7 +129,7 @@ const getSettingsByUserId = async (req, res) => {
         }
 
     } catch (error) {
-
+        console.log(error)
         return res.json({
             status: 500,
             msg: 'Internal server error',

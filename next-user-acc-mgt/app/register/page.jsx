@@ -54,10 +54,10 @@ const RegisterPage = () => {
                 setRegSuccess(true)
                 setRegisterLoading(false)
 
-                // REDIRECT TO LOGIN PAGE AFTER 2 SECONDS
-                setTimeout(() => {
-                    router.push('/login')
-                }, 3000)
+                // // REDIRECT TO LOGIN PAGE AFTER 2 SECONDS
+                // setTimeout(() => {
+                //     window.location.href = '/login'
+                // }, 3000)
             }
             else {
                 setRegisterLoading(false)

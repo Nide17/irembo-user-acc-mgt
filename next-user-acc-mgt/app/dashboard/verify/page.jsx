@@ -121,6 +121,20 @@ const VerificationPage = () => {
         return <p>You are not allowed to access this page!</p>
     }
 
+    // IF VERIFICATION REQUESTS LENGTH IS 0, DISPLAY MESSAGE
+    else if (!vers || vers.length === 0) {
+        return (
+            <div className='flex flex-col items-center justify-center mt-24 lg:mt-72'>
+                <div className="flex flex-col items-center justify-center w-11/12 sm:w-9/10 h-min p-3 bg-blue-500 rounded-lg sm:hover:scale-99 sm:hover:bg-blue-700 transition duration-300 ease-in-out shadow-lg shadow-white">
+                    <h1 className="text-3xl text-white font-bold my-8">Verify users</h1>
+                    <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-white">
+                        <p className="text-center text-red-700 text-lg">No verification requests available!</p>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+    
     else return (
         <div className='flex flex-col items-center justify-center mt-24'>
 

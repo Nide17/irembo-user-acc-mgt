@@ -59,40 +59,6 @@ const EditProfilePage = () => {
         fetchProfile()
     }, [])
 
-    // UPDATE USER PROFILE
-    const updateUser = async (firstName, lastName, gender, dateOfBirth, maritalStatus, nationality) => {
-
-        // Check for empty fields
-        if (!firstName || !lastName || !gender || !dateOfBirth || !maritalStatus || !nationality) {
-            setError('Please fill in all fields')
-            return
-        }
-
-        try {
-            // CLEAR ERROR MESSAGE
-            setError('')
-
-            // ATTEMPT TO UPDATE USER PROFILE
-            const profResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`,
-                { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality },
-                {
-                    headers: {
-                        'x-auth-token': token,
-                        'Content-Type': 'application/json'
-                    },
-                })
-
-            // IF SUCCESSFUL, SET SUCCESS STATE
-            if (profResponse && profResponse.data.status === 200) {
-                return profResponse
-            }
-            else setError(`Error occured: ${profResponse.data.msg}`)
-        }
-        catch (err) {
-            setError('Error updating user profile')
-        }
-    }
-
     // IF NOT AUTHENTICATED, DISPLAY MESSAGE
     if (!isAuthenticated) {
         return <p>Please log in to edit profile.</p>
@@ -105,9 +71,13 @@ const EditProfilePage = () => {
     return (
         <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
             <Form
+                setLoading={setLoading}
+                loading={loading}
                 error={error}
-                updateUser={updateUser}
+                setError={setError}
                 profile={profile}
+                user={user}
+                token={token}
                 setProfile={setProfile}
             />
         </div>

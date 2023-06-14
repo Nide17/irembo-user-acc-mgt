@@ -52,6 +52,16 @@ const updateProfile = async (req, res) => {
     // DESCTRUCTURE USER DATA FROM REQUEST BODY
     const { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality } = req.body
 
+    // VALIDATING THE DATE OF BIRTH
+    const dobIsAfter = moment(dateOfBirth).isAfter(new Date())
+
+    if (dobIsAfter) {
+        return res.json({
+            status: 400,
+            msg: 'Date of birth can not be in the future'
+        })
+    }
+
     // CALCULATE USER AGE
     const age = moment().diff(dateOfBirth, 'years')
 

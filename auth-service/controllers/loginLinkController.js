@@ -133,7 +133,7 @@ const verifyLink = async (req, res) => {
         if (tokenExists.expiration < Date.now()) {
             return res.json({
                 status: 400,
-                msg: 'Token has expired!'
+                msg: 'Link has expired!'
             })
         }
 
@@ -141,7 +141,7 @@ const verifyLink = async (req, res) => {
         if (tokenExists.used) {
             return res.json({
                 status: 400,
-                msg: 'Token has been used!'
+                msg: 'Link has been used!'
             })
         }
 

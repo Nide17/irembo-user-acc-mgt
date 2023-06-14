@@ -170,7 +170,7 @@ const verifyTwoFactorAuth = async (req, res) => {
         if (tokenExists.expiration < Date.now()) {
             return res.json({
                 status: 400,
-                msg: 'Token has expired!'
+                msg: 'Code has expired!'
             })
         }
 
@@ -178,7 +178,7 @@ const verifyTwoFactorAuth = async (req, res) => {
         if (tokenExists.used) {
             return res.json({
                 status: 400,
-                msg: 'Token has been used!'
+                msg: 'Code has been used!'
             })
         }
 

@@ -3,18 +3,17 @@ import Link from 'next/link'
 import { useState } from 'react'
 import countryList from './countries.json'
 import moment from 'moment'
+import axios from 'axios'
 import Loading from '../../utils/loading'
 import { useRouter } from 'next/navigation'
 
-const Form = ({ error, updateUser, profile, setProfile }) => {
+const Form = ({ setLoading, loading, setError, error, profile, setProfile, user, token }) => {
 
   // NEXT ROUTER
   const router = useRouter()
 
   // STATE VARIABLES
-  const [errorP, setErrorP] = useState(error)
   const [success, setSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
 
   // DESTRUCTURE PROFILE
   const { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality } = profile
@@ -26,15 +25,30 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
     setLoading(true)
 
     // CLEAR ERROR MESSAGE
-    setErrorP('')
+    setError('')
 
     // ATTEMPT TO UPDATE USER PROFILE
     try {
-      // CALL UPDATE USER FUNCTION
-      const updateUserResponse = await updateUser(firstName, lastName, gender, dateOfBirth, maritalStatus, nationality)
+      // Check for empty fields
+      if (!firstName || !lastName || !gender || !dateOfBirth || !maritalStatus || !nationality) {
+        setError('Please fill in all fields')
+        return
+      }
+      // CLEAR ERROR MESSAGE
+      setError('')
+
+      // ATTEMPT TO UPDATE USER PROFILE
+      const profResponse = await axios.put(`${process.env.NEXT_PUBLIC_API_GATEWAY}/profiles/user/${JSON.parse(user).id}`,
+        { firstName, lastName, gender, dateOfBirth, maritalStatus, nationality },
+        {
+          headers: {
+            'x-auth-token': token,
+            'Content-Type': 'application/json'
+          },
+        })
 
       // IF SUCCESSFUL, SET SUCCESS STATE
-      if (updateUserResponse && updateUserResponse.data.status === 200) {
+      if (profResponse && profResponse.data.status === 200) {
 
         // SET SUCCESS STATE
         setSuccess(true)
@@ -44,10 +58,14 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
           router.push('/dashboard')
         }, 3000)
       }
+      else {
+        setError(`Error occured: ${profResponse.data.msg}`)
+      }
+
     } catch (error) {
       // IF ERROR, SET ERROR STATE
       setSuccess(false)
-      setErrorP('Error updating user profile')
+      setError('Error updating user profile')
       return error
     }
 
@@ -66,18 +84,18 @@ const Form = ({ error, updateUser, profile, setProfile }) => {
       </div>
 
       {/* NOTIFICATION - LOADING, ERROR, SUCCESS */}
-      {loading && !errorP && !success && (
+      {loading && !error && !success && (
         <div className="flex items-center justify-center">
           <Loading />
         </div>
       )}
 
-      {errorP && (
+      {error && (
         <div className="flex items-center justify-center h-16 mx-2 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-100">
-          <p className="text-center text-red-700 text-sm">{errorP}</p>
+          <p className="text-center text-red-700 text-sm">{error}</p>
         </div>)}
 
-      {!loading && !errorP && success && (
+      {!loading && !error && success && (
         <div className="flex items-center justify-center h-10 px-2 my-4 text-center sm:my-2 rounded-lg bg-green-200">
           <p className="text-center text-green-900 text-lg">Success, profile updated ...</p>
         </div>

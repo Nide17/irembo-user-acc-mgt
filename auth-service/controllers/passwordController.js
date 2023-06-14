@@ -133,7 +133,7 @@ const resetPassword = async (req, res) => {
         if (resetTokenExists.expiryDate < Date.now()) {
             return res.json({
                 status: 401,
-                msg: 'Reset token has expired!'
+                msg: 'Reset link has expired!'
             })
         }
 

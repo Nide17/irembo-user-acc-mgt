@@ -29,9 +29,6 @@ const VerifyLink = () => {
                     // SET SUCCESS MESSAGE AND REDIRECT TO DASHBOARD
                     setSuccess(true)
 
-                    // SET LOADING TO FALSE AFTER SUCCESSFUL REQUEST
-                    setLoadingVerify(false)
-
                     // STORE TOKEN AND USER DATA IN LOCAL STORAGE
                     localStorage.setItem('token', verifyResponse.data.token)
                     localStorage.setItem('user', JSON.stringify(verifyResponse.data.user))
@@ -41,22 +38,25 @@ const VerifyLink = () => {
                 }
 
                 else {
-                    // SET ERROR MESSAGE
-                    setError(`Error occured: ${verifyResponse.data.msg}`)
-                    
                     setSuccess(false)
-                    router.push('/auth/link')
+                    // SET ERROR MESSAGE
+                    setError(`Error: ${verifyResponse.data.msg}`)
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('user')
                 }
-
-                // SET LOADING TO FALSE AFTER SUCCESSFUL REQUEST
                 setLoadingVerify(false)
 
             } catch (error) {
+
                 // SET ERROR MESSAGE
                 setError('Something went wrong. Please try again.')
 
                 // SET LOADING TO FALSE AFTER FAILED REQUEST
                 setLoadingVerify(false)
+                setSuccess(false)
+
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
             }
         }
 
@@ -67,35 +67,36 @@ const VerifyLink = () => {
     return (
         <>
             {
-                loadingVerify ?
-                    <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-                        <Loading />
-                    </div> :
+                loadingVerify &&
+                <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
+                    <Loading />
+                </div>
+            }
 
-                    !success && error ?
+            {!success && error &&
+                // DISPLAY ERROR MESSAGE IF UNSUCCESSFUL
+                <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
+                    <div className="flex flex-col w-96 p-10 bg-slate-700 rounded-lg shadow-lg">
+                        <h4 className="mb-5 text-2xl font-bold text-center text-red-500">
+                            {error}
+                        </h4>
+                        <p className="my-5 text-center text-white text-sm underline underline-offset-4">
+                            <Link href="/auth/link">Try again</Link>
+                        </p>
+                        <p className="text-center text-white text-sm underline underline-offset-4">
+                            <Link href="/login">Login</Link>
+                        </p>
+                    </div>
+                </div>
+            }
 
-                        // DISPLAY ERROR MESSAGE IF UNSUCCESSFUL
-                        <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-                            <div className="flex flex-col w-96 p-10 bg-slate-700 rounded-lg shadow-lg">
-                                <h1 className="mb-5 text-2xl font-bold text-center text-red-500">Verification failed!</h1>
-                                <p className="my-5 text-center text-white text-sm underline underline-offset-4">
-                                    <Link href="/auth/link">Try again</Link>
-                                </p>
-                                <p className="text-center text-white text-sm underline underline-offset-4">
-                                    <Link href="/login">Login</Link>
-                                </p>
-                            </div>
-                        </div> :
-
-                        // DISPLAY SUCCESS MESSAGE IF SUCCESSFUL
-                        <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
-                            <div className="flex flex-col w-96 p-10 bg-slate-700 rounded-lg shadow-lg">
-                                <h1 className="mb-5 text-2xl font-bold text-center text-green-500">Verification successful!</h1>
-                                <p className="text-center text-white text-sm underline underline-offset-4">
-                                    <Link href="/login">Login</Link>
-                                </p>
-                            </div>
-                        </div>
+            {!loadingVerify && !error && success &&
+                // DISPLAY SUCCESS MESSAGE IF SUCCESSFUL
+                <div className="flex items-center justify-center h-screen bg-image-login bg-cover bg-center bg-no-repeat">
+                    <div className="flex flex-col w-96 p-10 bg-slate-700 rounded-lg shadow-lg">
+                        <h1 className="mb-5 text-2xl font-bold text-center text-green-500">Login successful!</h1>
+                    </div>
+                </div>
             }
         </>
     )

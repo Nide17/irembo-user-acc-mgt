@@ -78,12 +78,15 @@ export default function Header() {
     return (
         <header className='fixed top-0 left-0 w-full z-10 bg-slate-100 text-slate-900 text-16 drop-shadow-md'>
 
-            <nav className="py-1 px-3 flex flex-col md:flex-row items-center columns-1 sm:columns-3">
+            <nav className="py-1 px-3 flex flex-col sm:flex-row items-center columns-1 sm:columns-3">
 
                 <div className="w-full sm:w-120 h-16 p-2 flex items-center justify-between text-center">
                     <Link href="#" className='p-1 font-bold'>
-                        <span className='hidden sm:block text-xl md:text-2xl text-blue-500 leading-6'>User Account Management App</span>
-                        <span className='block sm:hidden text-xl md:text-2xl text-blue-500 leading-6'>UAM App</span>
+
+                        <span className='hidden lg:block text-xl md:text-2xl text-blue-500 leading-6'>User Account Management App</span>
+
+                        <span className='block lg:hidden text-xl md:text-2xl text-blue-500 leading-6'>UAM App</span>
+
                         <span className='block text-sm md:text-base text-slate-800 underline underline-offset-4 leading-6'>Manage, be fruitful</span>
                     </Link>
 
@@ -106,27 +109,27 @@ export default function Header() {
                             </Link>
                         </li>
 
-                        <li className='sm:mx-4 py-3 hover:scale-110 transition duration-500 ease-in-out'>
+                        <li className='lg:mx-4 py-3 hover:scale-110 transition duration-500 ease-in-out'>
                             <Link href="/dashboard" className='p-2 border border-slate-100 rounded-md hover:bg-blue-500 hover:text-white'>
                                 Dashboard
                             </Link>
                         </li>
 
                         {
-                            isAuth ? <li className='sm:mx-4 py-3 hover:scale-110 transition duration-500 ease-in-out'>
+                            isAuth ? <li className='lg:mx-4 py-3 hover:scale-110 transition duration-500 ease-in-out'>
                                 <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onClick={logout}>
                                     Logout
                                 </button>
                             </li> :
 
                                 <>
-                                    <li className='sm:mx-4 sm:ml-20 py-3 hover:scale-110 transition duration-500 ease-in-out'>
+                                    <li className='sm:mx-4 lg:ml-20 py-3 hover:scale-110 transition duration-500 ease-in-out'>
                                         <Link href="/login" className='p-2 border border-slate-100 rounded-md hover:bg-blue-500 hover:text-white'>
                                             Login
                                         </Link>
                                     </li>
 
-                                    <li className='sm:mx-4 py-3 hover:scale-110 transition duration-500 ease-in-out'>
+                                    <li className='lg:mx-4 py-3 hover:scale-110 transition duration-500 ease-in-out'>
                                         <Link href="/register" className='p-2 border rounded-md bg-blue-500 text-white hover:bg-blue-900'>
                                             Register
                                         </Link>
